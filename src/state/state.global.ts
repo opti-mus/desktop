@@ -8,6 +8,9 @@ type WithSelectors<S> = S extends { getState: () => infer T }
 export interface GlobalState {
   windows: WindowTemplate[];
   addWindow: (window: WindowTemplate) => void;
+  minimizeWindow: (window: WindowTemplate) => void;
+  maximizeWindow: (window: WindowTemplate) => void;
+  closeWindow: (window: WindowTemplate) => void;
 }
 
 const createSelectors = <S extends UseBoundStore<StoreApi<object>>>(
@@ -29,6 +32,21 @@ export const globalStore = create<GlobalState>((set, get) => {
     addWindow: (window: WindowTemplate) => {
       set((state) => ({ windows: [...state.windows, window] }));
     },
+    minimizeWindow: (window: WindowTemplate) => {
+      set((state) => ({
+        windows: state.windows.map((w) => w === window ? { ...w, isMinimized: true } : w)
+      }));
+    },
+    maximizeWindow: (window: WindowTemplate) => {
+      set((state) => ({
+        windows: state.windows.map((w) => w === window ? { ...w, isMaximized: !w.isMaximized } : w)
+      }));
+    },
+    closeWindow: (window: WindowTemplate) => {
+      set((state) => ({
+        windows: state.windows.filter(w => w !== window)
+      }));
+    }
   }
 });
 
