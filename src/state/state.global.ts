@@ -6,7 +6,6 @@ type WithSelectors<S> = S extends { getState: () => infer T }
   : never
 
 export interface GlobalState {
-  theme: 'light' | 'dark';
   windows: WindowTemplate[];
   addWindow: (window: WindowTemplate) => void;
 }
@@ -26,7 +25,6 @@ const createSelectors = <S extends UseBoundStore<StoreApi<object>>>(
 
 export const globalStore = create<GlobalState>((set, get) => {
   return {
-    theme: 'light',
     windows: [],
     addWindow: (window: WindowTemplate) => {
       set((state) => ({ windows: [...state.windows, window] }));

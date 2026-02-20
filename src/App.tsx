@@ -1,3 +1,4 @@
+import WindowTable from "./components/window/Window";
 import { useGlobalStore } from "./state/state.global";
 
 function App() {
@@ -8,12 +9,13 @@ function App() {
     const count = windows.length + 1;
 
     const render = () => <div>Hello World {count}</div>;
-
-    addWindow({
+    const newWindow = {
       id: Date.now().toString(),
       name: "Window" + count,
       render,
-    });
+    };
+
+    addWindow(newWindow);
   };
   return (
     <>
@@ -22,7 +24,7 @@ function App() {
         <button onClick={handleAddWindow}>Add Window</button>
         <div>
           {windows.map((window) => (
-            <div key={window.id}>{window?.render?.()}</div>
+            <WindowTable key={window.id} window={window} />
           ))}
         </div>
       </div>
