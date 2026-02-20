@@ -1,4 +1,4 @@
-export type WindowTable = Partial<{
+export type WindowTemplate = Partial<{
     id: string;
     name: string;
     isOpen: boolean;

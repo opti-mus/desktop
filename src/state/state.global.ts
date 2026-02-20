@@ -1,5 +1,5 @@
 import { create, StoreApi, UseBoundStore } from 'zustand';
-import type { WindowTable } from '../types/config';
+import type { WindowTemplate } from '../types/config';
 
 type WithSelectors<S> = S extends { getState: () => infer T }
   ? S & { use: { [K in keyof T]: () => T[K] } }
@@ -7,8 +7,8 @@ type WithSelectors<S> = S extends { getState: () => infer T }
 
 export interface GlobalState {
   theme: 'light' | 'dark';
-  windows: WindowTable[];
-  addWindow: (window: WindowTable) => void;
+  windows: WindowTemplate[];
+  addWindow: (window: WindowTemplate) => void;
 }
 
 const createSelectors = <S extends UseBoundStore<StoreApi<object>>>(
@@ -28,7 +28,7 @@ export const globalStore = create<GlobalState>((set, get) => {
   return {
     theme: 'light',
     windows: [],
-    addWindow: (window: WindowTable) => {
+    addWindow: (window: WindowTemplate) => {
       set((state) => ({ windows: [...state.windows, window] }));
     },
   }
