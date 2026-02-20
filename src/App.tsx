@@ -7,8 +7,7 @@ function App() {
 
   const handleAddWindow = () => {
     const count = windows.length + 1;
-    console.log(123);
-    
+
     const render = () => <div>Hello World {count}</div>;
     const newWindow = {
       id: Date.now().toString(),
