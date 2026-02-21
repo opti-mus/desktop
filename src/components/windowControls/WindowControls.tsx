@@ -6,6 +6,15 @@ type WindowControlsProps = {
   window: WindowTemplate;
 };
 
+const scrollController = {
+    disableScroll() {
+        document.body.style.overflow = "hidden";
+    },
+    enableScroll() {
+        document.body.style.overflow = "auto";
+    },
+}
+
 const WindowControls = ({ window } : WindowControlsProps) => {
     const minimizeWindow = useGlobalStore.use.minimizeWindow();
     const maximizeWindow = useGlobalStore.use.maximizeWindow();
@@ -15,7 +24,12 @@ const WindowControls = ({ window } : WindowControlsProps) => {
         <>
             <WindowControlsStyles>
                 <button onClick={() => minimizeWindow(window)}>Minimize</button>
-                <button onClick={() => maximizeWindow(window)}>Maximize</button>
+                <button onClick={() => {
+                    maximizeWindow(window);
+                    !window.isMaximized 
+                    ? scrollController.disableScroll() 
+                    : scrollController.enableScroll();
+                }}>Maximize</button>
                 <button onClick={() => closeWindow(window)}>Close</button>
             </WindowControlsStyles>
         </>
