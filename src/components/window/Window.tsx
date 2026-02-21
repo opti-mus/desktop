@@ -6,10 +6,10 @@ type WindowTableProps = {
   window: WindowTemplate;
 };
 const WindowTable = ({ window }: WindowTableProps) => {
-  const { name, render } = window;
+  const { name, render, isMaximized } = window;
   return (
     <>
-      <WindowTableStyles>
+      <WindowTableStyles isMaximized={isMaximized}>
         <TitleBar window={ window } />
         <h1>{name}</h1>
         <div>{render?.()}</div>

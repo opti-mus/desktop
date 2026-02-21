@@ -1,6 +1,7 @@
 import WindowTable from "./components/window/Window";
 import { useGlobalStore } from "./state/state.global";
 
+
 function App() {
   const addWindow = useGlobalStore.use.addWindow();
   const windows = useGlobalStore.use.windows();
