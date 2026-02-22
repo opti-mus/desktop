@@ -14,6 +14,6 @@ export const WindowTableStyles = styled.div<WindowTableStylesProps>`
     margin: ${({isMaximized}) => isMaximized ? "0" : "10px"};
     display: flex;
     flex-direction: column;
-    position: ${({isMaximized}) => isMaximized ? "absolute" : "static"};
+    position: ${({isMaximized}) => isMaximized ? "fixed" : "static"};
     inset: ${({isMaximized}) => isMaximized ? "0" : "auto"};
 `

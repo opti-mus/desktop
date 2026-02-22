@@ -7,11 +7,18 @@ type WindowControlsProps = {
 };
 
 const scrollController = {
+    scrollPosition: 0,
     disableScroll() {
-        document.body.style.overflow = "hidden";
+        this.scrollPosition = window.scrollY;
+        document.body.style.cssText = `
+            overflow: hidden;
+            `;
     },
     enableScroll() {
-        document.body.style.overflow = "auto";
+        document.body.style.cssText = `
+        overflow: auto;
+        `;
+        window.scrollTo({top: this.scrollPosition});
     },
 }
 
@@ -30,7 +37,10 @@ const WindowControls = ({ window } : WindowControlsProps) => {
                     ? scrollController.disableScroll() 
                     : scrollController.enableScroll();
                 }}>Maximize</button>
-                <button onClick={() => closeWindow(window)}>Close</button>
+                <button onClick={() => {
+                    closeWindow(window);
+                    scrollController.enableScroll();
+                }}>Close</button>
             </WindowControlsStyles>
         </>
     )
