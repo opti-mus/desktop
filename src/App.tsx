@@ -1,4 +1,4 @@
-import WindowTable from "./components/window/Window";
+import WindowTable from "./components/window/windowComponent/Window";
 import { useGlobalStore } from "./state/state.global";
 
 function App() {

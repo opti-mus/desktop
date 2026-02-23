@@ -1,4 +1,4 @@
-import type { WindowTemplate } from "../../types/config";
+import type { WindowTemplate } from "../../../types/config";
 import TitleBar from "../titleBar/TitleBar";
 import { WindowTableStyles } from "./Window.styles";
 
