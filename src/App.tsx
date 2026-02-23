@@ -1,21 +1,32 @@
 import WindowTable from "./components/window/Window";
 import { useGlobalStore } from "./state/state.global";
 
-
 function App() {
   const addWindow = useGlobalStore.use.addWindow();
+  const addShortcut = useGlobalStore.use.addShortcut();
   const windows = useGlobalStore.use.windows();
 
   const handleAddWindow = () => {
     const count = windows.length + 1;
 
     const render = () => <div>Hello World {count}</div>;
+
+    const shortcut = {
+      id: Date.now().toString(),
+      name: "Shortcut" + count,
+      key: "Ctrl+Shift+A",
+      action: () => {
+        console.log("Shortcut pressed");
+      },
+    };
     const newWindow = {
       id: Date.now().toString(),
       name: "Window" + count,
       render,
+      shortcut,
     };
 
+    addShortcut(shortcut);
     addWindow(newWindow);
   };
   return (

@@ -1,5 +1,6 @@
-import { create, StoreApi, UseBoundStore } from 'zustand';
-import type { WindowTemplate } from '../types/config';
+import { create } from 'zustand';
+import type { StoreApi, UseBoundStore } from 'zustand';
+import type { Shortcut, WindowTemplate } from '../types/config';
 
 type WithSelectors<S> = S extends { getState: () => infer T }
   ? S & { use: { [K in keyof T]: () => T[K] } }
@@ -7,6 +8,8 @@ type WithSelectors<S> = S extends { getState: () => infer T }
 
 export interface GlobalState {
   windows: WindowTemplate[];
+  shortcuts: Shortcut[];
+  addShortcut: (shortcut: Shortcut) => void;
   addWindow: (window: WindowTemplate) => void;
   minimizeWindow: (window: WindowTemplate) => void;
   maximizeWindow: (window: WindowTemplate) => void;
@@ -29,6 +32,10 @@ const createSelectors = <S extends UseBoundStore<StoreApi<object>>>(
 export const globalStore = create<GlobalState>((set, get) => {
   return {
     windows: [],
+    shortcuts: [],
+    addShortcut: (shortcut: Shortcut) => {
+      set((state) => ({ shortcuts: [...state.shortcuts, shortcut] }));
+    },
     addWindow: (window: WindowTemplate) => {
       set((state) => ({ windows: [...state.windows, window] }));
     },
