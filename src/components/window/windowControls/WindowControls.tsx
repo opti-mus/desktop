@@ -1,9 +1,9 @@
 import {WindowControlsStyles} from "./WindowControls.styles";
 import { useGlobalStore } from "../../../state/state.global";
-import type { WindowTemplate } from "../../../types/config";
+import type { Shortcut } from "../../../types/config";
 
 type WindowControlsProps = {
-  window: WindowTemplate;
+  shortcut: Shortcut;
 };
 
 const scrollController = {
@@ -22,7 +22,7 @@ const scrollController = {
     },
 }
 
-const WindowControls = ({ window } : WindowControlsProps) => {
+const WindowControls = ({ shortcut } : WindowControlsProps) => {
     const minimizeWindow = useGlobalStore.use.minimizeWindow();
     const maximizeWindow = useGlobalStore.use.maximizeWindow();
     const closeWindow = useGlobalStore.use.closeWindow();
@@ -30,15 +30,15 @@ const WindowControls = ({ window } : WindowControlsProps) => {
     return (
         <>
             <WindowControlsStyles>
-                <button onClick={() => minimizeWindow(window)}>Minimize</button>
+                <button onClick={() => minimizeWindow(shortcut.newWindow)}>Minimize</button>
                 <button onClick={() => {
-                    maximizeWindow(window);
-                    !window.isMaximized 
+                    maximizeWindow(shortcut.newWindow);
+                    !shortcut.newWindow.isMaximized 
                     ? scrollController.disableScroll() 
                     : scrollController.enableScroll();
                 }}>Maximize</button>
                 <button onClick={() => {
-                    closeWindow(window);
+                    closeWindow(shortcut.newWindow);
                     scrollController.enableScroll();
                 }}>Close</button>
             </WindowControlsStyles>

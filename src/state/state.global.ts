@@ -14,6 +14,7 @@ export interface GlobalState {
   minimizeWindow: (window: WindowTemplate) => void;
   maximizeWindow: (window: WindowTemplate) => void;
   closeWindow: (window: WindowTemplate) => void;
+  openWindow: (window: WindowTemplate) => void;
 }
 
 const createSelectors = <S extends UseBoundStore<StoreApi<object>>>(
@@ -41,17 +42,22 @@ export const globalStore = create<GlobalState>((set, get) => {
     },
     minimizeWindow: (window: WindowTemplate) => {
       set((state) => ({
-        windows: state.windows.map((w) => w === window ? { ...w, isMinimized: true } : w)
+        windows: state.windows.map((w) => w.id === window.id ? { ...w, isMinimized: true } : w)
       }));
     },
     maximizeWindow: (window: WindowTemplate) => {
       set((state) => ({
-        windows: state.windows.map((w) => w === window ? { ...w, isMaximized: !w.isMaximized } : w)
+        shortcuts: state.shortcuts.map((w) => w.newWindow.id === window.id ? { ...w, newWindow:{ ...w.newWindow, isMaximized: !w.newWindow.isMaximized } } : w)
       }));
     },
     closeWindow: (window: WindowTemplate) => {
       set((state) => ({
-        windows: state.windows.filter(w => w !== window)
+        shortcuts: state.shortcuts.map((w) => w.newWindow.id === window.id ? { ... w, newWindow:{ ...w.newWindow, isOpen: false, isMinimized: false, isMaximized: false} } : w)
+      }));
+    },
+    openWindow: (window: WindowTemplate) => {
+      set((state) => ({
+        shortcuts: state.shortcuts.map((w) => w.newWindow.id === window.id ? { ...w, newWindow: {...w.newWindow, isOpen: true}} : w)
       }));
     }
   }

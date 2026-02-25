@@ -1,19 +1,19 @@
 import IconBar from "../iconBar/IconBar";
 import WindowControls from "../windowControls/WindowControls";
 import { TitleBarStyles } from "./TitleBar.styles";
-import type { WindowTemplate } from "../../types/config";
+import type { Shortcut } from "../../../types/config";
 
 type TitleBarProps = {
-    window: WindowTemplate;
-}
+  shortcut: Shortcut;
+};
 
-const TitleBar = ({ window } : TitleBarProps) => {
+const TitleBar = ({ shortcut } : TitleBarProps) => {
     return (
         <>
             <TitleBarStyles>
                 <IconBar />
-                <span>Title Bar</span>
-                <WindowControls window={window} />
+                <span>{shortcut.name}</span>
+                <WindowControls shortcut={shortcut} />
             </TitleBarStyles>
         </>
     )

@@ -1,16 +1,18 @@
-import type { WindowTemplate } from "../../../types/config";
+import type { Shortcut } from "../../../types/config";
 import TitleBar from "../titleBar/TitleBar";
 import { WindowTableStyles } from "./Window.styles";
 
 type WindowTableProps = {
-  window: WindowTemplate;
+  shortcut: Shortcut;
 };
-const WindowTable = ({ window }: WindowTableProps) => {
-  const { name, render, isMaximized } = window;
+const WindowTable = ({ shortcut }: WindowTableProps) => {
+  console.log(shortcut);
+  
+  const { name, render, isMaximized, isOpen } = shortcut.newWindow;
   return (
     <>
-      <WindowTableStyles isMaximized={isMaximized}>
-        <TitleBar window={ window } />
+      <WindowTableStyles isMaximized={isMaximized} isOpen={isOpen}>
+        <TitleBar shortcut={ shortcut } />
         <h1>{name}</h1>
         <div>{render?.()}</div>
       </WindowTableStyles>

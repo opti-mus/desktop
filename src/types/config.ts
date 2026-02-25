@@ -8,7 +8,6 @@ export type WindowTemplate = Partial<{
     isVisible: boolean;
     isFocused: boolean;
     isResizable: boolean;
-    shortcut?: Shortcut;
 
     render: () => React.ReactNode;
 }>
@@ -19,5 +18,6 @@ export type Shortcut = {
     description?: string;
     key?: string;
     icon?: string;
+    newWindow: WindowTemplate;
     action?: () => void;
 }

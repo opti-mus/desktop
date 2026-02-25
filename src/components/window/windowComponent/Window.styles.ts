@@ -2,6 +2,7 @@ import styled from "styled-components";
 
 type WindowTableStylesProps = {
     isMaximized: boolean | undefined;
+    isOpen: boolean | undefined;
 }
 
 export const WindowTableStyles = styled.div<WindowTableStylesProps>`
@@ -12,8 +13,8 @@ export const WindowTableStyles = styled.div<WindowTableStylesProps>`
     border-radius: 5px;
     padding: 10px;
     margin: ${({isMaximized}) => isMaximized ? "0" : "10px"};
-    display: flex;
+    display: ${({isOpen}) => isOpen ? "flex" : "none"};
     flex-direction: column;
-    position: ${({isMaximized}) => isMaximized ? "fixed" : "static"};
+    position: ${({isMaximized}) => isMaximized ? "fixed" : "absolute"};
     inset: ${({isMaximized}) => isMaximized ? "0" : "auto"};
 `
