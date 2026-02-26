@@ -19,5 +19,6 @@ export type Shortcut = {
     key?: string;
     icon?: string;
     newWindow: WindowTemplate;
+    
     action?: () => void;
 }

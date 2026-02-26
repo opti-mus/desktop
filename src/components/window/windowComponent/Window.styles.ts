@@ -3,6 +3,13 @@ import styled from "styled-components";
 type WindowTableStylesProps = {
     isMaximized: boolean | undefined;
     isOpen: boolean | undefined;
+    isFocused: boolean | undefined;
+    pos: PositionProps;
+}
+
+type PositionProps = {
+    x: number;
+    y: number;
 }
 
 export const WindowTableStyles = styled.div<WindowTableStylesProps>`
@@ -17,4 +24,7 @@ export const WindowTableStyles = styled.div<WindowTableStylesProps>`
     flex-direction: column;
     position: ${({isMaximized}) => isMaximized ? "fixed" : "absolute"};
     inset: ${({isMaximized}) => isMaximized ? "0" : "auto"};
+    top: ${({pos, isMaximized}) => isMaximized ? "0" : `${pos.y}px`};
+    left: ${({pos, isMaximized}) => isMaximized ? "0" : `${pos.x}px`};
+    z-index: ${({isFocused}) => isFocused ? "1000" : "1"};
 `

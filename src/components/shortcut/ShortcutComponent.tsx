@@ -7,13 +7,14 @@ type ShortcutProps = {
 }
 
 const ShortcutComponent = ({ shortcut } : ShortcutProps) => {
-    console.log(shortcut);
     
     const openWindow = useGlobalStore.use.openWindow();
+    const { id } = shortcut.newWindow;
 
     const handleClickShortcut = () => {
+        if(!id) return;
         shortcut.action?.();
-        openWindow(shortcut.newWindow)
+        openWindow(id)
     }
     return  (
         <ShortcutStyles onClick={handleClickShortcut}>

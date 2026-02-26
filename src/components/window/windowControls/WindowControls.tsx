@@ -10,35 +10,34 @@ const scrollController = {
     scrollPosition: 0,
     disableScroll() {
         this.scrollPosition = window.scrollY;
-        document.body.style.cssText = `
-            overflow: hidden;
-            `;
     },
     enableScroll() {
-        document.body.style.cssText = `
-        overflow: auto;
-        `;
         window.scrollTo({top: this.scrollPosition});
     },
 }
 
 const WindowControls = ({ shortcut } : WindowControlsProps) => {
+
     const minimizeWindow = useGlobalStore.use.minimizeWindow();
     const maximizeWindow = useGlobalStore.use.maximizeWindow();
     const closeWindow = useGlobalStore.use.closeWindow();
 
+    const { id, isMaximized } = shortcut.newWindow;
+
+    if(!id) return null;
+
     return (
         <>
             <WindowControlsStyles>
-                <button onClick={() => minimizeWindow(shortcut.newWindow)}>Minimize</button>
+                <button onClick={() => minimizeWindow(id)}>Minimize</button>
                 <button onClick={() => {
-                    maximizeWindow(shortcut.newWindow);
-                    !shortcut.newWindow.isMaximized 
+                    maximizeWindow(id);
+                    !isMaximized 
                     ? scrollController.disableScroll() 
                     : scrollController.enableScroll();
                 }}>Maximize</button>
                 <button onClick={() => {
-                    closeWindow(shortcut.newWindow);
+                    closeWindow(id);
                     scrollController.enableScroll();
                 }}>Close</button>
             </WindowControlsStyles>

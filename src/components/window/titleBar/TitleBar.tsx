@@ -5,12 +5,14 @@ import type { Shortcut } from "../../../types/config";
 
 type TitleBarProps = {
   shortcut: Shortcut;
+  onMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void;
 };
 
-const TitleBar = ({ shortcut } : TitleBarProps) => {
+const TitleBar = ({ shortcut, onMouseDown } : TitleBarProps) => {
+    
     return (
         <>
-            <TitleBarStyles>
+            <TitleBarStyles onMouseDown={onMouseDown}>
                 <IconBar />
                 <span>{shortcut.name}</span>
                 <WindowControls shortcut={shortcut} />

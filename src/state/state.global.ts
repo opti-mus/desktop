@@ -11,10 +11,11 @@ export interface GlobalState {
   shortcuts: Shortcut[];
   addShortcut: (shortcut: Shortcut) => void;
   addWindow: (window: WindowTemplate) => void;
-  minimizeWindow: (window: WindowTemplate) => void;
-  maximizeWindow: (window: WindowTemplate) => void;
-  closeWindow: (window: WindowTemplate) => void;
-  openWindow: (window: WindowTemplate) => void;
+  minimizeWindow: (id: string) => void;
+  maximizeWindow: (id: string) => void;
+  closeWindow: (id: string) => void;
+  openWindow: (id: string) => void;
+  focusWindow: (id: string) => void;
 }
 
 const createSelectors = <S extends UseBoundStore<StoreApi<object>>>(
@@ -40,26 +41,31 @@ export const globalStore = create<GlobalState>((set, get) => {
     addWindow: (window: WindowTemplate) => {
       set((state) => ({ windows: [...state.windows, window] }));
     },
-    minimizeWindow: (window: WindowTemplate) => {
+    minimizeWindow: (id: string) => {
       set((state) => ({
-        windows: state.windows.map((w) => w.id === window.id ? { ...w, isMinimized: true } : w)
+        shortcuts: state.shortcuts.map((s) => s.newWindow.id === id ? { ...s, isMinimized: true } : s)
       }));
     },
-    maximizeWindow: (window: WindowTemplate) => {
+    maximizeWindow: (id: string) => {
       set((state) => ({
-        shortcuts: state.shortcuts.map((w) => w.newWindow.id === window.id ? { ...w, newWindow:{ ...w.newWindow, isMaximized: !w.newWindow.isMaximized } } : w)
+        shortcuts: state.shortcuts.map((s) => s.newWindow.id === id ? { ...s, newWindow:{ ...s.newWindow, isMaximized: !s.newWindow.isMaximized } } : s)
       }));
     },
-    closeWindow: (window: WindowTemplate) => {
+    closeWindow: (id: string) => {
       set((state) => ({
-        shortcuts: state.shortcuts.map((w) => w.newWindow.id === window.id ? { ... w, newWindow:{ ...w.newWindow, isOpen: false, isMinimized: false, isMaximized: false} } : w)
+        shortcuts: state.shortcuts.map((s) => s.newWindow.id === id ? { ... s, newWindow:{ ...s.newWindow, isOpen: false, isMinimized: false, isMaximized: false} } : s)
       }));
     },
-    openWindow: (window: WindowTemplate) => {
+    openWindow: (id: string) => {
       set((state) => ({
-        shortcuts: state.shortcuts.map((w) => w.newWindow.id === window.id ? { ...w, newWindow: {...w.newWindow, isOpen: true}} : w)
+        shortcuts: state.shortcuts.map((s) => s.newWindow.id === id ? { ...s, newWindow: {...s.newWindow, isOpen: true}} : s)
       }));
-    }
+    },
+    focusWindow: (id: string) => {
+      set((state)=> ({
+        shortcuts: state.shortcuts.map((s) => s.newWindow.id === id ? { ...s, newWindow: { ...s.newWindow, isFocused: true}} : { ...s, newWindow: { ...s.newWindow, isFocused: false}})
+      }));
+    },
   }
 });
 
