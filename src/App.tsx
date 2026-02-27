@@ -35,20 +35,18 @@ function App() {
     addWindow(newWindow);   
   };
   return (
-    <>
-      <div style={{ position: "relative" }}>
-        <h1>Hello World</h1>
-        <button onClick={handleAddWindow}>Add Window</button>
-        <AppStyles>
-          {shortcuts.map((shortcut) => (
-              <div key={shortcut.id}>
-                <ShortcutComponent shortcut={shortcut} />
-                {shortcut.newWindow && <WindowTable shortcut={shortcut} />}
-              </div>
-          ))}
-        </AppStyles>
-      </div>
-    </>
+    <div style={{ position: "relative" }}>
+      <h1>Hello World</h1>
+      <button onClick={handleAddWindow}>Add Window</button>
+      <AppStyles>
+        {shortcuts.map((shortcut) => (
+            <div key={shortcut.id}>
+              <ShortcutComponent shortcut={shortcut} />
+              {shortcut.newWindow && <WindowTable shortcut={shortcut} />}
+            </div>
+        ))}
+      </AppStyles>
+    </div>
   );
 }
 

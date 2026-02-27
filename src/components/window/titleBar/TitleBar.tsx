@@ -11,13 +11,11 @@ type TitleBarProps = {
 const TitleBar = ({ shortcut, onMouseDown } : TitleBarProps) => {
     
     return (
-        <>
-            <TitleBarStyles onMouseDown={onMouseDown}>
-                <IconBar />
-                <span>{shortcut.name}</span>
-                <WindowControls shortcut={shortcut} />
-            </TitleBarStyles>
-        </>
+        <TitleBarStyles onMouseDown={onMouseDown}>
+            <IconBar />
+            <span>{shortcut.name}</span>
+            <WindowControls shortcut={shortcut} />
+        </TitleBarStyles>
     )
 }
 

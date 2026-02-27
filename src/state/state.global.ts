@@ -43,27 +43,39 @@ export const globalStore = create<GlobalState>((set, get) => {
     },
     minimizeWindow: (id: string) => {
       set((state) => ({
-        shortcuts: state.shortcuts.map((s) => s.newWindow.id === id ? { ...s, isMinimized: true } : s)
+        shortcuts: state.shortcuts.map((shortcut) => shortcut.newWindow.id === id ? { ...shortcut, isMinimized: true } : shortcut)
       }));
     },
     maximizeWindow: (id: string) => {
       set((state) => ({
-        shortcuts: state.shortcuts.map((s) => s.newWindow.id === id ? { ...s, newWindow:{ ...s.newWindow, isMaximized: !s.newWindow.isMaximized } } : s)
+        shortcuts: state.shortcuts
+        .map((shortcut) => shortcut.newWindow.id === id 
+        ? { ...shortcut, newWindow:{ ...shortcut.newWindow, isMaximized: !shortcut.newWindow.isMaximized } } 
+        : shortcut)
       }));
     },
     closeWindow: (id: string) => {
       set((state) => ({
-        shortcuts: state.shortcuts.map((s) => s.newWindow.id === id ? { ... s, newWindow:{ ...s.newWindow, isOpen: false, isMinimized: false, isMaximized: false} } : s)
+        shortcuts: state.shortcuts
+        .map((shortcut) => shortcut.newWindow.id === id 
+        ? { ... shortcut, newWindow:{ ...shortcut.newWindow, isOpen: false, isMinimized: false, isMaximized: false} } 
+        : shortcut)
       }));
     },
     openWindow: (id: string) => {
       set((state) => ({
-        shortcuts: state.shortcuts.map((s) => s.newWindow.id === id ? { ...s, newWindow: {...s.newWindow, isOpen: true}} : s)
+        shortcuts: state.shortcuts
+        .map((shortcut) => shortcut.newWindow.id === id 
+        ? { ...shortcut, newWindow: {...shortcut.newWindow, isOpen: true}} 
+        : shortcut)
       }));
     },
     focusWindow: (id: string) => {
       set((state)=> ({
-        shortcuts: state.shortcuts.map((s) => s.newWindow.id === id ? { ...s, newWindow: { ...s.newWindow, isFocused: true}} : { ...s, newWindow: { ...s.newWindow, isFocused: false}})
+        shortcuts: state.shortcuts
+        .map((shortcut) => shortcut.newWindow.id === id 
+        ? { ...shortcut, newWindow: { ...shortcut.newWindow, isFocused: true}} 
+        : { ...shortcut, newWindow: { ...shortcut.newWindow, isFocused: false}})
       }));
     },
   }

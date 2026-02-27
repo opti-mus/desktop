@@ -12,12 +12,10 @@ type Position = {x: number; y: number;}
 
 const WindowTable = ({ shortcut }: WindowTableProps) => {
 
+  const [pos, setPos] = useState<Position>({ x: 0, y: 0})
   const focusWindow = useGlobalStore.use.focusWindow();
 
-  const [pos, setPos] = useState<Position>({ x: 0, y: 0})
   const { id, name, render, isMaximized, isOpen, isFocused } = shortcut.newWindow;
-
-  if(!id) return null;
 
   const activeWindow = useCallback(() => {
     focusWindow(id);
@@ -27,6 +25,7 @@ const WindowTable = ({ shortcut }: WindowTableProps) => {
     activeWindow();
     const startX = e.pageX;
     const startY = e.pageY;
+    document.body.style.cursor = "grab";
 
     setPos(prev => {
       const offsetX = startX - prev.x;
@@ -45,6 +44,7 @@ const WindowTable = ({ shortcut }: WindowTableProps) => {
         document.body.style.userSelect = "auto";
         document.removeEventListener("mousemove", onMouseMove);
         document.removeEventListener("mouseup", onMouseUp);
+        document.body.style.cursor = "default";
       };
 
       document.addEventListener("mousemove", onMouseMove);
@@ -55,13 +55,18 @@ const WindowTable = ({ shortcut }: WindowTableProps) => {
   }, [activeWindow]);
 
   return (
-    <>
-      <WindowTableStyles isMaximized={isMaximized} isOpen={isOpen} pos={pos} isFocused={isFocused} onMouseDown={activeWindow}>
-        <TitleBar shortcut={shortcut} onMouseDown={onMouseDown}/>
-        <h1>{name}</h1>
-        <div>{render?.()}</div>
+      <WindowTableStyles 
+        $isMaximized={!!isMaximized} 
+        $isOpen={!!isOpen} 
+        $isFocused={!!isFocused} 
+        style={{transform: isMaximized ? "none" : `translate(${pos.x}px, ${pos.y}px)`}}
+        onMouseDown={activeWindow}
+        
+        >
+            <TitleBar shortcut={shortcut} onMouseDown={onMouseDown}/>
+            <h1>{name}</h1>
+            <div>{render?.()}</div>
       </WindowTableStyles>
-    </>
   );
 };
 
