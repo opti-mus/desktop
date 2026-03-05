@@ -6,17 +6,21 @@ type WithSelectors<S> = S extends { getState: () => infer T }
   ? S & { use: { [K in keyof T]: () => T[K] } }
   : never
 
-export interface GlobalState {
-  windows: WindowTemplate[];
-  shortcuts: Shortcut[];
+interface Actions {
   addShortcut: (shortcut: Shortcut) => void;
   addWindow: (window: WindowTemplate) => void;
   minimizeWindow: (id: string) => void;
   maximizeWindow: (id: string) => void;
   closeWindow: (id: string) => void;
-  openWindow: (id: string) => void;
-  focusWindow: (id: string) => void;
+  changeWindowProps: (id: string, props: Partial<WindowTemplate>) => void;
 }
+
+interface InitialState {
+  windows: WindowTemplate[];
+  shortcuts: Shortcut[];
+}
+
+export interface GlobalState extends InitialState, Actions {}
 
 const createSelectors = <S extends UseBoundStore<StoreApi<object>>>(
   _store: S,
@@ -30,11 +34,14 @@ const createSelectors = <S extends UseBoundStore<StoreApi<object>>>(
   return store
 }
 
+const initialState: InitialState = {
+  windows: [],
+  shortcuts: [],
+}
 
 export const globalStore = create<GlobalState>((set, get) => {
   return {
-    windows: [],
-    shortcuts: [],
+    ...initialState,
     addShortcut: (shortcut: Shortcut) => {
       set((state) => ({ shortcuts: [...state.shortcuts, shortcut] }));
     },
@@ -62,24 +69,34 @@ export const globalStore = create<GlobalState>((set, get) => {
         : shortcut)
       }));
     },
-    openWindow: (id: string) => {
+    changeWindowProps: (id: string, props: Partial<WindowTemplate>) => {
       set((state) => ({
         shortcuts: state.shortcuts
         .map((shortcut) => shortcut.newWindow.id === id 
-        ? { ...shortcut, newWindow: {...shortcut.newWindow, isOpen: true}} 
-        : shortcut)
-      }));
-    },
-    focusWindow: (id: string) => {
-      set((state)=> ({
-        shortcuts: state.shortcuts
-        .map((shortcut) => shortcut.newWindow.id === id 
-        ? { ...shortcut, newWindow: { ...shortcut.newWindow, isFocused: true}} 
+        ? { ...shortcut, newWindow: { ...shortcut.newWindow, ...props}} 
         : { ...shortcut, newWindow: { ...shortcut.newWindow, isFocused: false}})
-      }));
-    },
+      }))
+    }
   }
 });
 
 export const useGlobalStore = createSelectors(globalStore);
 
+
+
+// openWindow: (id: string) => {
+//       set((state) => ({
+//         shortcuts: state.shortcuts
+//         .map((shortcut) => shortcut.newWindow.id === id 
+//         ? { ...shortcut, newWindow: {...shortcut.newWindow, isOpen: true}} 
+//         : shortcut)
+//       }));
+//     },
+//     focusWindow: (id: string) => {
+//       set((state)=> ({
+//         shortcuts: state.shortcuts
+//         .map((shortcut) => shortcut.newWindow.id === id 
+//         ? { ...shortcut, newWindow: { ...shortcut.newWindow, isFocused: true}} 
+//         : { ...shortcut, newWindow: { ...shortcut.newWindow, isFocused: false}})
+//       }));
+//     },
