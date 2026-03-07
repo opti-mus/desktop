@@ -10,7 +10,7 @@ type WindowTableProps = {
 
 type Position = {x: number; y: number;}
 
-const WindowTable = ({ shortcut }: WindowTableProps) => {
+const WindowTable = ({ shortcut } : WindowTableProps) => {
 
   const [pos, setPos] = useState<Position>({ x: 0, y: 0})
   const changeWindowProps = useGlobalStore.use.changeWindowProps();
