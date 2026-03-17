@@ -8,9 +8,7 @@ const GlobalStyle = createGlobalStyle`
   margin: 0px;
   padding: 0px;
   box-sizing: border-box;
-}
-body {
-  overflow: hidden;}  
+} 
 `
 
 createRoot(document.getElementById("root")!).render(
