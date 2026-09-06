@@ -1,20 +1,14 @@
 import { create } from 'zustand';
 import type { StoreApi, UseBoundStore } from 'zustand';
-import type { Shortcut, WindowTemplate } from '../types/config';
+import { createWindowSlice, type WindowStateSlice } from './WindowSlice';
+import { createShortcutSlice, type ShortcutStateSlice } from './ShortcutSlice';
+import { createBackgroundSlice, type BackgroundStateSlice } from './BackgroundSlice';
 
 type WithSelectors<S> = S extends { getState: () => infer T }
   ? S & { use: { [K in keyof T]: () => T[K] } }
   : never
 
-export interface GlobalState {
-  windows: WindowTemplate[];
-  shortcuts: Shortcut[];
-  addShortcut: (shortcut: Shortcut) => void;
-  addWindow: (window: WindowTemplate) => void;
-  minimizeWindow: (window: WindowTemplate) => void;
-  maximizeWindow: (window: WindowTemplate) => void;
-  closeWindow: (window: WindowTemplate) => void;
-}
+type GlobalState = WindowStateSlice & ShortcutStateSlice & BackgroundStateSlice;
 
 const createSelectors = <S extends UseBoundStore<StoreApi<object>>>(
   _store: S,
@@ -28,34 +22,10 @@ const createSelectors = <S extends UseBoundStore<StoreApi<object>>>(
   return store
 }
 
-
-export const globalStore = create<GlobalState>((set, get) => {
-  return {
-    windows: [],
-    shortcuts: [],
-    addShortcut: (shortcut: Shortcut) => {
-      set((state) => ({ shortcuts: [...state.shortcuts, shortcut] }));
-    },
-    addWindow: (window: WindowTemplate) => {
-      set((state) => ({ windows: [...state.windows, window] }));
-    },
-    minimizeWindow: (window: WindowTemplate) => {
-      set((state) => ({
-        windows: state.windows.map((w) => w === window ? { ...w, isMinimized: true } : w)
-      }));
-    },
-    maximizeWindow: (window: WindowTemplate) => {
-      set((state) => ({
-        windows: state.windows.map((w) => w === window ? { ...w, isMaximized: !w.isMaximized } : w)
-      }));
-    },
-    closeWindow: (window: WindowTemplate) => {
-      set((state) => ({
-        windows: state.windows.filter(w => w !== window)
-      }));
-    }
-  }
-});
+export const globalStore = create<GlobalState>()((...a) => ({
+  ...createWindowSlice(...a),
+  ...createShortcutSlice(...a),
+  ...createBackgroundSlice(...a),
+}));
 
 export const useGlobalStore = createSelectors(globalStore);
-

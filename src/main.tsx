@@ -8,7 +8,8 @@ const GlobalStyle = createGlobalStyle`
   margin: 0px;
   padding: 0px;
   box-sizing: border-box;
-}`
+} 
+`
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

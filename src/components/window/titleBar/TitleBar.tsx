@@ -1,21 +1,21 @@
 import IconBar from "../iconBar/IconBar";
 import WindowControls from "../windowControls/WindowControls";
 import { TitleBarStyles } from "./TitleBar.styles";
-import type { WindowTemplate } from "../../types/config";
+import type { Shortcut } from "../../../types/config";
 
 type TitleBarProps = {
-    window: WindowTemplate;
-}
+  shortcut: Shortcut;
+  onMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void;
+};
 
-const TitleBar = ({ window } : TitleBarProps) => {
+const TitleBar = ({ shortcut, onMouseDown } : TitleBarProps) => {
+    
     return (
-        <>
-            <TitleBarStyles>
-                <IconBar />
-                <span>Title Bar</span>
-                <WindowControls window={window} />
-            </TitleBarStyles>
-        </>
+        <TitleBarStyles onMouseDown={onMouseDown}>
+            <IconBar />
+            <span>{shortcut.name}</span>
+            <WindowControls shortcut={shortcut} />
+        </TitleBarStyles>
     )
 }
 
