@@ -18,8 +18,6 @@ const ShortcutComponent = ({ shortcut }: ShortcutProps) => {
         return allPositions.find(i => i.id === id) || baseMovableObject
     }, [allPositions, id])
 
-    console.log('allPositions', pos)
-
     const handleClickShortcut = () => {
         setMovableObject({ id, triggerMove: true })
 
