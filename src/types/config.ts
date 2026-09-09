@@ -15,12 +15,12 @@ export type WindowTemplate = {
 } & WindowConfig;
 
 export type Shortcut = {
-    id: string;
-    name: string;
-    description?: string;
-    key?: string;
-    icon?: string;
-    newWindow: WindowTemplate;
-    
-    action?: () => void;
+  id: string;
+  name: string;
+  description?: string;
+  key?: string;
+  icon?: string;
+  newWindow: WindowTemplate['id'];
+
+  action?: () => void;
 }

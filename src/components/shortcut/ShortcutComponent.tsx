@@ -1,26 +1,40 @@
-import { ShortcutStyles } from "./Shortcut.styles";
-import type { Shortcut } from "../../types/config";
-import { useGlobalStore } from "../../state/state.global";
+import { useMemo } from 'react'
+import { baseMovableObject, movableStore } from '../../state/MovableSilce'
+import type { Shortcut } from '../../types/config'
+import { MovableComponent } from '../movableComponent/MovableComponent'
+import { ShortcutStyles } from './Shortcut.styles'
 
 type ShortcutProps = {
-    shortcut: Shortcut;
+    shortcut: Shortcut
 }
 
-const ShortcutComponent = ({ shortcut } : ShortcutProps) => {
-    
-    const changeWindowProps = useGlobalStore.use.changeWindowProps();
-    const { id } = shortcut.newWindow;
+const ShortcutComponent = ({ shortcut }: ShortcutProps) => {
+    const id = shortcut.id
+
+    const allPositions = movableStore(state => state.positions)
+    const setMovableObject = movableStore(state => state.setMovableObject)
+
+    const pos = useMemo(() => {
+        return allPositions.find(i => i.id === id) || baseMovableObject
+    }, [allPositions, id])
+
+    console.log('allPositions', pos)
 
     const handleClickShortcut = () => {
-        if(!id) return;
-        shortcut.action?.();
-        changeWindowProps(id, { isOpen: true, isFocused: true})
+        setMovableObject({ id, triggerMove: true })
+
+        if (!id || pos?.isMoving) return
+
+        shortcut.action?.()
     }
-    return  (
-        <ShortcutStyles onClick={handleClickShortcut}>
-            <span>{shortcut.name}</span>
-        </ShortcutStyles>
+
+    return (
+        <MovableComponent id={id}>
+            <ShortcutStyles onMouseDown={handleClickShortcut}>
+                <span>{shortcut.name}</span>
+            </ShortcutStyles>
+        </MovableComponent>
     )
 }
 
-export default ShortcutComponent;
+export default ShortcutComponent

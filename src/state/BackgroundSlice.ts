@@ -1,40 +1,45 @@
 import type { StateCreator } from "zustand";
 
-export type BackgroundMode = "contain" | "cover" | "fill";
-
-export interface BackgroundStateSlice {
-  file: File | null;
-  previewUrl: string | null;
-  mode: BackgroundMode;
-
-  setMode: (mode: BackgroundMode) => void;
-  setBackground: (file: File | null) => void;
+export enum BackgroundMode {
+    CONTAIN = "contain",
+    COVER = "cover",
+    FILL = "fill",
 }
 
-export const createBackgroundSlice : StateCreator<
-BackgroundStateSlice, 
-[],
-[],
-BackgroundStateSlice>=(set, get) => ({
-    file: null,
-    previewUrl: null,
-    mode: "cover",
 
-    setMode: (mode) => set({mode}),
+export interface BackgroundStateSlice {
+    file: File | null;
+    previewUrl: string | null;
+    mode: BackgroundMode;
 
-    setBackground: (file: File | null) => {
-        const oldPreviewUrl = get().previewUrl;
+    setMode: (mode: BackgroundMode) => void;
+    setBackground: (file: File | null) => void;
+}
 
-        if(oldPreviewUrl) {
-            URL.revokeObjectURL(oldPreviewUrl);
-        }    
+export const createBackgroundSlice: StateCreator<
+    BackgroundStateSlice,
+    [],
+    [],
+    BackgroundStateSlice> = (set, get) => ({
+        file: null,
+        previewUrl: null,
+        mode: BackgroundMode.COVER,
 
-        if(!file) {
-            set({file: null, previewUrl: null});
-            return;
-        }
+        setMode: (mode) => set({ mode }),
 
-        const previewUrl = URL.createObjectURL(file);
-        set({file, previewUrl})
-    },
-});
+        setBackground: (file: File | null) => {
+            const oldPreviewUrl = get().previewUrl;
+
+            if (oldPreviewUrl) {
+                URL.revokeObjectURL(oldPreviewUrl);
+            }
+
+            if (!file) {
+                set({ file: null, previewUrl: null });
+                return;
+            }
+
+            const previewUrl = URL.createObjectURL(file);
+            set({ file, previewUrl })
+        },
+    });

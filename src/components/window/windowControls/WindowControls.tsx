@@ -1,26 +1,25 @@
-import {WindowControlsStyles} from "./WindowControls.styles";
-import { useGlobalStore } from "../../../state/state.global";
-import type { Shortcut } from "../../../types/config";
+import { useGlobalStore } from '../../../state/state.global'
+import type { WindowTemplate } from '../../../types/config'
+import { WindowControlsStyles } from './WindowControls.styles'
 
 type WindowControlsProps = {
-  shortcut: Shortcut;
-};
+    window: WindowTemplate
+}
 
-const WindowControls = ({ shortcut } : WindowControlsProps) => {
+const WindowControls = ({ window }: WindowControlsProps) => {
+    const minimizeWindow = useGlobalStore.use.minimizeWindow()
+    const maximizeWindow = useGlobalStore.use.maximizeWindow()
+    const closeWindow = useGlobalStore.use.closeWindow()
 
-    const minimizeWindow = useGlobalStore.use.minimizeWindow();
-    const maximizeWindow = useGlobalStore.use.maximizeWindow();
-    const closeWindow = useGlobalStore.use.closeWindow();
-
-    const { id } = shortcut.newWindow;
+    const { id } = window
 
     return (
         <WindowControlsStyles>
             <button onClick={() => minimizeWindow(id)}>Minimize</button>
-            <button onClick={() => {maximizeWindow(id)}}>Maximize</button>
-            <button onClick={() => {closeWindow(id)}}>Close</button>
+            <button onClick={() => maximizeWindow(id)}>Maximize</button>
+            <button onClick={() => closeWindow(id)}>Close</button>
         </WindowControlsStyles>
     )
 }
 
-export default WindowControls;  
+export default WindowControls
