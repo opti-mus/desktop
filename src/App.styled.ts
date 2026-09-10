@@ -5,14 +5,6 @@ type WindowContainerStyleProps = {
     $mode: string;
 }
 
-export const AppStyles = styled.div`
-min-width: 100vw;
-display: flex;
-flex-wrap: wrap;
-gap: 10px;
-padding: 10px;
-`
-
 export const WindowContainerStyles = styled.div<WindowContainerStyleProps>`
 position: fixed;
 top: 0;
@@ -23,4 +15,15 @@ background-image: url(${({$previewUrl}) => $previewUrl ? $previewUrl : "none"});
 background-size: ${({$mode}) => $mode === "fill" ? "100% 100%" : $mode};
 background-position: center;
 background-repeat: no-repeat;
+
+button {
+    cursor: pointer;}
+`
+
+export const AppStyles = styled.div`
+min-width: 100vw;
+display: flex;
+flex-wrap: wrap;
+gap: 10px;
+padding: 10px;
 `

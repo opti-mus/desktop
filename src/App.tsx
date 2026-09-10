@@ -38,6 +38,7 @@ function App() {
     addShortcut(shortcut);
     addWindow(newWindow);   
   };
+  
   return (
     <WindowContainerStyles $previewUrl={previewUrl} $mode={mode}>
       <h1>Hello World</h1>

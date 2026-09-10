@@ -7,7 +7,7 @@ const BackgroundDesktop = () => {
     
     return (
         <BackgroundStyles>
-            <label htmlFor="background-desktop">
+            <label>
                 <input 
                 type="file" 
                 id="background-desktop" 

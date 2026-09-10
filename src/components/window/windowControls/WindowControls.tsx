@@ -17,8 +17,8 @@ const WindowControls = ({ shortcut } : WindowControlsProps) => {
     return (
         <WindowControlsStyles>
             <button onClick={() => minimizeWindow(id)}>Minimize</button>
-            <button onClick={() => {maximizeWindow(id)}}>Maximize</button>
-            <button onClick={() => {closeWindow(id)}}>Close</button>
+            <button onClick={() => maximizeWindow(id)}>Maximize</button>
+            <button onClick={() => closeWindow(id)}>Close</button>
         </WindowControlsStyles>
     )
 }

@@ -9,23 +9,25 @@ margin: 20px;
 
 label {
     cursor: pointer;
-    padding: 10px;
-    background-color: fcfcfc;
+    padding: 9px;
     border-radius: 5px;
     border: 1px solid #ccc;
-
+    background-color: #fcfcfc;
+    user-select: none;
+    margin-right: 10px;
+    
     &:hover {
         border: 1px solid #949494
-    }
-    
-    input {
+        }
+        
+        input {
         display: none;
     }
 }
 
 button {
     padding: 10px;
-    background-color: fcfcfc;
+    background-color: #fcfcfc;
     border-radius: 5px;
     border: 1px solid #ccc;
     cursor: pointer;
