@@ -1,7 +1,6 @@
-import { useMemo } from 'react'
-import { baseMovableObject, movableStore } from '../../state/MovableSilce'
+import { useRef } from 'react'
+import { useMovableObject } from '../../hooks/useMovableObject'
 import type { Shortcut } from '../../types/config'
-import { MovableComponent } from '../movableComponent/MovableComponent'
 import { ShortcutStyles } from './Shortcut.styles'
 
 type ShortcutProps = {
@@ -11,27 +10,20 @@ type ShortcutProps = {
 const ShortcutComponent = ({ shortcut }: ShortcutProps) => {
     const id = shortcut.id
 
-    const allPositions = movableStore(state => state.positions)
-    const setMovableObject = movableStore(state => state.setMovableObject)
+    const shortcutRef = useRef<HTMLDivElement>(null)
+    const { startMoveHandler, isMoving } = useMovableObject({ refObject: shortcutRef })
 
-    const pos = useMemo(() => {
-        return allPositions.find(i => i.id === id) || baseMovableObject
-    }, [allPositions, id])
-
-    const handleClickShortcut = () => {
-        setMovableObject({ id, triggerMove: true })
-
-        if (!id || pos?.isMoving) return
+    const handleClickShortcut = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (!id || isMoving) return
 
         shortcut.action?.()
+        startMoveHandler(e)
     }
 
     return (
-        <MovableComponent id={id}>
-            <ShortcutStyles onMouseDown={handleClickShortcut}>
-                <span>{shortcut.name}</span>
-            </ShortcutStyles>
-        </MovableComponent>
+        <ShortcutStyles ref={shortcutRef} onMouseDown={handleClickShortcut}>
+            <span>{shortcut.name}</span>
+        </ShortcutStyles>
     )
 }
 
