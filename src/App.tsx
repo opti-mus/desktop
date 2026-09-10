@@ -1,6 +1,7 @@
 import { AppStyles, WindowContainerStyles } from './App.styled'
 import BackgroundDesktop from './components/background/BackgroundDesktop'
 import ShortcutComponent from './components/shortcut/ShortcutComponent'
+import { TodoList } from './components/widgets/todoList/TodoList'
 import WindowTable from './components/window/windowComponent/Window'
 import { movableStore } from './state/MovableSilce'
 import { useGlobalStore } from './state/state.global'
@@ -50,6 +51,7 @@ function App() {
         <WindowContainerStyles $previewUrl={previewUrl} $mode={mode}>
             <h1>Hello World</h1>
             <button onClick={handleAddWindow}>Add Window</button>
+            <TodoList />
             <AppStyles>
                 {shortcuts.map(shortcut => (
                     <div key={shortcut.id}>
