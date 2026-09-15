@@ -60,8 +60,8 @@ function App() {
             }
         };
 
-        document.addEventListener('click', handleGlobalClick);
-        return () => document.removeEventListener('click', handleGlobalClick);
+        document.addEventListener('mousedown', handleGlobalClick);
+        return () => document.removeEventListener('mousedown', handleGlobalClick);
     }, [bringToFront]);
 
 
