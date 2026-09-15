@@ -2,6 +2,7 @@ import { useRef } from 'react'
 import { useMovableObject } from '../../hooks/useMovableObject'
 import type { Shortcut } from '../../types/config'
 import { ShortcutStyles } from './Shortcut.styles'
+import { useBlockStore } from '../../state/BlockStoreSlice'
 
 type ShortcutProps = {
     shortcut: Shortcut
@@ -10,7 +11,10 @@ type ShortcutProps = {
 const ShortcutComponent = ({ shortcut }: ShortcutProps) => {
     const id = shortcut.id
 
-    const shortcutRef = useRef<HTMLDivElement>(null)
+    const blockZIndices = useBlockStore((state) => state.blockZIndices);
+    const myZIndex = blockZIndices[id] || 1;
+
+    const shortcutRef = useRef<HTMLDivElement>(null);
     const { startMoveHandler, isMoving } = useMovableObject({ refObject: shortcutRef })
 
     const handleClickShortcut = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -21,7 +25,7 @@ const ShortcutComponent = ({ shortcut }: ShortcutProps) => {
     }
 
     return (
-        <ShortcutStyles ref={shortcutRef} onMouseDown={handleClickShortcut}>
+        <ShortcutStyles ref={shortcutRef} onMouseDown={handleClickShortcut} style={{ zIndex: myZIndex }} id={id}>
             <span>{shortcut.name}</span>
         </ShortcutStyles>
     )

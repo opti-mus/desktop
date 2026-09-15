@@ -1,6 +1,7 @@
 import styled from "styled-components";
 
 export const ShortcutStyles = styled.div`
+position: relative;
 width: 80px;
 height: 80px;
 display: flex;

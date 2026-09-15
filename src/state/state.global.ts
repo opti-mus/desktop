@@ -3,13 +3,12 @@ import { create } from 'zustand';
 import { createBackgroundSlice, type BackgroundStateSlice } from './BackgroundSlice';
 import { createShortcutSlice, type ShortcutStateSlice } from './ShortcutSlice';
 import { createWindowSlice, type WindowStateSlice } from './WindowSlice';
-import { createTodoListSlice, type TodoListStateSlice } from './TodoSlice';
 
 type WithSelectors<S> = S extends { getState: () => infer T }
   ? S & { use: { [K in keyof T]: () => T[K] } }
   : never
 
-type GlobalState = WindowStateSlice & ShortcutStateSlice & BackgroundStateSlice & TodoListStateSlice
+type GlobalState = WindowStateSlice & ShortcutStateSlice & BackgroundStateSlice 
 
 const createSelectors = <S extends UseBoundStore<StoreApi<object>>>(
   _store: S,
@@ -27,7 +26,6 @@ export const globalStore = create<GlobalState>()((...a) => ({
   ...createWindowSlice(...a),
   ...createShortcutSlice(...a),
   ...createBackgroundSlice(...a),
-  ...createTodoListSlice(...a),
 }));
 
 export const useGlobalStore = createSelectors(globalStore);
