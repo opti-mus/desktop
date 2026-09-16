@@ -1,7 +1,7 @@
-import { movableStore } from '../../../state/MovableSilce'
+import { useRef } from 'react'
+import { useMovableObject } from '../../../hooks/useMovableObject'
 import { useGlobalStore } from '../../../state/state.global'
 import type { WindowTemplate } from '../../../types/config'
-import { MovableComponent } from '../../movableComponent/MovableComponent'
 import TitleBar from '../titleBar/TitleBar'
 import { WindowTableStyles } from './Window.styles'
 
@@ -13,21 +13,26 @@ const WindowTable = ({ window }: WindowTableProps) => {
     const { id, name, render, isMaximized, isOpen, isFocused } = window
 
     const changeWindowProps = useGlobalStore.use.changeWindowProps()
-    const setMovableObject = movableStore(state => state.setMovableObject)
+
+    const windowRef = useRef<HTMLDivElement>(null)
+    const { startMoveHandler } = useMovableObject({ refObject: windowRef })
 
     const activeWindow = (e: React.MouseEvent<HTMLDivElement>) => {
         changeWindowProps({ id, isFocused: true })
-        setMovableObject({ id, triggerMove: true })
+        startMoveHandler(e)
     }
 
     return (
-        <MovableComponent id={window.id}>
-            <WindowTableStyles $isMaximized={!!isMaximized} $isOpen={!!isOpen} $isFocused={!!isFocused}>
-                <TitleBar window={window} onMouseDown={activeWindow} />
-                <h1>{name}</h1>
-                <div>{render?.()}</div>
-            </WindowTableStyles>
-        </MovableComponent>
+        <WindowTableStyles
+            data-window={'todo'}
+            ref={windowRef}
+            $isMaximized={!!isMaximized}
+            $isOpen={!!isOpen}
+            $isFocused={!!isFocused}>
+            <TitleBar window={window} onMouseDown={activeWindow} />
+            <h1>{name}</h1>
+            <div>{render?.()}</div>
+        </WindowTableStyles>
     )
 }
 
