@@ -8,7 +8,7 @@ type WithSelectors<S> = S extends { getState: () => infer T }
   ? S & { use: { [K in keyof T]: () => T[K] } }
   : never
 
-type GlobalState = WindowStateSlice & ShortcutStateSlice & BackgroundStateSlice
+type GlobalState = WindowStateSlice & ShortcutStateSlice & BackgroundStateSlice 
 
 const createSelectors = <S extends UseBoundStore<StoreApi<object>>>(
   _store: S,

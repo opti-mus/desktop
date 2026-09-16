@@ -24,3 +24,9 @@ export type Shortcut = {
 
   action?: () => void;
 }
+
+export type Todo = {
+  id: string;
+  text: string;
+  completed: boolean;
+}
