@@ -1,9 +1,7 @@
-import { useState } from 'react'
 
-type MovablePosition = {
-    x: number
-    y: number
-}
+import { useState } from 'react'
+import { parseTranslate } from './useResizeWindow'
+
 
 type MovableType = {
     refObject: React.RefObject<HTMLElement | null>
@@ -11,47 +9,42 @@ type MovableType = {
 
 type MovableTypeReturn = {
     startMoveHandler: (e: React.MouseEvent) => void
-
-    position: MovablePosition
     isMoving: boolean
 }
 
-export const useMovableObject = ({ refObject }: MovableType): MovableTypeReturn => {
-    const [position, setPosition] = useState({ x: 0, y: 0 })
+export const useMovableObject = ({ refObject, }: MovableType): MovableTypeReturn => {
     const [isMoving, setIsMoving] = useState(false)
 
     const startMoveHandler = (e: React.MouseEvent) => {
-        const startX = e.pageX
-        const startY = e.pageY
+        const element = refObject.current
 
-        document.body.style.cursor = 'grab'
+        if (!element) return
+
+        const startMouseX = e.clientX
+        const startMouseY = e.clientY
+
+        const startTranslate = parseTranslate(element.style.transform)
+
+        document.body.style.cursor = 'grabbing'
         document.body.style.userSelect = 'none'
 
-        const offsetX = startX - position.x
-        const offsetY = startY - position.y
-
-        const newPos = { x: 0, y: 0 }
-
         const onMouseMove = (event: MouseEvent) => {
-            const newX = event.pageX - offsetX
-            const newY = event.pageY - offsetY
+            const deltaX = event.clientX - startMouseX
+            const deltaY = event.clientY - startMouseY
 
-            newPos.x = newX
-            newPos.y = newY
+            const x = startTranslate.x + deltaX
+            const y = startTranslate.y + deltaY
 
-            setPosition(newPos)
+            element.style.transform = `translate(${x}px, ${y}px)`
+
             setIsMoving(true)
-
-            if (refObject?.current) {
-                refObject.current.style.transform = `translate(${newPos.x}px, ${newPos.y}px)`
-            }
         }
 
         const onMouseUp = () => {
             setIsMoving(false)
 
-            document.body.style.userSelect = 'auto'
-            document.body.style.cursor = 'default'
+            document.body.style.userSelect = ''
+            document.body.style.cursor = ''
 
             document.removeEventListener('mousemove', onMouseMove)
             document.removeEventListener('mouseup', onMouseUp)
@@ -63,7 +56,7 @@ export const useMovableObject = ({ refObject }: MovableType): MovableTypeReturn 
 
     return {
         startMoveHandler,
-        position,
-        isMoving
+        isMoving,
     }
 }
+

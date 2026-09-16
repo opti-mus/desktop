@@ -23,7 +23,12 @@ const WindowTable = ({ window }: WindowTableProps) => {
     }
 
     return (
-        <WindowTableStyles ref={windowRef} $isMaximized={!!isMaximized} $isOpen={!!isOpen} $isFocused={!!isFocused}>
+        <WindowTableStyles
+            data-window={'todo'}
+            ref={windowRef}
+            $isMaximized={!!isMaximized}
+            $isOpen={!!isOpen}
+            $isFocused={!!isFocused}>
             <TitleBar window={window} onMouseDown={activeWindow} />
             <h1>{name}</h1>
             <div>{render?.()}</div>
