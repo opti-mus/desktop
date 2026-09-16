@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react"
 
-const offset = 10
+const OFFSET = 10
 
 export const parseTranslate = (transform: string) => {
     const match = transform.match(/translate\(\s*(-?[\d.]+)px,\s*(-?[\d.]+)px\s*\)/)
@@ -72,10 +72,10 @@ export const useResizeWindow = () => {
 
             if (window.dataset?.window) {
                 startMove = {
-                    left: Math.abs(e.clientX - bbox.left) <= offset,
-                    right: Math.abs(e.clientX - bbox.right) <= offset,
-                    top: Math.abs(e.clientY - bbox.top) <= offset,
-                    bottom: Math.abs(e.clientY - bbox.bottom) <= offset
+                    left: Math.abs(e.clientX - bbox.left) <= OFFSET,
+                    right: Math.abs(e.clientX - bbox.right) <= OFFSET,
+                    top: Math.abs(e.clientY - bbox.top) <= OFFSET,
+                    bottom: Math.abs(e.clientY - bbox.bottom) <= OFFSET
                 }
             }
 
@@ -95,22 +95,7 @@ export const useResizeWindow = () => {
 
             const bbox = window?.getBoundingClientRect()
 
-            // cursor
-            document.body.style.cursor = ''
 
-            if (
-                target.dataset?.window &&
-                (Math.abs(e.clientX - bbox.left) <= offset || Math.abs(e.clientX - bbox.right) <= offset)
-            ) {
-                document.body.style.cursor = 'ew-resize'
-            }
-
-            if (
-                target.dataset?.window &&
-                (Math.abs(e.clientY - bbox.top) <= offset || Math.abs(e.clientY - bbox.bottom) <= offset)
-            ) {
-                document.body.style.cursor = 'ns-resize'
-            }
 
             // LEFT
             if (startMove.left) {
@@ -160,6 +145,31 @@ export const useResizeWindow = () => {
                 if (newHeight > 50) {
                     window.style.height = `${newHeight}px`
                 }
+            }
+            // cursor
+            document.body.style.cursor = ''
+
+            if (!target.dataset?.window) return
+
+            if (Math.abs(e.clientX - bbox.left) <= OFFSET || Math.abs(e.clientX - bbox.right) <= OFFSET) {
+                document.body.style.cursor = 'ew-resize'
+            }
+
+            if ((Math.abs(e.clientY - bbox.top) <= OFFSET || Math.abs(e.clientY - bbox.bottom) <= OFFSET)) {
+                document.body.style.cursor = 'ns-resize'
+            }
+
+            if (
+                (Math.abs(e.clientX - bbox.left) <= OFFSET && Math.abs(e.clientY - bbox.bottom) <= OFFSET)
+            ) {
+                document.body.style.cursor = 'ne-resize'
+            }
+
+            if (
+
+                (Math.abs(e.clientX - bbox.right) <= OFFSET && Math.abs(e.clientY - bbox.bottom) <= OFFSET)
+            ) {
+                document.body.style.cursor = 'nw-resize'
             }
         }
 
