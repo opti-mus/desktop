@@ -1,10 +1,10 @@
 import { useRef } from 'react'
 import { useMovableObject } from '../../../hooks/useMovableObject'
+import { useBlockStore } from '../../../state/BlockStoreSlice'
 import { useGlobalStore } from '../../../state/state.global'
 import type { WindowTemplate } from '../../../types/config'
 import TitleBar from '../titleBar/TitleBar'
 import { WindowTableStyles } from './Window.styles'
-import { useBlockStore } from '../../../state/BlockStoreSlice'
 
 type WindowTableProps = {
     window: WindowTemplate
@@ -12,12 +12,11 @@ type WindowTableProps = {
 
 const WindowTable = ({ window }: WindowTableProps) => {
     const { id, name, render, isMaximized, isOpen, isFocused } = window
-    
+
     const changeWindowProps = useGlobalStore.use.changeWindowProps()
 
-    const blockZIndices = useBlockStore((state) => state.blockZIndices);
-    const myZIndex = blockZIndices[id] || 1;
-
+    const blockZIndices = useBlockStore(state => state.blockZIndices)
+    const myZIndex = blockZIndices[`window-${id}`] || 1
 
     const windowRef = useRef<HTMLDivElement>(null)
     const { startMoveHandler } = useMovableObject({ refObject: windowRef })
@@ -28,7 +27,15 @@ const WindowTable = ({ window }: WindowTableProps) => {
     }
 
     return (
-        <WindowTableStyles ref={windowRef} $isMaximized={!!isMaximized} $isOpen={!!isOpen} $isFocused={!!isFocused} $zIndex={myZIndex} id={id} >
+        <WindowTableStyles
+            ref={windowRef}
+            $isMaximized={!!isMaximized}
+            $isOpen={!!isOpen}
+            $isFocused={!!isFocused}
+            data-index={id}
+            data-window
+            id={`window-${id}`}
+            style={{ zIndex: myZIndex }}>
             <TitleBar window={window} onMouseDown={activeWindow} />
             <h1>{name}</h1>
             <div>{render?.()}</div>
