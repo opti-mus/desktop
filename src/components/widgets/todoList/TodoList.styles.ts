@@ -13,7 +13,7 @@ export const TodoListStyles = styled.div`
     h2 {
         margin-top: 0;
         text-align: center;
-        }
+    }
 `
 export const TodoTaskStyles = styled.div`
     display: flex;

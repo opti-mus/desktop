@@ -19,11 +19,13 @@ type MovableTypeReturn = {
 export const useMovableObject = ({ refObject }: MovableType): MovableTypeReturn => {
     const [position, setPosition] = useState({ x: 0, y: 0 })
     const [isMoving, setIsMoving] = useState(false)
+    
 
     const startMoveHandler = (e: React.MouseEvent) => {
         const startX = e.pageX
         const startY = e.pageY
 
+        
         document.body.style.cursor = 'grab'
         document.body.style.userSelect = 'none'
 

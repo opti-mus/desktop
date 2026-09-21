@@ -16,7 +16,7 @@ const WindowTable = ({ window }: WindowTableProps) => {
     const changeWindowProps = useGlobalStore.use.changeWindowProps()
 
     const blockZIndices = useBlockStore((state) => state.blockZIndices);
-    const myZIndex = blockZIndices[`window-${id}`] || 1;
+    const myZIndex = blockZIndices[id] || 1;
 
 
     const windowRef = useRef<HTMLDivElement>(null)
@@ -28,7 +28,7 @@ const WindowTable = ({ window }: WindowTableProps) => {
     }
 
     return (
-        <WindowTableStyles ref={windowRef} $isMaximized={!!isMaximized} $isOpen={!!isOpen} $isFocused={!!isFocused} id={`window-${id}`} style={{ zIndex: myZIndex }}>
+        <WindowTableStyles ref={windowRef} $isMaximized={!!isMaximized} $isOpen={!!isOpen} $isFocused={!!isFocused} $zIndex={myZIndex} id={id} >
             <TitleBar window={window} onMouseDown={activeWindow} />
             <h1>{name}</h1>
             <div>{render?.()}</div>

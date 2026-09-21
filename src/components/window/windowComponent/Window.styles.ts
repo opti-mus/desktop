@@ -4,6 +4,7 @@ type WindowTableStylesProps = {
     $isMaximized: boolean;
     $isOpen: boolean;
     $isFocused: boolean;
+    $zIndex: number;
 }
 
 export const WindowTableStyles = styled.div<WindowTableStylesProps>`
@@ -18,10 +19,9 @@ export const WindowTableStyles = styled.div<WindowTableStylesProps>`
   display: ${({ $isOpen }) => ($isOpen ? "flex" : "none")};
   flex-direction: column;
 
-  position: fixed;
-  
+  position: absolute;
   top: 0;
   left: 0;
   
-  z-index: ${({ $isFocused }) => ($isFocused ? 1000 : 1)};
+  z-index: ${({ $zIndex }) => $zIndex};
   `;
