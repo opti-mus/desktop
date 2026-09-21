@@ -33,6 +33,7 @@ const WindowTable = ({ window }: WindowTableProps) => {
             $isOpen={!!isOpen}
             $isFocused={!!isFocused}
             data-index={id}
+            data-window
             id={`window-${id}`}
             style={{ zIndex: myZIndex }}>
             <TitleBar window={window} onMouseDown={activeWindow} />
