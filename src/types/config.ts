@@ -1,4 +1,5 @@
 export type WindowConfig = Partial<{
+  isActive: boolean
   isOpen: boolean;
   isMaximized: boolean;
   isMinimized: boolean;
@@ -11,6 +12,7 @@ export type WindowConfig = Partial<{
 export type WindowTemplate = {
   id: string;
   name: string;
+  position?: MousePosition
   render: () => React.ReactNode;
 } & WindowConfig;
 
@@ -21,6 +23,12 @@ export type Shortcut = {
   key?: string;
   icon?: string;
   newWindow: WindowTemplate['id'];
+  position?: MousePosition
 
   action?: () => void;
+}
+
+export type MousePosition = {
+  x: number
+  y: number
 }

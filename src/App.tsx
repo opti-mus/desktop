@@ -1,6 +1,7 @@
 import { AppStyles, WindowContainerStyles } from './App.styled'
 import BackgroundDesktop from './components/background/BackgroundDesktop'
 import ShortcutComponent from './components/shortcut/ShortcutComponent'
+import StartMenu from './components/startMenu/startMenu'
 import WindowTable from './components/window/windowComponent/Window'
 import { useResizeWindow } from './hooks/useResizeWindow'
 import { useGlobalStore } from './state/state.global'
@@ -35,7 +36,7 @@ function App() {
             key: 'Ctrl+Shift+A',
             action: () => {
                 console.log('Shortcut pressed')
-                changeWindowProps({ id: newWindow.id, isOpen: true, isFocused: true })
+                changeWindowProps({ id: newWindow.id, isOpen: true, isFocused: true, isActive: true })
             },
             newWindow: newWindow.id
         }
@@ -61,6 +62,7 @@ function App() {
                 </div>
             ))}
             <BackgroundDesktop />
+            <StartMenu />
         </WindowContainerStyles>
     )
 }

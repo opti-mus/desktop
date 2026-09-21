@@ -1,19 +1,30 @@
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import type { MousePosition, Shortcut, WindowTemplate } from '../types/config'
 import { parseTranslate } from './useResizeWindow'
 
 
 type MovableType = {
-    refObject: React.RefObject<HTMLElement | null>
+    moveObject?: WindowTemplate | Shortcut
+}
+
+export const isWindowTemplate = (data?: WindowTemplate | Shortcut): data is WindowTemplate => {
+    if (!data) return false
+    return 'render' in data
 }
 
 type MovableTypeReturn = {
     startMoveHandler: (e: React.MouseEvent) => void
-    isMoving: boolean
+    position: MousePosition
+    isMoving: boolean,
+    refObject: React.RefObject<HTMLDivElement | null>
 }
 
-export const useMovableObject = ({ refObject, }: MovableType): MovableTypeReturn => {
+export const useMovableObject = ({ moveObject }: MovableType): MovableTypeReturn => {
+    const refObject = useRef<HTMLDivElement | null>(null)
+
     const [isMoving, setIsMoving] = useState(false)
+    const [position, setPosition] = useState({ x: 0, y: 0 })
 
     const startMoveHandler = (e: React.MouseEvent) => {
         const element = refObject.current
@@ -37,6 +48,7 @@ export const useMovableObject = ({ refObject, }: MovableType): MovableTypeReturn
 
             element.style.transform = `translate(${x}px, ${y}px)`
 
+            setPosition({ x, y })
             setIsMoving(true)
         }
 
@@ -54,9 +66,39 @@ export const useMovableObject = ({ refObject, }: MovableType): MovableTypeReturn
         document.addEventListener('mouseup', onMouseUp)
     }
 
+    useEffect(() => {
+        if (!refObject.current || !moveObject?.position) return
+
+        const element = refObject.current
+        const { x, y } = moveObject.position
+
+        element.style.transform = `translate(${x}px, ${y}px)`
+
+    }, [])
+
+    const prevIsMaximized = useRef(moveObject?.isMaximized)
+
+    useEffect(() => {
+        if (!isWindowTemplate(moveObject)) return
+        if (!refObject.current || !moveObject?.position) return
+        if (prevIsMaximized.current === moveObject?.isMaximized) return
+
+        const { x, y } = position
+
+        refObject.current.style.transform = moveObject.isMaximized
+            ? 'translate(0, 0)'
+            : `translate(${x}px, ${y}px)`
+
+        prevIsMaximized.current = moveObject.isMaximized
+    }, [moveObject?.isMaximized])
+
+
+
     return {
         startMoveHandler,
         isMoving,
+        position,
+        refObject
     }
 }
 

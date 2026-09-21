@@ -1,5 +1,5 @@
-import { useRef } from 'react'
 import { useMovableObject } from '../../hooks/useMovableObject'
+import { useGlobalStore } from '../../state/state.global'
 import type { Shortcut } from '../../types/config'
 import { ShortcutStyles } from './Shortcut.styles'
 
@@ -8,10 +8,11 @@ type ShortcutProps = {
 }
 
 const ShortcutComponent = ({ shortcut }: ShortcutProps) => {
-    const id = shortcut.id
+    const { id } = shortcut
 
-    const shortcutRef = useRef<HTMLDivElement>(null)
-    const { startMoveHandler, isMoving } = useMovableObject({ refObject: shortcutRef })
+    const changeShortcutProps = useGlobalStore.use.changeShortcutProps()
+
+    const { startMoveHandler, isMoving, position: newPosition, refObject } = useMovableObject({ moveObject: shortcut })
 
     const handleClickShortcut = (e: React.MouseEvent<HTMLDivElement>) => {
         if (!id || isMoving) return
@@ -20,8 +21,12 @@ const ShortcutComponent = ({ shortcut }: ShortcutProps) => {
         startMoveHandler(e)
     }
 
+    const savePositionHandler = () => {
+        changeShortcutProps({ id, position: newPosition })
+    }
+
     return (
-        <ShortcutStyles ref={shortcutRef} onMouseDown={handleClickShortcut}>
+        <ShortcutStyles ref={refObject} onMouseDown={handleClickShortcut} onPointerUp={savePositionHandler}>
             <span>{shortcut.name}</span>
         </ShortcutStyles>
     )

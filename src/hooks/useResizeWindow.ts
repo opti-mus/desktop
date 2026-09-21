@@ -2,7 +2,8 @@ import { useEffect, useRef } from "react"
 
 const OFFSET = 10
 
-export const parseTranslate = (transform: string) => {
+export const parseTranslate = (transform?: string) => {
+    if (!transform) return { x: 0, y: 0 }
     const match = transform.match(/translate\(\s*(-?[\d.]+)px,\s*(-?[\d.]+)px\s*\)/)
 
     return {
