@@ -5,21 +5,14 @@ import { TitleBarStyles } from './TitleBar.styles'
 
 type TitleBarProps = {
     window: WindowTemplate
-    onMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void
-    controls : {
-        minimize: (id: string) => void
-        maximize: (id: string) => void
-        close: (id: string) => void
-    }
-    
-}
+} & React.ComponentProps<'div'>
 
-const TitleBar = ({ window, onMouseDown, controls }: TitleBarProps) => {
+const TitleBar = ({ window, ...props }: TitleBarProps) => {
     return (
-        <TitleBarStyles onMouseDown={onMouseDown}>
+        <TitleBarStyles {...props}>
             <IconBar />
             <span>{window.name}</span>
-            <WindowControls window={window} controls={controls} />
+            <WindowControls window={window} />
         </TitleBarStyles>
     )
 }

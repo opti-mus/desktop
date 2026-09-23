@@ -1,28 +1,18 @@
-import { useRef } from "react";
-import { useBlockStore } from "../../../state/BlockStoreSlice";
-import { useGlobalStore } from "../../../state/state.global";
-import type { Widjet } from "../../../types/config"
-import { useMovableObject } from "../../../hooks/useMovableObject";
-import { WidjetStyles, WidgetTitleBarStyles } from "./WidjetComponent.styles";
-import WindowControls from "../../window/windowControls/WindowControls";
+import { useRef } from 'react'
+import { useBlockStore } from '../../../state/BlockStoreSlice'
+import { useGlobalStore } from '../../../state/state.global'
+import type { Widjet } from '../../../types/config'
+import WindowControls from '../../window/windowControls/WindowControls'
+import { WidgetTitleBarStyles, WidjetStyles } from './WidjetComponent.styles'
 
 type WidjetProps = {
     widjet: Widjet
 }
 
 export const WidjetComponent = ({ widjet }: WidjetProps) => {
-    const {
-        id,
-        name,
-        render,
-        isOpen,
-        isMaximized,
-        isFocused,
-    } = widjet;
+    const { id, name, render, isOpen, isMaximized, isFocused } = widjet
 
-    const blockZIndices = useBlockStore(
-        state => state.blockZIndices
-    )
+    const blockZIndices = useBlockStore(state => state.blockZIndices)
 
     const myZIndex = blockZIndices[id] || 1
 
@@ -33,19 +23,17 @@ export const WidjetComponent = ({ widjet }: WidjetProps) => {
 
     const widgetRef = useRef<HTMLDivElement>(null)
 
-    const { startMoveHandler } = useMovableObject({
-        refObject: widgetRef
-    })
+    // const { startMoveHandler } = useMovableObject({
+    //     refObject: widgetRef
+    // })
 
-    const handleMouseDown = (
-        e: React.MouseEvent<HTMLDivElement>
-    ) => {
+    const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
         changeWidjetProps({
             id,
             isFocused: true
         })
 
-        startMoveHandler(e)
+        // startMoveHandler(e)
     }
 
     if (!isOpen) {
@@ -61,24 +49,20 @@ export const WidjetComponent = ({ widjet }: WidjetProps) => {
             data-index={id}
             data-widget
             id={id}>
-            <WidgetTitleBarStyles
-                onMouseDown={handleMouseDown}
-            >
+            <WidgetTitleBarStyles onMouseDown={handleMouseDown}>
                 <span>{name}</span>
 
                 <WindowControls
                     window={widjet}
-                    controls={{
-                        minimize: minimizeWidjet,
-                        maximize: maximizeWidjet,
-                        close: closeWidjet,
-                    }}
+                    // controls={{
+                    //     minimize: minimizeWidjet,
+                    //     maximize: maximizeWidjet,
+                    //     close: closeWidjet
+                    // }}
                 />
             </WidgetTitleBarStyles>
 
-            <div>
-                {render?.()}
-            </div>
+            <div>{render?.()}</div>
         </WidjetStyles>
     )
 }

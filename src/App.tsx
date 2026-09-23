@@ -1,14 +1,15 @@
 import { useEffect } from 'react'
 import { AppStyles, WindowContainerStyles } from './App.styled'
+import { WindowController } from './classes/WindowController'
 import BackgroundDesktop from './components/background/BackgroundDesktop'
 import ShortcutComponent from './components/shortcut/ShortcutComponent'
+import StartMenu from './components/startMenu/startMenu'
 import { TodoList } from './components/widgets/todoList/TodoList'
+import { WidjetComponent } from './components/widgets/widjetComponent/WidjetComponent'
 import WindowTable from './components/window/windowComponent/Window'
-import { useResizeWindow } from './hooks/useResizeWindow'
 import { useBlockStore } from './state/BlockStoreSlice'
 import { useGlobalStore } from './state/state.global'
 import type { Shortcut, Widjet, WindowTemplate } from './types/config'
-import { WidjetComponent } from './components/widgets/widjetComponent/WidjetComponent'
 
 function App() {
     const previewUrl = useGlobalStore.use.previewUrl()
@@ -25,15 +26,14 @@ function App() {
     const changeWindowProps = useGlobalStore.use.changeWindowProps()
 
     const bringToFront = useBlockStore(state => state.bringToFront)
-    useResizeWindow()
 
     const handleAddWindow = () => {
         const count = windows.length + 1
 
         const render = () => <div>Hello World {count}</div>
 
-        let dblClick = 0;
-        const dblClickDelay = 200;
+        let dblClick = 0
+        const dblClickDelay = 200
 
         const newWindow: WindowTemplate = {
             id: crypto.randomUUID(),
@@ -49,9 +49,9 @@ function App() {
             action: () => {
                 console.log('Shortcut pressed')
                 if (Date.now() - dblClick < dblClickDelay) {
-                    changeWindowProps({ id: newWindow.id, isOpen: true, isFocused: true })
+                    changeWindowProps({ id: newWindow.id, isOpen: true, isFocused: true, isActive: true })
                 } else {
-                    dblClick = Date.now();
+                    dblClick = Date.now()
                 }
             },
             newWindow: newWindow.id
@@ -61,9 +61,22 @@ function App() {
         addWindow(newWindow)
     }
 
+    useEffect(() => {
+        const windowController = new WindowController()
+        windowController.addCallback(
+            'mouseup',
+            (e, controller) => {
+                const store = useGlobalStore.getState()
+
+                store.changeWindowProps({ id: controller.windowID, dimensions: controller.windowDimensions })
+            },
+            'save_window_dimension'
+        )
+    }, [])
+
     const handleAddWidjet = () => {
-        const count = widjets.length + 1;
-        const id = crypto.randomUUID();
+        const count = widjets.length + 1
+        const id = crypto.randomUUID()
 
         const newWidjet: Widjet = {
             id,
@@ -114,6 +127,7 @@ function App() {
             ))}
 
             <BackgroundDesktop />
+            <StartMenu />
         </WindowContainerStyles>
     )
 }

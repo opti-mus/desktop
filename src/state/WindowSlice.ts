@@ -31,7 +31,7 @@ export const createWindowSlice: StateCreator<
         },
         minimizeWindow: (id: string) => {
             set((state: WindowStateSlice) => ({
-                windows: state.windows.map((s) => s.id === id ? { ...s, isMinimized: true } : s)
+                windows: state.windows.map((s) => s.id === id ? { ...s, isMinimized: true, isOpen: false } : s)
             }));
         },
         maximizeWindow: (id: string) => {
@@ -46,7 +46,7 @@ export const createWindowSlice: StateCreator<
             set((state: WindowStateSlice) => ({
                 windows: state.windows
                     .map((s) => s.id === id
-                        ? { ...s, isOpen: false, isMinimized: false, isMaximized: false }
+                        ? { ...s, isOpen: false, isMaximized: false, isActive: false }
                         : s)
             }));
         },
