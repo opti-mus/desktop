@@ -1,23 +1,25 @@
-import { useGlobalStore } from '../../../state/state.global'
-import type { WindowTemplate } from '../../../types/config'
+import type { Widjet, WindowTemplate } from '../../../types/config'
 import { WindowControlsStyles } from './WindowControls.styles'
 
 type WindowControlsProps = {
-    window: WindowTemplate
+    window: WindowTemplate | Widjet;
+
+    controls: {
+        minimize: (id: string) => void
+        maximize: (id: string) => void
+        close: (id: string) => void
+    }
 }
 
-const WindowControls = ({ window }: WindowControlsProps) => {
-    const minimizeWindow = useGlobalStore.use.minimizeWindow()
-    const maximizeWindow = useGlobalStore.use.maximizeWindow()
-    const closeWindow = useGlobalStore.use.closeWindow()
+const WindowControls = ({ window, controls }: WindowControlsProps) => {
 
     const { id } = window
 
     return (
         <WindowControlsStyles>
-            <button onClick={() => minimizeWindow(id)}>Minimize</button>
-            <button onClick={() => maximizeWindow(id)}>Maximize</button>
-            <button onClick={() => closeWindow(id)}>Close</button>
+            <button onClick={() => controls.minimize(id)}>Minimize</button>
+            <button onClick={() => controls.maximize(id)}>Maximize</button>
+            <button onClick={() => controls.close(id)}>Close</button>
         </WindowControlsStyles>
     )
 }

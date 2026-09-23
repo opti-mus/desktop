@@ -25,6 +25,12 @@ export type Shortcut = {
   action?: () => void;
 }
 
+export type Widjet = {
+  id: string;
+  name: string;
+  render: () => React.ReactNode;
+} & WindowConfig;
+
 export type Todo = {
   id: string;
   text: string;

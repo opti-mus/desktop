@@ -16,7 +16,11 @@ const WindowTable = ({ window }: WindowTableProps) => {
     const changeWindowProps = useGlobalStore.use.changeWindowProps()
 
     const blockZIndices = useBlockStore(state => state.blockZIndices)
-    const myZIndex = blockZIndices[`window-${id}`] || 1
+    const myZIndex = blockZIndices[id] || 1
+
+    const minimizeWindow = useGlobalStore.use.minimizeWindow()
+    const maximizeWindow = useGlobalStore.use.maximizeWindow()
+    const closeWindow = useGlobalStore.use.closeWindow()
 
     const windowRef = useRef<HTMLDivElement>(null)
     const { startMoveHandler } = useMovableObject({ refObject: windowRef })
@@ -32,11 +36,18 @@ const WindowTable = ({ window }: WindowTableProps) => {
             $isMaximized={!!isMaximized}
             $isOpen={!!isOpen}
             $isFocused={!!isFocused}
+            $zIndex={myZIndex}
             data-index={id}
             data-window
-            id={`window-${id}`}
-            style={{ zIndex: myZIndex }}>
-            <TitleBar window={window} onMouseDown={activeWindow} />
+            id={id}>
+            <TitleBar 
+            window={window} 
+            onMouseDown={activeWindow} 
+            controls={{
+                minimize: minimizeWindow,
+                maximize: maximizeWindow,
+                close: closeWindow
+            }} />
             <h1>{name}</h1>
             <div>{render?.()}</div>
         </WindowTableStyles>

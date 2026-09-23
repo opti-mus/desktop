@@ -21,6 +21,9 @@ export const createBlockSlice: StateCreator<
     
     bringToFront: (id: string) => {
       set((state: BlockStateSlice) => {
+        if (state.activeBlockId === id) {
+            return state;
+        }
         const nextZIndex = state.maxZIndex + 1;
         return {
           activeBlockId: id,

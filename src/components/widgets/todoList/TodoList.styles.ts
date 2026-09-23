@@ -1,14 +1,18 @@
 import styled from "styled-components";
 
-export const TodoListStyles = styled.div`
-    position: absolute;
-    width: 500px;
-    min-height: 400px;
-    background-color: rgba(199, 199, 199, 0.4);
-    border: 1px solid #9e9e9e;
-    border-radius: 8px;
+type TodoListProps = {
+    $zIndex: number;
+}
+
+export const TodoListStyles = styled.div<TodoListProps>`
+    width: 100%;
+    max-height: 600px;
+
+    overflow-x: auto;
+
+    border-top: 1px solid #9e9e9e;
     padding: 16px;
-    z-index: 1000;
+    z-index: ${({ $zIndex }) => $zIndex};
 
     h2 {
         margin-top: 0;
