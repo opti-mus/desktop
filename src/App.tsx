@@ -1,8 +1,10 @@
+import { useEffect } from 'react'
 import { AppStyles, WindowContainerStyles } from './App.styled'
+import { WindowController } from './classes/WindowController'
 import BackgroundDesktop from './components/background/BackgroundDesktop'
 import ShortcutComponent from './components/shortcut/ShortcutComponent'
+import StartMenu from './components/startMenu/startMenu'
 import WindowTable from './components/window/windowComponent/Window'
-import { useResizeWindow } from './hooks/useResizeWindow'
 import { useGlobalStore } from './state/state.global'
 import type { Shortcut, WindowTemplate } from './types/config'
 
@@ -14,8 +16,6 @@ function App() {
     const mode = useGlobalStore.use.mode()
     const addWindow = useGlobalStore.use.addWindow()
     const changeWindowProps = useGlobalStore.use.changeWindowProps()
-
-    useResizeWindow()
 
     const handleAddWindow = () => {
         const count = windows.length + 1
@@ -35,7 +35,7 @@ function App() {
             key: 'Ctrl+Shift+A',
             action: () => {
                 console.log('Shortcut pressed')
-                changeWindowProps({ id: newWindow.id, isOpen: true, isFocused: true })
+                changeWindowProps({ id: newWindow.id, isOpen: true, isFocused: true, isActive: true })
             },
             newWindow: newWindow.id
         }
@@ -43,6 +43,19 @@ function App() {
         addShortcut(shortcut)
         addWindow(newWindow)
     }
+
+    useEffect(() => {
+        const windowController = new WindowController()
+        windowController.addCallback(
+            'mouseup',
+            (e, controller) => {
+                const store = useGlobalStore.getState()
+
+                store.changeWindowProps({ id: controller.windowID, dimensions: controller.windowDimensions })
+            },
+            'save_window_dimension'
+        )
+    }, [])
 
     return (
         <WindowContainerStyles $previewUrl={previewUrl} $mode={mode}>
@@ -61,6 +74,7 @@ function App() {
                 </div>
             ))}
             <BackgroundDesktop />
+            <StartMenu />
         </WindowContainerStyles>
     )
 }

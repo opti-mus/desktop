@@ -7,11 +7,11 @@ type WindowControlsProps = {
 }
 
 const WindowControls = ({ window }: WindowControlsProps) => {
+    const { id } = window
+
     const minimizeWindow = useGlobalStore.use.minimizeWindow()
     const maximizeWindow = useGlobalStore.use.maximizeWindow()
     const closeWindow = useGlobalStore.use.closeWindow()
-
-    const { id } = window
 
     return (
         <WindowControlsStyles>
