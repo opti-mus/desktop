@@ -1,3 +1,8 @@
+export enum DialogType {
+  BASE = 'BASE',
+  WIDGET = 'WIDGET',
+  SHORTCUT = 'SHORTCUT'
+}
 export type MousePosition = {
   x: number
   y: number
@@ -8,12 +13,19 @@ export type WindowDimension = {
   height: number
 }
 
-export type WindowBaseDialog = {
+export type BaseDialogControls = {
+  maximized: boolean
+  minimized: boolean
+  close: boolean
+}
+
+export type BaseDialog = {
   id: string;
-  name: string;
+  name?: string;
+  type: DialogType
   position?: MousePosition
   dimensions?: WindowDimension
-}
+} & WindowConfig
 
 export type WindowConfig = Partial<{
   isActive: boolean
@@ -27,27 +39,38 @@ export type WindowConfig = Partial<{
 }>;
 
 export type WindowTemplate = {
-  dimensions?: WindowDimension
+  type: DialogType.BASE
+  disabledControls?: boolean
+
   render: () => React.ReactNode;
-} & WindowConfig & WindowBaseDialog;
+} & BaseDialog;
 
 export type Shortcut = {
+  type: DialogType.SHORTCUT
   description?: string;
   key?: string;
   icon?: string;
   newWindow: WindowTemplate['id'];
   action?: () => void;
-} & WindowBaseDialog
+} & BaseDialog
 
 
-export type Widjet = {
-  id: string;
-  name: string;
+export type Widget = {
+  type: DialogType.WIDGET
+  disabledControls?: boolean
+
   render: () => React.ReactNode;
-} & WindowConfig;
+} & BaseDialog;
 
 export type Todo = {
   id: string;
   text: string;
   completed: boolean;
 }
+
+export type CombinedObject = WindowTemplate | Shortcut | Widget
+
+export type DesktopObject<T extends keyof typeof DialogType = keyof typeof DialogType> = Extract<
+  CombinedObject,
+  { type: T }
+>

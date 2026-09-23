@@ -5,11 +5,9 @@ import BackgroundDesktop from './components/background/BackgroundDesktop'
 import ShortcutComponent from './components/shortcut/ShortcutComponent'
 import StartMenu from './components/startMenu/startMenu'
 import { TodoList } from './components/widgets/todoList/TodoList'
-import { WidjetComponent } from './components/widgets/widjetComponent/WidjetComponent'
 import WindowTable from './components/window/windowComponent/Window'
-import { useBlockStore } from './state/BlockStoreSlice'
 import { useGlobalStore } from './state/state.global'
-import type { Shortcut, Widjet, WindowTemplate } from './types/config'
+import { DialogType, type DesktopObject } from './types/config'
 
 function App() {
     const previewUrl = useGlobalStore.use.previewUrl()
@@ -19,13 +17,8 @@ function App() {
     const shortcuts = useGlobalStore.use.shortcuts()
     const addShortcut = useGlobalStore.use.addShortcut()
 
-    const widjets = useGlobalStore.use.widjets()
-    const addWidjet = useGlobalStore.use.addWidjet()
-
     const mode = useGlobalStore.use.mode()
     const changeWindowProps = useGlobalStore.use.changeWindowProps()
-
-    const bringToFront = useBlockStore(state => state.bringToFront)
 
     const handleAddWindow = () => {
         const count = windows.length + 1
@@ -35,21 +28,22 @@ function App() {
         let dblClick = 0
         const dblClickDelay = 200
 
-        const newWindow: WindowTemplate = {
+        const newWindow: DesktopObject<DialogType.BASE> = {
             id: crypto.randomUUID(),
             name: 'Window' + count,
             isMaximized: false,
             isOpen: false,
+            type: DialogType.BASE,
             render
         }
-        const shortcut: Shortcut = {
+        const shortcut: DesktopObject<DialogType.SHORTCUT> = {
             id: crypto.randomUUID(),
             name: 'Shortcut' + count,
             key: 'Ctrl+Shift+A',
+            type: DialogType.SHORTCUT,
             action: () => {
-                console.log('Shortcut pressed')
                 if (Date.now() - dblClick < dblClickDelay) {
-                    changeWindowProps({ id: newWindow.id, isOpen: true, isFocused: true, isActive: true })
+                    changeWindowProps({ id: newWindow.id, isOpen: true, isActive: true })
                 } else {
                     dblClick = Date.now()
                 }
@@ -61,8 +55,26 @@ function App() {
         addWindow(newWindow)
     }
 
+    const handleAddWidget = () => {
+        const id = crypto.randomUUID()
+
+        const newWidget: DesktopObject<DialogType.WIDGET> = {
+            id,
+            type: DialogType.WIDGET,
+            isMaximized: false,
+            isOpen: true,
+            isFocused: true,
+            disabledControls: true,
+
+            render: () => <TodoList />
+        }
+
+        addWindow(newWidget)
+    }
+
     useEffect(() => {
         const windowController = new WindowController()
+
         windowController.addCallback(
             'mouseup',
             (e, controller) => {
@@ -72,46 +84,22 @@ function App() {
             },
             'save_window_dimension'
         )
+        windowController.addCallback(
+            'mousedown',
+            (e, controller) => {
+                const store = useGlobalStore.getState()
+
+                if (controller.windowID) store.changeFocus(controller.windowID)
+            },
+            'save_window_dimension'
+        )
     }, [])
-
-    const handleAddWidjet = () => {
-        const count = widjets.length + 1
-        const id = crypto.randomUUID()
-
-        const newWidjet: Widjet = {
-            id,
-            name: `Widjet: ${count}`,
-
-            isMaximized: false,
-            isOpen: true,
-            isFocused: true,
-
-            render: () => <TodoList id={id} />
-        }
-
-        addWidjet(newWidjet)
-    }
-
-    useEffect(() => {
-        const handleGlobalClick = (event: MouseEvent) => {
-            const target = event.target as HTMLElement
-            const closestElement = target.closest('[data-index]') as HTMLElement
-
-            if (closestElement && closestElement?.dataset.index) {
-                bringToFront(closestElement.dataset.index)
-            }
-        }
-
-        document.addEventListener('mousedown', handleGlobalClick)
-
-        return () => document.removeEventListener('mousedown', handleGlobalClick)
-    }, [bringToFront])
 
     return (
         <WindowContainerStyles $previewUrl={previewUrl} $mode={mode}>
             <h1>Hello World</h1>
             <button onClick={handleAddWindow}>Add Window</button>
-            <button onClick={handleAddWidjet}>Add Widjet</button>
+            <button onClick={handleAddWidget}>Add Widjet</button>
             <AppStyles>
                 {shortcuts.map(shortcut => (
                     <div key={shortcut.id}>
@@ -121,9 +109,6 @@ function App() {
             </AppStyles>
             {windows.map(w => (
                 <WindowTable key={w.id} window={w} />
-            ))}
-            {widjets.map(w => (
-                <WidjetComponent key={w.id} widjet={w} />
             ))}
 
             <BackgroundDesktop />

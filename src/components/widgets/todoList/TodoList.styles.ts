@@ -1,10 +1,8 @@
 import styled from "styled-components";
 
-type TodoListProps = {
-    $zIndex: number;
-}
 
-export const TodoListStyles = styled.div<TodoListProps>`
+
+export const TodoListStyles = styled.div`
     width: 100%;
     max-height: 600px;
 
@@ -12,7 +10,6 @@ export const TodoListStyles = styled.div<TodoListProps>`
 
     border-top: 1px solid #9e9e9e;
     padding: 16px;
-    z-index: ${({ $zIndex }) => $zIndex};
 
     h2 {
         margin-top: 0;

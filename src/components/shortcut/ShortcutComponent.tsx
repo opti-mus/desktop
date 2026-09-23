@@ -1,6 +1,5 @@
 import { useEffect, useRef } from 'react'
 import { WindowController } from '../../classes/WindowController'
-import { useBlockStore } from '../../state/BlockStoreSlice'
 import { useGlobalStore } from '../../state/state.global'
 import type { Shortcut } from '../../types/config'
 import { ShortcutStyles } from './Shortcut.styles'
@@ -13,9 +12,6 @@ const ShortcutComponent = ({ shortcut }: ShortcutProps) => {
     const { id } = shortcut
 
     const changeShortcutProps = useGlobalStore.use.changeShortcutProps()
-
-    const blockZIndices = useBlockStore(state => state.blockZIndices)
-    const myZIndex = blockZIndices[id] || 1
 
     const refObject = useRef<HTMLDivElement | null>(null)
 
@@ -43,7 +39,6 @@ const ShortcutComponent = ({ shortcut }: ShortcutProps) => {
             data-window={id}
             onMouseDown={handleClickShortcut}
             onPointerUp={savePositionHandler}
-            style={{ zIndex: myZIndex }}
             id={id}>
             <span>{shortcut.name}</span>
         </ShortcutStyles>

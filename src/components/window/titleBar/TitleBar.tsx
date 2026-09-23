@@ -1,10 +1,10 @@
-import type { WindowTemplate } from '../../../types/config'
+import type { DesktopObject, DialogType } from '../../../types/config'
 import IconBar from '../iconBar/IconBar'
 import WindowControls from '../windowControls/WindowControls'
 import { TitleBarStyles } from './TitleBar.styles'
 
 type TitleBarProps = {
-    window: WindowTemplate
+    window: DesktopObject<DialogType.BASE | DialogType.WIDGET>
 } & React.ComponentProps<'div'>
 
 const TitleBar = ({ window, ...props }: TitleBarProps) => {
@@ -12,7 +12,7 @@ const TitleBar = ({ window, ...props }: TitleBarProps) => {
         <TitleBarStyles {...props}>
             <IconBar />
             <span>{window.name}</span>
-            <WindowControls window={window} />
+            {!window?.disabledControls && <WindowControls window={window} />}
         </TitleBarStyles>
     )
 }

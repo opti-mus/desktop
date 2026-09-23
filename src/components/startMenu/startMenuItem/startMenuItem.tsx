@@ -1,10 +1,10 @@
 import { useMemo } from 'react'
 import { useGlobalStore } from '../../../state/state.global'
-import type { Shortcut } from '../../../types/config'
+import type { DesktopObject, DialogType } from '../../../types/config'
 import { StartMenuElement } from './startMenuItem.styles'
 
 type StartMenuItemType = {
-    shortcut: Shortcut
+    shortcut: DesktopObject<DialogType.SHORTCUT>
 }
 export const StartMenuItem = ({ shortcut }: StartMenuItemType) => {
     const windows = useGlobalStore.use.windows()

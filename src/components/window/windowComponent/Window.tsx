@@ -1,25 +1,18 @@
 import { useEffect, useRef } from 'react'
 import { WindowController } from '../../../classes/WindowController'
-import { useBlockStore } from '../../../state/BlockStoreSlice'
 import { useGlobalStore } from '../../../state/state.global'
-import type { WindowTemplate } from '../../../types/config'
+import type { DesktopObject, DialogType } from '../../../types/config'
 import TitleBar from '../titleBar/TitleBar'
 import { WindowTableStyles } from './Window.styles'
 
 type WindowTableProps = {
-    window: WindowTemplate
+    window: DesktopObject<DialogType.BASE | DialogType.WIDGET>
 }
 
 const WindowTable = ({ window }: WindowTableProps) => {
     const { id, name, render, isMaximized, isOpen, isFocused } = window
 
-    const blockZIndices = useBlockStore(state => state.blockZIndices)
-    const myZIndex = blockZIndices[id] || 1
-
     const changeWindowProps = useGlobalStore.use.changeWindowProps()
-    const minimizeWindow = useGlobalStore.use.minimizeWindow()
-    const maximizeWindow = useGlobalStore.use.maximizeWindow()
-    const closeWindow = useGlobalStore.use.closeWindow()
 
     const refObject = useRef<HTMLDivElement | null>(null)
 
@@ -53,20 +46,10 @@ const WindowTable = ({ window }: WindowTableProps) => {
             $isMaximized={!!isMaximized}
             $isOpen={!!isOpen}
             $isFocused={!!isFocused}
-            $zIndex={myZIndex}
             data-index={id}
             id={id}>
-            <TitleBar
-                window={window}
-                onPointerDown={activeWindow}
-                onPointerUp={savePositionHandler}
-                controls={{
-                    minimize: minimizeWindow,
-                    maximize: maximizeWindow,
-                    close: closeWindow
-                }}
-            />
-            <h1>{name}</h1>
+            <TitleBar window={window} onPointerDown={activeWindow} onPointerUp={savePositionHandler} />
+            {name && <h1>{name}</h1>}
             <div>{render?.()}</div>
         </WindowTableStyles>
     )
