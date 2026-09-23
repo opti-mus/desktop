@@ -18,8 +18,7 @@ export const WindowTableStyles = styled.div<WindowTableStylesProps>`
   display: ${({ $isOpen }) => ($isOpen ? "flex" : "none")};
   flex-direction: column;
 
-  position: fixed;
-  
+  position: absolute;
   top: 0;
   left: 0;
   

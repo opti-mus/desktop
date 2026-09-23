@@ -38,7 +38,8 @@ const ShortcutComponent = ({ shortcut }: ShortcutProps) => {
             ref={refObject}
             data-window={id}
             onMouseDown={handleClickShortcut}
-            onPointerUp={savePositionHandler}>
+            onPointerUp={savePositionHandler}
+            id={id}>
             <span>{shortcut.name}</span>
         </ShortcutStyles>
     )

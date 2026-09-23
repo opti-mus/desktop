@@ -1,4 +1,4 @@
-import type { MousePosition, Shortcut, WindowDimension, WindowTemplate } from "../types/config"
+import type { DesktopObject, DialogType, MousePosition, WindowDimension } from "../types/config"
 import { parseTranslate } from "../utils"
 
 
@@ -72,7 +72,7 @@ export class WindowController {
         document.removeEventListener('mouseup', this.mouseUpHandler)
     }
 
-    public applyDimensions(target: HTMLElement | null, window: WindowTemplate | Shortcut) {
+    public applyDimensions(target: HTMLElement | null, window: DesktopObject<DialogType.BASE | DialogType.WIDGET | DialogType.SHORTCUT>) {
         if (!target || !window?.position) return
 
         const { x, y } = window.position
@@ -83,7 +83,7 @@ export class WindowController {
         target.style.height = `${window.dimensions?.height}px`
     }
 
-    public maximizeWindow(target: HTMLElement | null, window: WindowTemplate) {
+    public maximizeWindow(target: HTMLElement | null, window: DesktopObject<DialogType.BASE | DialogType.WIDGET>) {
         if (!target || !window.position) return
         const { isMaximized, position } = window
 

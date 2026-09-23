@@ -4,6 +4,7 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import { createBackgroundSlice, type BackgroundStateSlice } from './BackgroundSlice';
 import { createShortcutSlice, type ShortcutStateSlice } from './ShortcutSlice';
 import { createWindowSlice, type WindowStateSlice } from './WindowSlice';
+
 type WithSelectors<S> = S extends { getState: () => infer T }
   ? S & { use: { [K in keyof T]: () => T[K] } }
   : never
@@ -27,7 +28,7 @@ export const globalStore = create<GlobalState>()(
     (...a) => ({
       ...createWindowSlice(...a),
       ...createShortcutSlice(...a),
-      ...createBackgroundSlice(...a),
+      ...createBackgroundSlice(...a)
     }),
     {
       name: 'store',
@@ -35,5 +36,14 @@ export const globalStore = create<GlobalState>()(
     },
   ),
 )
+// export const globalStore = create<GlobalState>()(
 
+//   (...a) => ({
+//     ...createWindowSlice(...a),
+//     ...createShortcutSlice(...a),
+//     ...createBackgroundSlice(...a)
+//   }
+
+//   ),
+// )
 export const useGlobalStore = createSelectors(globalStore);

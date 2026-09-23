@@ -1,9 +1,9 @@
 import { useGlobalStore } from '../../../state/state.global'
-import type { WindowTemplate } from '../../../types/config'
+import type { DesktopObject, DialogType } from '../../../types/config'
 import { WindowControlsStyles } from './WindowControls.styles'
 
 type WindowControlsProps = {
-    window: WindowTemplate
+    window: DesktopObject<DialogType.BASE | DialogType.WIDGET>
 }
 
 const WindowControls = ({ window }: WindowControlsProps) => {

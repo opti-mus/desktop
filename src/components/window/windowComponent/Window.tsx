@@ -1,12 +1,12 @@
 import { useEffect, useRef } from 'react'
 import { WindowController } from '../../../classes/WindowController'
 import { useGlobalStore } from '../../../state/state.global'
-import type { WindowTemplate } from '../../../types/config'
+import type { DesktopObject, DialogType } from '../../../types/config'
 import TitleBar from '../titleBar/TitleBar'
 import { WindowTableStyles } from './Window.styles'
 
 type WindowTableProps = {
-    window: WindowTemplate
+    window: DesktopObject<DialogType.BASE | DialogType.WIDGET>
 }
 
 const WindowTable = ({ window }: WindowTableProps) => {
@@ -45,9 +45,11 @@ const WindowTable = ({ window }: WindowTableProps) => {
             ref={refObject}
             $isMaximized={!!isMaximized}
             $isOpen={!!isOpen}
-            $isFocused={!!isFocused}>
+            $isFocused={!!isFocused}
+            data-index={id}
+            id={id}>
             <TitleBar window={window} onPointerDown={activeWindow} onPointerUp={savePositionHandler} />
-            <h1>{name}</h1>
+            {name && <h1>{name}</h1>}
             <div>{render?.()}</div>
         </WindowTableStyles>
     )
