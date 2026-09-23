@@ -16,7 +16,7 @@ const WindowTable = ({ window }: WindowTableProps) => {
 
     const refObject = useRef<HTMLDivElement | null>(null)
 
-    const activeWindow = (e: React.MouseEvent<HTMLDivElement>) => {
+    const activeWindow = () => {
         if (isMaximized) return
 
         new WindowController().isDragging = true

@@ -77,7 +77,7 @@ function App() {
 
         windowController.addCallback(
             'mouseup',
-            (e, controller) => {
+            (_, controller) => {
                 const store = useGlobalStore.getState()
 
                 store.changeWindowProps({ id: controller.windowID, dimensions: controller.windowDimensions })
@@ -86,7 +86,7 @@ function App() {
         )
         windowController.addCallback(
             'mousedown',
-            (e, controller) => {
+            (_, controller) => {
                 const store = useGlobalStore.getState()
 
                 if (controller.windowID) store.changeFocus(controller.windowID)
