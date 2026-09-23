@@ -2,15 +2,7 @@ import { useEffect, useRef } from "react"
 
 const OFFSET = 10
 
-export const parseTranslate = (transform?: string) => {
-    if (!transform) return { x: 0, y: 0 }
-    const match = transform.match(/translate\(\s*(-?[\d.]+)px,\s*(-?[\d.]+)px\s*\)/)
 
-    return {
-        x: match ? Number(match[1]) : 0,
-        y: match ? Number(match[2]) : 0
-    }
-}
 
 export const useResizeWindow = () => {
     const refWindow = useRef<HTMLElement>(null)
@@ -44,6 +36,7 @@ export const useResizeWindow = () => {
 
             document.body.style.userSelect = ''
             document.body.style.cursor = ''
+            refWindow.current = null
         }
 
         const mouseDownHandler = (e: MouseEvent) => {
@@ -124,18 +117,18 @@ export const useResizeWindow = () => {
             }
 
             // TOP
-            if (startMove.top) {
-                const deltaY = e.clientY - startData.mouseY
+            // if (startMove.top) {
+            //     const deltaY = e.clientY - startData.mouseY
 
-                const newHeight = startData.height - deltaY
-                const newTranslateY = startData.translateY + deltaY
+            //     const newHeight = startData.height - deltaY
+            //     const newTranslateY = startData.translateY + deltaY
 
-                if (newHeight > 50) {
-                    window.style.height = `${newHeight}px`
+            //     if (newHeight > 50) {
+            //         window.style.height = `${newHeight}px`
 
-                    window.style.transform = `translate(${startData.translateX}px, ${newTranslateY}px)`
-                }
-            }
+            //         window.style.transform = `translate(${startData.translateX}px, ${newTranslateY}px)`
+            //     }
+            // }
 
             // BOTTOM
             if (startMove.bottom) {

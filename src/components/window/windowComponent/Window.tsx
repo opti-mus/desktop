@@ -1,5 +1,5 @@
-import { useMemo } from 'react'
-import { useMovableObject } from '../../../hooks/useMovableObject'
+import { useEffect, useRef } from 'react'
+import { WindowController } from '../../../classes/WindowController'
 import { useGlobalStore } from '../../../state/state.global'
 import type { WindowTemplate } from '../../../types/config'
 import TitleBar from '../titleBar/TitleBar'
@@ -10,43 +10,43 @@ type WindowTableProps = {
 }
 
 const WindowTable = ({ window }: WindowTableProps) => {
-    const { id, name, render, isMaximized, isOpen, isFocused, position } = window
+    const { id, name, render, isMaximized, isOpen, isFocused } = window
 
     const changeWindowProps = useGlobalStore.use.changeWindowProps()
 
-    const {
-        startMoveHandler,
-        position: newPosition,
-        refObject
-    } = useMovableObject({
-        moveObject: window
-    })
-
-    const windowPosition = useMemo(() => {
-        return isMaximized ? 'translate(0,0) !important' : `translate(${newPosition.x}px, ${newPosition.y}px)`
-    }, [newPosition, isMaximized])
+    const refObject = useRef<HTMLDivElement | null>(null)
 
     const activeWindow = (e: React.MouseEvent<HTMLDivElement>) => {
         if (isMaximized) return
 
-        changeWindowProps({ id, isFocused: true })
-        startMoveHandler(e)
+        new WindowController().isDragging = true
     }
 
     const savePositionHandler = () => {
-        changeWindowProps({ id, position: newPosition })
+        const controller = new WindowController()
+        const position = controller.moveData.get(id)
+
+        if (position) {
+            changeWindowProps({ id, position })
+        }
     }
-    console.log('@position', position)
+
+    useEffect(() => {
+        new WindowController().maximizeWindow(refObject.current, window)
+    }, [window.isMaximized])
+
+    useEffect(() => {
+        new WindowController().applyDimensions(refObject.current, window)
+    }, [])
 
     return (
         <WindowTableStyles
-            data-window={'todo'}
+            data-window={id}
             ref={refObject}
             $isMaximized={!!isMaximized}
             $isOpen={!!isOpen}
-            $windowPosition={windowPosition}
             $isFocused={!!isFocused}>
-            <TitleBar window={window} onMouseDown={activeWindow} onPointerUp={savePositionHandler} />
+            <TitleBar window={window} onPointerDown={activeWindow} onPointerUp={savePositionHandler} />
             <h1>{name}</h1>
             <div>{render?.()}</div>
         </WindowTableStyles>

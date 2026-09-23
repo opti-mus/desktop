@@ -1,4 +1,5 @@
-import { useMovableObject } from '../../hooks/useMovableObject'
+import { useEffect, useRef } from 'react'
+import { WindowController } from '../../classes/WindowController'
 import { useGlobalStore } from '../../state/state.global'
 import type { Shortcut } from '../../types/config'
 import { ShortcutStyles } from './Shortcut.styles'
@@ -12,21 +13,32 @@ const ShortcutComponent = ({ shortcut }: ShortcutProps) => {
 
     const changeShortcutProps = useGlobalStore.use.changeShortcutProps()
 
-    const { startMoveHandler, isMoving, position: newPosition, refObject } = useMovableObject({ moveObject: shortcut })
+    const refObject = useRef<HTMLDivElement | null>(null)
 
     const handleClickShortcut = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (!id || isMoving) return
-
+        new WindowController().isDragging = true
         shortcut.action?.()
-        startMoveHandler(e)
     }
 
     const savePositionHandler = () => {
-        changeShortcutProps({ id, position: newPosition })
+        const controller = new WindowController()
+        const position = controller.moveData.get(id)
+
+        if (position) {
+            changeShortcutProps({ id, position })
+        }
     }
 
+    useEffect(() => {
+        new WindowController().applyDimensions(refObject.current, shortcut)
+    }, [])
+
     return (
-        <ShortcutStyles ref={refObject} onMouseDown={handleClickShortcut} onPointerUp={savePositionHandler}>
+        <ShortcutStyles
+            ref={refObject}
+            data-window={id}
+            onMouseDown={handleClickShortcut}
+            onPointerUp={savePositionHandler}>
             <span>{shortcut.name}</span>
         </ShortcutStyles>
     )

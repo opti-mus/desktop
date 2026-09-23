@@ -4,13 +4,11 @@ type WindowTableStylesProps = {
   $isMaximized: boolean;
   $isOpen: boolean;
   $isFocused: boolean;
-  $windowPosition: string
 }
 
 export const WindowTableStyles = styled.div<WindowTableStylesProps>`
   width: ${({ $isMaximized }) => ($isMaximized ? "100vw !important" : "500px")};
   height: ${({ $isMaximized }) => ($isMaximized ? "100vh !important" : "500px")};
-  transform: ${({ $windowPosition }) => ($windowPosition)};;
 
   background-color: #f0f0f0;
   border: 1px solid #ccc;
