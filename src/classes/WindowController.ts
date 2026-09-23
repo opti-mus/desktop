@@ -23,21 +23,19 @@ type BindType = {
 }
 
 export class WindowController {
-    private _isDragging: boolean
-
     static instance: WindowController
     static OFFSET = 10
 
-    startMove?: StartMoveType
-    startData: StartDataType
-    moveData: Map<string, MousePosition>
-    refWindow: HTMLElement | null
-    windowDimensions: WindowDimension
+    private startMove?: StartMoveType
+    private startData: StartDataType
+    private bindings: Map<string, BindType[]>
 
+    public moveData: Map<string, MousePosition>
+    public windowDimensions: WindowDimension
+    public refWindow: HTMLElement | null
+    public isDragging: boolean
 
-    public bindings: Map<string, BindType[]>
     constructor() {
-
         this.startData = {
             mouseX: 0,
             mouseY: 0,
@@ -50,7 +48,7 @@ export class WindowController {
         this.refWindow = null
         this.windowDimensions = { width: 0, height: 0 }
         this.bindings = new Map()
-        this._isDragging = false
+        this.isDragging = false
 
         if (WindowController.instance) return WindowController.instance
 
@@ -60,20 +58,21 @@ export class WindowController {
 
     }
 
-    init() {
+    public init() {
         document.addEventListener('mousedown', this.mouseDownHandler.bind(this))
         document.addEventListener('mousemove', this.mouseMoveHandler.bind(this))
         document.addEventListener('mouseup', this.mouseUpHandler.bind(this))
 
         this.bindCallbacks()
     }
-    destroy() {
+
+    public destroy() {
         document.removeEventListener('mousedown', this.mouseDownHandler)
         document.removeEventListener('mousemove', this.mouseMoveHandler)
         document.removeEventListener('mouseup', this.mouseUpHandler)
     }
 
-    applyDimensions(target: HTMLElement | null, window: WindowTemplate | Shortcut) {
+    public applyDimensions(target: HTMLElement | null, window: WindowTemplate | Shortcut) {
         if (!target || !window?.position) return
 
         const { x, y } = window.position
@@ -84,14 +83,14 @@ export class WindowController {
         target.style.height = `${window.dimensions?.height}px`
     }
 
-    maximizeWindow(target: HTMLElement | null, window: WindowTemplate) {
+    public maximizeWindow(target: HTMLElement | null, window: WindowTemplate) {
         if (!target || !window.position) return
         const { isMaximized, position } = window
 
         target.style.transform = isMaximized ? 'translate(0,0)' : `translate(${position.x}px, ${position.y}px)`
     }
 
-    addCallback<T extends WindowController[]>(
+    public addCallback<T extends WindowController[]>(
         event: string,
         callback: (event: MouseEvent, instance: WindowController, ...args: T) => void,
         flag?: string,
@@ -116,7 +115,7 @@ export class WindowController {
 
     }
 
-    triggerCallbacks(event: string, eventData: MouseEvent) {
+    private triggerCallbacks(event: string, eventData: MouseEvent) {
         const callbacks = this.bindings.get(event)
 
         if (callbacks) {
@@ -127,7 +126,7 @@ export class WindowController {
         }
     }
 
-    mouseDownHandler(e: MouseEvent) {
+    private mouseDownHandler(e: MouseEvent) {
         const target = e.target as HTMLElement
         const windowDOM = target.closest('[data-window]') as HTMLElement
 
@@ -171,7 +170,8 @@ export class WindowController {
 
         this.triggerCallbacks('mousedown', e)
     }
-    mouseMoveHandler(e: MouseEvent) {
+
+    private mouseMoveHandler(e: MouseEvent) {
         const target = e.target as HTMLElement
         const windowDOM = target.closest('[data-window]') as HTMLElement
 
@@ -189,7 +189,7 @@ export class WindowController {
         this.windowDimensions = { width: bbox.width, height: bbox.height }
 
 
-        if (this._isDragging) {
+        if (this.isDragging) {
             document.body.style.cursor = 'grab'
 
             const deltaX = e.clientX - this.startData.mouseX
@@ -256,8 +256,10 @@ export class WindowController {
 
             if (newHeight > 50) {
                 window.style.height = `${newHeight}px`
+                this.windowDimensions.height = newHeight
 
                 window.style.transform = `translate(${this.startData.translateX}px, ${newTranslateY}px)`
+
             }
         }
 
@@ -294,12 +296,12 @@ export class WindowController {
         //     document.body.style.cursor = 'nw-resize'
         // }
     }
-    mouseUpHandler(e: MouseEvent) {
+    private mouseUpHandler(e: MouseEvent) {
         this.triggerCallbacks('mouseup', e)
         this.resetMove()
     }
 
-    resetMove() {
+    private resetMove() {
         this.startMove = undefined
         this.isDragging = false
         document.body.style.userSelect = ''
@@ -307,11 +309,9 @@ export class WindowController {
         this.refWindow = null
     }
 
-    get windowID() {
+    public get windowID() {
         return this.refWindow?.dataset?.window
     }
 
-    set isDragging(value: boolean) {
-        this._isDragging = value
-    }
+
 }
