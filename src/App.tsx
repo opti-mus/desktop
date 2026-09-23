@@ -88,10 +88,9 @@ function App() {
             'mousedown',
             (_, controller) => {
                 const store = useGlobalStore.getState()
-
                 if (controller.windowID) store.changeFocus(controller.windowID)
             },
-            'save_window_dimension'
+            'change_focus'
         )
     }, [])
 
