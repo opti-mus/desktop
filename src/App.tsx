@@ -8,6 +8,7 @@ import { TodoList } from './components/widgets/todoList/TodoList'
 import WindowTable from './components/window/windowComponent/Window'
 import { useGlobalStore } from './state/state.global'
 import { DialogType, type DesktopObject } from './types/config'
+import { ContextMenu } from './components/contextMenu/contextMenuComponent/ContextMenu'
 
 function App() {
     const previewUrl = useGlobalStore.use.previewUrl()
@@ -77,7 +78,7 @@ function App() {
 
         windowController.addCallback(
             'mouseup',
-            (e, controller) => {
+            (_, controller) => {
                 const store = useGlobalStore.getState()
 
                 store.changeWindowProps({ id: controller.windowID, dimensions: controller.windowDimensions })
@@ -86,7 +87,7 @@ function App() {
         )
         windowController.addCallback(
             'mousedown',
-            (e, controller) => {
+            (_, controller) => {
                 const store = useGlobalStore.getState()
 
                 if (controller.windowID) store.changeFocus(controller.windowID)
@@ -97,6 +98,7 @@ function App() {
 
     return (
         <WindowContainerStyles $previewUrl={previewUrl} $mode={mode}>
+            <ContextMenu handleAddWindow={handleAddWindow} handleAddWidget={handleAddWidget} />
             <h1>Hello World</h1>
             <button onClick={handleAddWindow}>Add Window</button>
             <button onClick={handleAddWidget}>Add Widjet</button>

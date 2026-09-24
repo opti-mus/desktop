@@ -15,7 +15,7 @@ const ShortcutComponent = ({ shortcut }: ShortcutProps) => {
 
     const refObject = useRef<HTMLDivElement | null>(null)
 
-    const handleClickShortcut = (e: React.MouseEvent<HTMLDivElement>) => {
+    const handleClickShortcut = () => {
         new WindowController().isDragging = true
         shortcut.action?.()
     }
