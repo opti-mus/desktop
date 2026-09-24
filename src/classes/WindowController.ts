@@ -22,12 +22,13 @@ type BindType = {
     callback: (event: MouseEvent, instance: WindowController) => void
     invocationCount: number
 }
+type BindingEvent = 'mousedown' | 'mouseup' | 'mousemove' | 'selection:start' | 'selection:move' | 'selection:end' | 'grab:bulk'
 
 export class WindowController {
     static instance: WindowController
     static OFFSET = 10
 
-    private bindings: Map<string, BindType[]>
+    private bindings: Map<BindingEvent, BindType[]>
 
     public selectionModule: SelectionModule
     public startData: StartDataType
@@ -142,9 +143,30 @@ export class WindowController {
 
         this.windowDimensions = { width: bbox.width, height: bbox.height }
 
-        if (this.isDragging) {
-            document.body.style.cursor = 'grab'
 
+        if (this.isDragging) {
+            // this.triggerCallbacks('grab:bulk', e)
+
+            if (this.selectionModule.selections.size) {
+                this.selectionModule.selections.forEach((data, inx) => {
+                    if (data) {
+                        const deltaX = e.clientX - this.startData.mouseX
+                        const deltaY = e.clientY - this.startData.mouseY
+                        console.log('@delta', { deltaX, deltaY })
+
+                        const newPosition = { x: data.x + deltaX, y: data.y + deltaY }
+                        console.log('@newPosition', { newPosition, data, mouseY: this.startData.mouseY, deltaY });
+
+                        const DOM = this.selectionModule.researchObjects.get(inx)
+
+                        if (DOM) {
+                            DOM.style.transform = `translate(${newPosition.x}px, ${newPosition.y}px)`
+                        }
+                    }
+                })
+                return
+            }
+            document.body.style.cursor = 'grab'
             this.refWindow.style.transform = `translate(${x}px, ${y}px)`
 
             if (this.windowID) {
@@ -156,7 +178,7 @@ export class WindowController {
 
         if (!this.startMove) {
             document.body.style.cursor = ''
-            if (!windowDOM.dataset?.window) return
+            if (!windowDOM?.dataset?.window) return
             if (Math.abs(e.clientX - bbox.left) <= WindowController.OFFSET || Math.abs(e.clientX - bbox.right) <= WindowController.OFFSET) {
                 document.body.style.cursor = 'ew-resize'
             }
@@ -281,7 +303,7 @@ export class WindowController {
     }
 
     public addCallback<T extends WindowController[]>(
-        event: string,
+        event: BindingEvent,
         callback: (event: MouseEvent, instance: WindowController, ...args: T) => void,
         flag?: string,
         ...args: T
@@ -303,9 +325,15 @@ export class WindowController {
         this.bindings.set('mousemove', [])
         this.bindings.set('mouseup', [])
 
+        this.bindings.set('selection:start', [])
+        this.bindings.set('selection:move', [])
+        this.bindings.set('selection:end', [])
+
+        this.bindings.set('grab:bulk', [])
+
     }
 
-    private triggerCallbacks(event: string, eventData: MouseEvent) {
+    public triggerCallbacks(event: BindingEvent, eventData: MouseEvent) {
         const callbacks = this.bindings.get(event)
 
         if (callbacks) {
@@ -322,7 +350,8 @@ export class WindowController {
         this.isResizing = false
         this.refWindow = null
 
-        document.body.style.userSelect = ''
+        //TODO test
+        // document.body.style.userSelect = ''
         document.body.style.cursor = ''
     }
 

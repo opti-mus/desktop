@@ -41,6 +41,7 @@ function App() {
             name: 'Shortcut' + count,
             key: 'Ctrl+Shift+A',
             type: DialogType.SHORTCUT,
+            position: { x: 0, y: 0 },
             action: () => {
                 if (Date.now() - dblClick < dblClickDelay) {
                     changeWindowProps({ id: newWindow.id, isOpen: true, isActive: true })
@@ -88,9 +89,57 @@ function App() {
             'mousedown',
             (_, controller) => {
                 const store = useGlobalStore.getState()
+                // const shs = document.querySelectorAll('[data-shortcut]')
+                // console.log('@shs', shs)
+
                 if (controller.windowID) store.changeFocus(controller.windowID)
             },
             'change_focus'
+        )
+        windowController.addCallback(
+            'selection:start',
+            (_, controller) => {
+                const store = useGlobalStore.getState()
+                store.changePropsForAll({ isHovered: false })
+                // controller.selectionModule.researchObjects = store.shortcuts.map(i => ({
+                //     id: i.id,
+                //     position: i.position
+                // }))
+            },
+            'selection_start'
+        )
+        windowController.addCallback(
+            'selection:move',
+            (_, controller) => {
+                console.log('@change')
+
+                const store = useGlobalStore.getState()
+                store.changePropsForAll({ isHovered: false })
+
+                controller.selectionModule.selections.forEach((i, inx) => {
+                    store.changeShortcutProps({ id: inx, isHovered: true })
+                })
+            },
+            'selection_start'
+        )
+        windowController.addCallback(
+            'grab:bulk',
+            (e, controller) => {
+                // if (controller.selectionModule.selections.size) {
+                //     const store = useGlobalStore.getState()
+                //     controller.selectionModule.selections.forEach((data, inx) => {
+                //         if (data) {
+                //             const deltaX = e.clientX - controller.startData.mouseX
+                //             const deltaY = e.clientY - controller.startData.mouseY
+                //             console.log('@delta', { deltaX, deltaY })
+                //             const newPosition = { x: data.x + deltaX, y: data.y + deltaY }
+                //             store.changeShortcutProps({ id: inx, position: newPosition })
+                //         }
+                //     })
+                //     return
+                // }
+            },
+            'selection_start'
         )
     }, [])
 

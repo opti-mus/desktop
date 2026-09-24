@@ -9,14 +9,16 @@ type ShortcutProps = {
 }
 
 const ShortcutComponent = ({ shortcut }: ShortcutProps) => {
-    const { id } = shortcut
+    const { id, position, isHovered } = shortcut
 
     const changeShortcutProps = useGlobalStore.use.changeShortcutProps()
 
     const refObject = useRef<HTMLDivElement | null>(null)
 
     const handleClickShortcut = () => {
-        new WindowController().isDragging = true
+        const controller = new WindowController()
+        controller.isDragging = true
+
         shortcut.action?.()
     }
 
@@ -24,7 +26,7 @@ const ShortcutComponent = ({ shortcut }: ShortcutProps) => {
         const controller = new WindowController()
         const position = controller.moveData.get(id)
 
-        if (position) {
+        if (position && !controller.selectionModule.selections.size) {
             changeShortcutProps({ id, position })
         }
     }
@@ -37,8 +39,13 @@ const ShortcutComponent = ({ shortcut }: ShortcutProps) => {
         <ShortcutStyles
             ref={refObject}
             data-window={id}
+            data-shortcut={id}
             onMouseDown={handleClickShortcut}
             onPointerUp={savePositionHandler}
+            style={{
+                // transform: `translate(${position?.x}px, ${position?.y}px)`,
+                backgroundColor: isHovered ? `red` : ''
+            }}
             id={id}>
             <span>{shortcut.name}</span>
         </ShortcutStyles>
