@@ -1,5 +1,6 @@
 import type { DesktopObject, DialogType, MousePosition, WindowDimension } from "../types/config"
 import { parseTranslate } from "../utils"
+import { SelectionModule } from "./modules/selection.module"
 
 
 type StartMoveType = {
@@ -26,16 +27,21 @@ export class WindowController {
     static instance: WindowController
     static OFFSET = 10
 
-    private startMove?: StartMoveType
-    private startData: StartDataType
     private bindings: Map<string, BindType[]>
 
+    public selectionModule: SelectionModule
+    public startData: StartDataType
+    public startMove?: StartMoveType
     public moveData: Map<string, MousePosition>
     public windowDimensions: WindowDimension
     public refWindow: HTMLElement | null
     public isDragging: boolean
+    public isResizing: boolean
+
+
 
     constructor() {
+        this.selectionModule = new SelectionModule(this)
         this.startData = {
             mouseX: 0,
             mouseY: 0,
@@ -45,10 +51,13 @@ export class WindowController {
             translateY: 0
         }
         this.moveData = new Map()
-        this.refWindow = null
-        this.windowDimensions = { width: 0, height: 0 }
         this.bindings = new Map()
+
+        this.windowDimensions = { width: 0, height: 0 }
+        this.refWindow = null
         this.isDragging = false
+        this.isResizing = false
+
 
         if (WindowController.instance) return WindowController.instance
 
@@ -64,12 +73,193 @@ export class WindowController {
         document.addEventListener('mouseup', this.mouseUpHandler.bind(this))
 
         this.bindCallbacks()
+        this.selectionModule.init()
     }
 
     public destroy() {
         document.removeEventListener('mousedown', this.mouseDownHandler)
         document.removeEventListener('mousemove', this.mouseMoveHandler)
         document.removeEventListener('mouseup', this.mouseUpHandler)
+    }
+
+    private mouseDownHandler(e: MouseEvent) {
+        const windowDOM = this.getWindowDOM(e)
+
+        this.startData.mouseX = e.clientX
+        this.startData.mouseY = e.clientY
+
+        this.triggerCallbacks('mousedown', e)
+
+
+        if (!this.refWindow) return
+
+        const bbox = this.refWindow.getBoundingClientRect()
+        this.windowDimensions = { width: bbox.width, height: bbox.height }
+
+        const transform = this.refWindow.style.transform
+        const { x, y } = parseTranslate(transform)
+
+        if (this.windowID) {
+            this.startData = {
+                mouseX: e.clientX,
+                mouseY: e.clientY,
+                width: bbox.width,
+                height: bbox.height,
+                translateX: x,
+                translateY: y
+            }
+
+        }
+
+
+        if (windowDOM) {
+            this.startMove = {
+                left: Math.abs(e.clientX - bbox.left) <= WindowController.OFFSET,
+                right: Math.abs(e.clientX - bbox.right) <= WindowController.OFFSET,
+                top: Math.abs(e.clientY - bbox.top) <= WindowController.OFFSET,
+                bottom: Math.abs(e.clientY - bbox.bottom) <= WindowController.OFFSET
+            }
+        }
+
+        document.body.style.userSelect = 'none'
+
+    }
+
+    private mouseMoveHandler(e: MouseEvent) {
+        const windowDOM = this.getWindowDOM(e)
+
+        const deltaX = e.clientX - this.startData.mouseX
+        const deltaY = e.clientY - this.startData.mouseY
+
+        const x = this.startData.translateX + deltaX
+        const y = this.startData.translateY + deltaY
+
+        this.triggerCallbacks('mousemove', e)
+
+        if (!this.refWindow) return
+
+        const bbox = this.refWindow?.getBoundingClientRect()
+
+        this.windowDimensions = { width: bbox.width, height: bbox.height }
+
+        if (this.isDragging) {
+            document.body.style.cursor = 'grab'
+
+            this.refWindow.style.transform = `translate(${x}px, ${y}px)`
+
+            if (this.windowID) {
+
+                this.moveData.set(this.windowID, { x, y })
+            }
+            return
+        }
+
+        if (!this.startMove) {
+            document.body.style.cursor = ''
+            if (!windowDOM.dataset?.window) return
+            if (Math.abs(e.clientX - bbox.left) <= WindowController.OFFSET || Math.abs(e.clientX - bbox.right) <= WindowController.OFFSET) {
+                document.body.style.cursor = 'ew-resize'
+            }
+
+            if ((Math.abs(e.clientY - bbox.top) <= WindowController.OFFSET || Math.abs(e.clientY - bbox.bottom) <= WindowController.OFFSET)) {
+                document.body.style.cursor = 'ns-resize'
+            }
+            return
+        }
+
+        // LEFT
+        if (this.startMove.left) {
+            const deltaX = e.clientX - this.startData.mouseX
+
+            const newWidth = this.startData.width - deltaX
+            const newTranslateX = this.startData.translateX + deltaX
+
+            if (newWidth > 50) {
+                this.refWindow.style.width = `${newWidth}px`
+
+                this.refWindow.style.transform = `translate(${newTranslateX}px, ${this.startData.translateY}px)`
+                this.windowDimensions.width = newWidth
+                this.isResizing = true
+            }
+        }
+
+        // RIGHT
+        if (this.startMove.right) {
+            const deltaX = e.clientX - this.startData.mouseX
+
+            const newWidth = this.startData.width + deltaX
+
+            if (newWidth > 50) {
+                this.refWindow.style.width = `${newWidth}px`
+                this.windowDimensions.width = newWidth
+                this.isResizing = true
+            }
+        }
+
+        // TOP
+        if (this.startMove.top) {
+            const deltaY = e.clientY - this.startData.mouseY
+
+            const newHeight = this.startData.height - deltaY
+            const newTranslateY = this.startData.translateY + deltaY
+
+            if (newHeight > 50) {
+                this.refWindow.style.height = `${newHeight}px`
+                this.windowDimensions.height = newHeight
+                this.isResizing = true
+
+                this.refWindow.style.transform = `translate(${this.startData.translateX}px, ${newTranslateY}px)`
+
+            }
+        }
+
+        // BOTTOM
+        if (this.startMove.bottom) {
+            const deltaY = e.clientY - this.startData.mouseY
+
+            const newHeight = this.startData.height + deltaY
+
+            if (newHeight > 50) {
+                this.refWindow.style.height = `${newHeight}px`
+                this.windowDimensions.height = newHeight
+                this.isResizing = true
+            }
+        }
+
+        // cursor
+        // document.body.style.cursor = ''
+
+        // console.log('@target', target);
+        // if (!target.dataset?.window) return
+
+
+
+        // if (
+        //     (Math.abs(e.clientX - bbox.left) <= WindowController.OFFSET && Math.abs(e.clientY - bbox.bottom) <= WindowController.OFFSET)
+        // ) {
+        //     document.body.style.cursor = 'ne-resize'
+        // }
+
+        // if (
+
+        //     (Math.abs(e.clientX - bbox.right) <= WindowController.OFFSET && Math.abs(e.clientY - bbox.bottom) <= WindowController.OFFSET)
+        // ) {
+        //     document.body.style.cursor = 'nw-resize'
+        // }
+    }
+    private mouseUpHandler(e: MouseEvent) {
+        this.triggerCallbacks('mouseup', e)
+        this.resetMove()
+    }
+
+    public getWindowDOM(e: MouseEvent) {
+        const target = e.target as HTMLElement
+        const windowDOM = target.closest('[data-window]') as HTMLElement
+
+        if (windowDOM) {
+            this.refWindow = windowDOM
+        }
+        return windowDOM
     }
 
     public applyDimensions(target: HTMLElement | null, window: DesktopObject<DialogType.BASE | DialogType.WIDGET | DialogType.SHORTCUT>) {
@@ -126,187 +316,14 @@ export class WindowController {
         }
     }
 
-    private mouseDownHandler(e: MouseEvent) {
-        const target = e.target as HTMLElement
-        const windowDOM = target.closest('[data-window]') as HTMLElement
-
-        if (windowDOM) {
-            this.refWindow = windowDOM
-        }
-
-        const window = this.refWindow
-
-        if (!window) return
-
-        const bbox = window.getBoundingClientRect()
-        this.windowDimensions = { width: bbox.width, height: bbox.height }
-
-        const transform = window.style.transform
-        const { x, y } = parseTranslate(transform)
-
-        if (this.windowID) {
-            this.startData = {
-                mouseX: e.clientX,
-                mouseY: e.clientY,
-                width: bbox.width,
-                height: bbox.height,
-                translateX: x,
-                translateY: y
-            }
-
-        }
-
-
-        if (windowDOM) {
-            this.startMove = {
-                left: Math.abs(e.clientX - bbox.left) <= WindowController.OFFSET,
-                right: Math.abs(e.clientX - bbox.right) <= WindowController.OFFSET,
-                top: Math.abs(e.clientY - bbox.top) <= WindowController.OFFSET,
-                bottom: Math.abs(e.clientY - bbox.bottom) <= WindowController.OFFSET
-            }
-        }
-
-        document.body.style.userSelect = 'none'
-
-        this.triggerCallbacks('mousedown', e)
-    }
-
-    private mouseMoveHandler(e: MouseEvent) {
-        const target = e.target as HTMLElement
-        const windowDOM = target.closest('[data-window]') as HTMLElement
-
-        if (windowDOM) {
-            this.refWindow = windowDOM
-        }
-
-        const window = this.refWindow
-
-        if (!window) return
-
-        const bbox = window?.getBoundingClientRect()
-
-        this.triggerCallbacks('mousemove', e)
-        this.windowDimensions = { width: bbox.width, height: bbox.height }
-
-
-        if (this.isDragging) {
-            document.body.style.cursor = 'grab'
-
-            const deltaX = e.clientX - this.startData.mouseX
-            const deltaY = e.clientY - this.startData.mouseY
-
-            const x = this.startData.translateX + deltaX
-            const y = this.startData.translateY + deltaY
-
-            window.style.transform = `translate(${x}px, ${y}px)`
-
-            if (this.windowID) {
-
-                this.moveData.set(this.windowID, { x, y })
-            }
-            return
-        }
-
-        if (!this.startMove) {
-            document.body.style.cursor = ''
-            if (!target.dataset?.window) return
-            if (Math.abs(e.clientX - bbox.left) <= WindowController.OFFSET || Math.abs(e.clientX - bbox.right) <= WindowController.OFFSET) {
-                document.body.style.cursor = 'ew-resize'
-            }
-
-            if ((Math.abs(e.clientY - bbox.top) <= WindowController.OFFSET || Math.abs(e.clientY - bbox.bottom) <= WindowController.OFFSET)) {
-                document.body.style.cursor = 'ns-resize'
-            }
-            return
-        }
-
-        // LEFT
-        if (this.startMove.left) {
-            const deltaX = e.clientX - this.startData.mouseX
-
-            const newWidth = this.startData.width - deltaX
-            const newTranslateX = this.startData.translateX + deltaX
-
-            if (newWidth > 50) {
-                window.style.width = `${newWidth}px`
-
-                window.style.transform = `translate(${newTranslateX}px, ${this.startData.translateY}px)`
-                this.windowDimensions.width = newWidth
-            }
-        }
-
-        // RIGHT
-        if (this.startMove.right) {
-            const deltaX = e.clientX - this.startData.mouseX
-
-            const newWidth = this.startData.width + deltaX
-
-            if (newWidth > 50) {
-                window.style.width = `${newWidth}px`
-                this.windowDimensions.width = newWidth
-            }
-        }
-
-        // TOP
-        if (this.startMove.top) {
-            const deltaY = e.clientY - this.startData.mouseY
-
-            const newHeight = this.startData.height - deltaY
-            const newTranslateY = this.startData.translateY + deltaY
-
-            if (newHeight > 50) {
-                window.style.height = `${newHeight}px`
-                this.windowDimensions.height = newHeight
-
-                window.style.transform = `translate(${this.startData.translateX}px, ${newTranslateY}px)`
-
-            }
-        }
-
-        // BOTTOM
-        if (this.startMove.bottom) {
-            const deltaY = e.clientY - this.startData.mouseY
-
-            const newHeight = this.startData.height + deltaY
-
-            if (newHeight > 50) {
-                window.style.height = `${newHeight}px`
-                this.windowDimensions.height = newHeight
-            }
-        }
-
-        // cursor
-        // document.body.style.cursor = ''
-
-        // console.log('@target', target);
-        // if (!target.dataset?.window) return
-
-
-
-        // if (
-        //     (Math.abs(e.clientX - bbox.left) <= WindowController.OFFSET && Math.abs(e.clientY - bbox.bottom) <= WindowController.OFFSET)
-        // ) {
-        //     document.body.style.cursor = 'ne-resize'
-        // }
-
-        // if (
-
-        //     (Math.abs(e.clientX - bbox.right) <= WindowController.OFFSET && Math.abs(e.clientY - bbox.bottom) <= WindowController.OFFSET)
-        // ) {
-        //     document.body.style.cursor = 'nw-resize'
-        // }
-    }
-    private mouseUpHandler(e: MouseEvent) {
-        this.triggerCallbacks('mouseup', e)
-        this.resetMove()
-    }
-
     private resetMove() {
         this.startMove = undefined
         this.isDragging = false
+        this.isResizing = false
+        this.refWindow = null
+
         document.body.style.userSelect = ''
         document.body.style.cursor = ''
-        this.refWindow = null
     }
 
     public get windowID() {
