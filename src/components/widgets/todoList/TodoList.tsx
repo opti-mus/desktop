@@ -3,11 +3,7 @@ import type { Todo } from '../../../types/config'
 import { TodoListItem } from '../todoListIterm/TodoListItem'
 import { TodoListStyles, TodoTaskStyles } from './TodoList.styles'
 
-type TodoListProps = {
-    id: string
-}
-
-export const TodoList = ({ id }: TodoListProps) => {
+export const TodoList = () => {
     const [todoList, setTodoList] = useState<Todo[]>([])
     const [todoText, setTodoText] = useState<string>('')
 

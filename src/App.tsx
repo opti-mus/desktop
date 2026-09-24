@@ -66,7 +66,7 @@ function App() {
             isFocused: true,
             disabledControls: true,
 
-            render: () => <TodoList id={id} />
+            render: () => <TodoList />
         }
 
         addWindow(newWidget)
