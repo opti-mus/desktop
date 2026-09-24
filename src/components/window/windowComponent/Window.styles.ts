@@ -1,15 +1,14 @@
 import styled from "styled-components";
 
 type WindowTableStylesProps = {
-    $isMaximized: boolean;
-    $isOpen: boolean;
-    $isFocused: boolean;
-    $zIndex: number;
+  $isMaximized: boolean;
+  $isOpen: boolean;
+  $isFocused: boolean;
 }
 
 export const WindowTableStyles = styled.div<WindowTableStylesProps>`
-  width: ${({ $isMaximized }) => ($isMaximized ? "100vw" : "500px")};
-  height: ${({ $isMaximized }) => ($isMaximized ? "100vh" : "500px")};
+  width: ${({ $isMaximized }) => ($isMaximized ? "100vw !important" : "500px")};
+  height: ${({ $isMaximized }) => ($isMaximized ? "100vh !important" : "500px")};
 
   background-color: #f0f0f0;
   border: 1px solid #ccc;
@@ -23,5 +22,5 @@ export const WindowTableStyles = styled.div<WindowTableStylesProps>`
   top: 0;
   left: 0;
   
-  z-index: ${({ $zIndex }) => $zIndex};
+  z-index: ${({ $isFocused }) => ($isFocused ? 1000 : 1)};
   `;

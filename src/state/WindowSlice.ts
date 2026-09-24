@@ -1,14 +1,15 @@
 import type { StateCreator } from "zustand";
-import type { WindowTemplate } from "../types/config";
+import type { DesktopObject, DialogType, WindowTemplate } from "../types/config";
 
 export interface WindowStateSlice {
-    windows: WindowTemplate[];
+    windows: DesktopObject<DialogType.BASE | DialogType.WIDGET>[];
 
-    addWindow: (window: WindowTemplate) => void;
+    addWindow: (window: DesktopObject<DialogType.BASE | DialogType.WIDGET>) => void;
     changeWindowProps: (props: Partial<WindowTemplate>) => void
     minimizeWindow: (id: string) => void;
     maximizeWindow: (id: string) => void;
     closeWindow: (id: string) => void;
+    changeFocus: (id: string) => void;
 }
 
 export const createWindowSlice: StateCreator<
@@ -17,7 +18,7 @@ export const createWindowSlice: StateCreator<
     [],
     WindowStateSlice> = (set, get) => ({
         windows: [],
-        addWindow: (window: WindowTemplate) => {
+        addWindow: (window: DesktopObject<DialogType.BASE | DialogType.WIDGET>) => {
             set((state: WindowStateSlice) => ({ windows: [...state.windows, window] }))
         },
 
@@ -31,7 +32,7 @@ export const createWindowSlice: StateCreator<
         },
         minimizeWindow: (id: string) => {
             set((state: WindowStateSlice) => ({
-                windows: state.windows.map((s) => s.id === id ? { ...s, isMinimized: true } : s)
+                windows: state.windows.map((s) => s.id === id ? { ...s, isMinimized: true, isOpen: false } : s)
             }));
         },
         maximizeWindow: (id: string) => {
@@ -46,9 +47,18 @@ export const createWindowSlice: StateCreator<
             set((state: WindowStateSlice) => ({
                 windows: state.windows
                     .map((s) => s.id === id
-                        ? { ...s, isOpen: false, isMinimized: false, isMaximized: false }
+                        ? { ...s, isOpen: false, isMaximized: false, isActive: false }
                         : s)
             }));
         },
+        changeFocus: (id: string) => {
+            set((state: WindowStateSlice) => ({
+                windows: state.windows
+                    .map((s) => s.id === id
+                        ? { ...s, isFocused: true }
+                        : { ...s, isFocused: false })
+            }));
+        },
+
 
     });

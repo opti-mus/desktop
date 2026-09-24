@@ -1,15 +1,15 @@
 import type { StoreApi, UseBoundStore } from 'zustand';
 import { create } from 'zustand';
+import { createJSONStorage, persist } from 'zustand/middleware';
 import { createBackgroundSlice, type BackgroundStateSlice } from './BackgroundSlice';
 import { createShortcutSlice, type ShortcutStateSlice } from './ShortcutSlice';
 import { createWindowSlice, type WindowStateSlice } from './WindowSlice';
-import { createWidjetSlice, type WidjetStateSlice } from './WidjetSlice';
 
 type WithSelectors<S> = S extends { getState: () => infer T }
   ? S & { use: { [K in keyof T]: () => T[K] } }
   : never
 
-type GlobalState = WindowStateSlice & ShortcutStateSlice & BackgroundStateSlice & WidjetStateSlice
+type GlobalState = WindowStateSlice & ShortcutStateSlice & BackgroundStateSlice
 
 const createSelectors = <S extends UseBoundStore<StoreApi<object>>>(
   _store: S,
@@ -23,11 +23,27 @@ const createSelectors = <S extends UseBoundStore<StoreApi<object>>>(
   return store
 }
 
-export const globalStore = create<GlobalState>()((...a) => ({
-  ...createWindowSlice(...a),
-  ...createShortcutSlice(...a),
-  ...createBackgroundSlice(...a),
-  ...createWidjetSlice(...a),
-}));
+export const globalStore = create<GlobalState>()(
+  persist(
+    (...a) => ({
+      ...createWindowSlice(...a),
+      ...createShortcutSlice(...a),
+      ...createBackgroundSlice(...a)
+    }),
+    {
+      name: 'store',
+      storage: createJSONStorage(() => localStorage),
+    },
+  ),
+)
+// export const globalStore = create<GlobalState>()(
 
+//   (...a) => ({
+//     ...createWindowSlice(...a),
+//     ...createShortcutSlice(...a),
+//     ...createBackgroundSlice(...a)
+//   }
+
+//   ),
+// )
 export const useGlobalStore = createSelectors(globalStore);

@@ -1,25 +1,23 @@
-import type { Widjet, WindowTemplate } from '../../../types/config'
+import { useGlobalStore } from '../../../state/state.global'
+import type { DesktopObject, DialogType } from '../../../types/config'
 import { WindowControlsStyles } from './WindowControls.styles'
 
 type WindowControlsProps = {
-    window: WindowTemplate | Widjet;
-
-    controls: {
-        minimize: (id: string) => void
-        maximize: (id: string) => void
-        close: (id: string) => void
-    }
+    window: DesktopObject<DialogType.BASE | DialogType.WIDGET>
 }
 
-const WindowControls = ({ window, controls }: WindowControlsProps) => {
-
+const WindowControls = ({ window }: WindowControlsProps) => {
     const { id } = window
+
+    const minimizeWindow = useGlobalStore.use.minimizeWindow()
+    const maximizeWindow = useGlobalStore.use.maximizeWindow()
+    const closeWindow = useGlobalStore.use.closeWindow()
 
     return (
         <WindowControlsStyles>
-            <button onClick={() => controls.minimize(id)}>Minimize</button>
-            <button onClick={() => controls.maximize(id)}>Maximize</button>
-            <button onClick={() => controls.close(id)}>Close</button>
+            <button onClick={() => minimizeWindow(id)}>Minimize</button>
+            <button onClick={() => maximizeWindow(id)}>Maximize</button>
+            <button onClick={() => closeWindow(id)}>Close</button>
         </WindowControlsStyles>
     )
 }

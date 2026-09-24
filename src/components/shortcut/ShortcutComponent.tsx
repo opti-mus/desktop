@@ -1,8 +1,8 @@
-import { useRef } from 'react'
-import { useMovableObject } from '../../hooks/useMovableObject'
+import { useEffect, useRef } from 'react'
+import { WindowController } from '../../classes/WindowController'
+import { useGlobalStore } from '../../state/state.global'
 import type { Shortcut } from '../../types/config'
 import { ShortcutStyles } from './Shortcut.styles'
-import { useBlockStore } from '../../state/BlockStoreSlice'
 
 type ShortcutProps = {
     shortcut: Shortcut
@@ -11,21 +11,35 @@ type ShortcutProps = {
 const ShortcutComponent = ({ shortcut }: ShortcutProps) => {
     const id = shortcut.id
 
-    const blockZIndices = useBlockStore((state) => state.blockZIndices);
-    const myZIndex = blockZIndices[id] || 1;
+    const changeShortcutProps = useGlobalStore.use.changeShortcutProps()
 
-    const shortcutRef = useRef<HTMLDivElement>(null);
-    const { startMoveHandler, isMoving } = useMovableObject({ refObject: shortcutRef })
+    const refObject = useRef<HTMLDivElement | null>(null)
 
     const handleClickShortcut = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (!id || isMoving) return
-
+        new WindowController().isDragging = true
         shortcut.action?.()
-        startMoveHandler(e)
     }
 
+    const savePositionHandler = () => {
+        const controller = new WindowController()
+        const position = controller.moveData.get(id)
+
+        if (position) {
+            changeShortcutProps({ id, position })
+        }
+    }
+
+    useEffect(() => {
+        new WindowController().applyDimensions(refObject.current, shortcut)
+    }, [])
+
     return (
-        <ShortcutStyles ref={shortcutRef} onMouseDown={handleClickShortcut} style={{ zIndex: myZIndex }} id={id}>
+        <ShortcutStyles
+            ref={refObject}
+            data-window={id}
+            onMouseDown={handleClickShortcut}
+            onPointerUp={savePositionHandler}
+            id={id}>
             <span>{shortcut.name}</span>
         </ShortcutStyles>
     )

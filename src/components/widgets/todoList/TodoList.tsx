@@ -1,21 +1,17 @@
 import { useState } from 'react'
-import { TodoTaskStyles, TodoListStyles } from './TodoList.styles'
-import { TodoListItem } from '../todoListIterm/TodoListItem'
 import type { Todo } from '../../../types/config'
-import { useBlockStore } from '../../../state/BlockStoreSlice'
+import { TodoListItem } from '../todoListIterm/TodoListItem'
+import { TodoListStyles, TodoTaskStyles } from './TodoList.styles'
 
 type TodoListProps = {
     id: string
 }
 
 export const TodoList = ({ id }: TodoListProps) => {
-    const blockZIndices = useBlockStore(state => state.blockZIndices)
-    const myZIndex = blockZIndices[id] || 1
-
     const [todoList, setTodoList] = useState<Todo[]>([])
     const [todoText, setTodoText] = useState<string>('')
 
-    const handleAddtodo = () => {
+    const handleAddTodo = () => {
         if (todoText.trim() !== '') {
             const todo = {
                 id: crypto.randomUUID(),
@@ -29,12 +25,12 @@ export const TodoList = ({ id }: TodoListProps) => {
 
     const handleClickEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
-            handleAddtodo()
+            handleAddTodo()
         }
     }
 
     return (
-        <TodoListStyles $zIndex={myZIndex} data-widjet>
+        <TodoListStyles>
             <h2>Todo List</h2>
             <TodoTaskStyles>
                 <input
@@ -44,7 +40,7 @@ export const TodoList = ({ id }: TodoListProps) => {
                     onChange={e => setTodoText(e.target.value)}
                     onKeyDown={handleClickEnter}
                 />
-                <button onClick={handleAddtodo}>Add Todo</button>
+                <button onClick={handleAddTodo}>Add Todo</button>
             </TodoTaskStyles>
             <TodoListItem todoList={todoList} setTodoList={setTodoList} />
         </TodoListStyles>
