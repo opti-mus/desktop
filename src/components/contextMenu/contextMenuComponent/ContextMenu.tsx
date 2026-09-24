@@ -27,24 +27,29 @@ export const ContextMenu = ({ handleAddWindow, handleAddWidget }: ContextMenuPro
             e.preventDefault()
             setIsOpen(true)
 
-            if (!refMenu.current) return
-
             let x = e.clientX
             let y = e.clientY
+
+            let isReversX = false
+            let isReversY = false
+
+            if (!refMenu.current) return
 
             let menuWidth = refMenu.current?.offsetWidth
             let menuHeight = refMenu.current?.offsetHeight
 
             if (menuWidth + x > window.innerWidth) {
                 x = window.innerWidth - menuWidth
-            } else {
+                isReversX = true
             }
 
             if (menuHeight + y > window.innerHeight) {
                 y = window.innerHeight - menuHeight
-            } else {
+                isReversY = true
             }
 
+            setRevers(item => ({ ...item, reversX: isReversX }))
+            setRevers(item => ({ ...item, reversY: isReversY }))
             setPos({ x, y })
         }
 
@@ -68,21 +73,21 @@ export const ContextMenu = ({ handleAddWindow, handleAddWidget }: ContextMenuPro
         <ContextMenuStyles ref={refMenu} $pos={pos}>
             <ContextMenuItemStyles>
                 <span>Create</span> <span>&#9658;</span>
-                <WrapperSubMenuStyles>
+                <WrapperSubMenuStyles $reversX={revers.reversX} $reversY={revers.reversY}>
                     <SubMenuStyles onClick={handleAddWindow}>add window</SubMenuStyles>
                     <SubMenuStyles onClick={handleAddWidget}>add widjet</SubMenuStyles>
                 </WrapperSubMenuStyles>
             </ContextMenuItemStyles>
             <ContextMenuItemStyles>
                 <span>Create</span> <span>&#9658;</span>
-                <WrapperSubMenuStyles>
+                <WrapperSubMenuStyles $reversX={revers.reversX} $reversY={revers.reversY}>
                     <SubMenuStyles onClick={handleAddWindow}>add window</SubMenuStyles>
                     <SubMenuStyles onClick={handleAddWidget}>add widjet</SubMenuStyles>
                 </WrapperSubMenuStyles>
             </ContextMenuItemStyles>
             <ContextMenuItemStyles>
                 <span>Create</span> <span>&#9658;</span>
-                <WrapperSubMenuStyles>
+                <WrapperSubMenuStyles $reversX={revers.reversX} $reversY={revers.reversY}>
                     <SubMenuStyles onClick={handleAddWindow}>add window</SubMenuStyles>
                     <SubMenuStyles onClick={handleAddWidget}>add widjet</SubMenuStyles>
                 </WrapperSubMenuStyles>

@@ -5,8 +5,8 @@ type ContextMenuProps = {
 }
 
 type WrapperSubMenu = {
-    // $reversX: boolean
-    // $reversY: boolean
+    $reversX: boolean
+    $reversY: boolean
 }
 
 type ContextmenuPos = {
@@ -46,10 +46,8 @@ export const WrapperSubMenuStyles = styled.div<WrapperSubMenu>`
     border-radius: 8px;
 
     position: absolute;
-    /* top: ${$reversY => ($reversY ? '0px' : '100%')};
-    left: ${$reversX => ($reversX ? '0px' : '100%')}; */
-    top: 0;
-    left: 100%;
+    top: ${({ $reversY }) => ($reversY ? '-100%' : '0')};
+    left: ${({ $reversX }) => ($reversX ? '-100%' : '100%')};
 `
 
 export const ContextMenuItemStyles = styled.div`
