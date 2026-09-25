@@ -1,10 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { ContextMenuItemStyles, ContextMenuStyles, SubMenuStyles, WrapperSubMenuStyles } from './ContextMenu.styles'
-
-type Position = {
-    x: number
-    y: number
-}
+import type { MousePosition } from '../../../types/config'
 
 type ContextMenuProps = {
     handleAddWindow: () => void
@@ -19,8 +15,9 @@ type Revers = {
 export const ContextMenu = ({ handleAddWindow, handleAddWidget }: ContextMenuProps) => {
     const [isOpen, setIsOpen] = useState<boolean>(false)
     const [revers, setRevers] = useState<Revers>({ reversX: false, reversY: false })
-    const [pos, setPos] = useState<Position>({ x: 0, y: 0 })
+    const [pos, setPos] = useState<MousePosition>({ x: 0, y: 0 })
     const refMenu = useRef<HTMLDivElement | null>(null)
+    const refWrapperMenu = useRef<HTMLDivElement | null>(null)
 
     useEffect(() => {
         const handleContextMenu = (e: MouseEvent) => {
@@ -30,27 +27,32 @@ export const ContextMenu = ({ handleAddWindow, handleAddWidget }: ContextMenuPro
             let x = e.clientX
             let y = e.clientY
 
-            let isReversX = false
-            let isReversY = false
+            let reversX = false
+            let reversY = false
 
-            if (!refMenu.current) return
+            if (!refMenu?.current) return
 
-            let menuWidth = refMenu.current?.offsetWidth
-            let menuHeight = refMenu.current?.offsetHeight
+            const menuWidth = refMenu.current?.offsetWidth
+            const menuHeight = refMenu.current?.offsetHeight
+
+            if (2 * menuWidth + x > window.innerWidth) {
+                reversX = true
+            }
+
+            if (menuHeight + y + 100 > window.innerHeight) {
+                reversY = true
+            }
 
             if (menuWidth + x > window.innerWidth) {
-                x = window.innerWidth - menuWidth
-                isReversX = true
+                x = x - menuWidth
             }
 
-            if (menuHeight + y > window.innerHeight) {
-                y = window.innerHeight - menuHeight
-                isReversY = true
+            if (menuHeight + y + 50 > window.innerHeight) {
+                y = y - menuHeight
             }
 
-            setRevers(item => ({ ...item, reversX: isReversX }))
-            setRevers(item => ({ ...item, reversY: isReversY }))
             setPos({ x, y })
+            setRevers(item => ({ ...item, reversX, reversY }))
         }
 
         const handleClickOutSide = (e: MouseEvent) => {
@@ -61,19 +63,18 @@ export const ContextMenu = ({ handleAddWindow, handleAddWidget }: ContextMenuPro
 
         window.addEventListener('contextmenu', handleContextMenu)
         window.addEventListener('click', handleClickOutSide)
+
         return () => {
             window.removeEventListener('contextmenu', handleContextMenu)
             window.removeEventListener('click', handleClickOutSide)
         }
     }, [])
 
-    if (!isOpen) return null
-
     return (
-        <ContextMenuStyles ref={refMenu} $pos={pos}>
+        <ContextMenuStyles ref={refMenu} $pos={pos} $isOpen={isOpen}>
             <ContextMenuItemStyles>
                 <span>Create</span> <span>&#9658;</span>
-                <WrapperSubMenuStyles $reversX={revers.reversX} $reversY={revers.reversY}>
+                <WrapperSubMenuStyles ref={refWrapperMenu} $reversX={revers.reversX} $reversY={revers.reversY}>
                     <SubMenuStyles onClick={handleAddWindow}>add window</SubMenuStyles>
                     <SubMenuStyles onClick={handleAddWidget}>add widjet</SubMenuStyles>
                 </WrapperSubMenuStyles>

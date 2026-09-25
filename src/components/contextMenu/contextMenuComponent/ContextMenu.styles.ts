@@ -2,6 +2,7 @@ import styled from 'styled-components'
 
 type ContextMenuProps = {
     $pos: ContextmenuPos
+    $isOpen: boolean
 }
 
 type WrapperSubMenu = {
@@ -19,6 +20,8 @@ export const ContextMenuStyles = styled.div<ContextMenuProps>`
     flex-direction: column;
     position: absolute;
     transform: translate(${({ $pos }) => $pos.x}px, ${({ $pos }) => $pos.y}px);
+
+    visibility: ${({ $isOpen }) => ($isOpen ? 'visible' : 'hidden')};
 
     background-color: #fefefe;
 

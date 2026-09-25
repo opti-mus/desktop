@@ -32,6 +32,7 @@ export const TodoList = () => {
                 <input
                     type="text"
                     placeholder="Add a new todo..."
+                    maxLength={100}
                     value={todoText}
                     onChange={e => setTodoText(e.target.value)}
                     onKeyDown={handleClickEnter}
