@@ -7,7 +7,7 @@ type WindowTableStylesProps = {
 }
 
 export const WindowTableStyles = styled.div<WindowTableStylesProps>`
-  width: ${({ $isMaximized }) => ($isMaximized ? "100vw !important" : "500px")};
+  width: ${({ $isMaximized }) => ($isMaximized ? "100vw !important" : "700px")};
   height: ${({ $isMaximized }) => ($isMaximized ? "100vh !important" : "500px")};
 
   background-color: #f0f0f0;

@@ -3,6 +3,9 @@ import styled from "styled-components";
 type ShortcutStylesType = {
     $isHovered?: boolean
 }
+type ShortcutIconType = {
+    $src: string
+}
 
 export const ShortcutStyles = styled.div<ShortcutStylesType>`
     position: absolute;
@@ -25,3 +28,13 @@ export const ShortcutStyles = styled.div<ShortcutStylesType>`
         background-color: #c0c0c0;
     }
 `;
+
+export const ShortcutIcon = styled.div<ShortcutIconType>`
+width: 100%;
+height: 100%;
+
+background-image: url(${({ $src }) => $src ? $src : "none"});
+background-size: contain;
+background-position: center;
+background-repeat: no-repeat;
+`

@@ -34,8 +34,6 @@ export const useInitListeners = () => {
         windowController.addCallback(
             'selection:move',
             (_, controller) => {
-                console.log('@change')
-
                 const store = useGlobalStore.getState()
                 store.changePropsForAll({ isHovered: false })
 

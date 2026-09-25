@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { WindowController } from '../../classes/WindowController'
 import { useGlobalStore } from '../../state/state.global'
 import type { Shortcut } from '../../types/config'
-import { ShortcutStyles } from './Shortcut.styles'
+import { ShortcutIcon, ShortcutStyles } from './Shortcut.styles'
 
 type ShortcutProps = {
     shortcut: Shortcut
@@ -51,7 +51,8 @@ const ShortcutComponent = ({ shortcut }: ShortcutProps) => {
             onMouseDown={handleClickShortcut}
             onPointerUp={savePositionHandler}
             id={id}>
-            <span>{shortcut.name}</span>
+            {shortcut?.name ? <span>{shortcut.name}</span> : null}
+            {shortcut?.icon ? <ShortcutIcon $src={shortcut.icon} /> : null}
         </ShortcutStyles>
     )
 }

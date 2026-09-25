@@ -50,7 +50,7 @@ const WindowTable = ({ window }: WindowTableProps) => {
             id={id}>
             <TitleBar window={window} onPointerDown={activeWindow} onPointerUp={savePositionHandler} />
             {name && <h1>{name}</h1>}
-            <div>{render?.()}</div>
+            {render?.()}
         </WindowTableStyles>
     )
 }

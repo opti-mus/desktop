@@ -24,14 +24,26 @@ function App() {
     const handleAddWindow = () => {
         const count = windows.length + 1
 
-        const render = () => <div>Hello World {count}</div>
+        const render = () => (
+            <div style={{ width: '100%', height: '100%' }}>
+                <iframe
+                    width={'100%'}
+                    height={'100%'}
+                    id="gameIframe"
+                    title="Doom 1"
+                    data-src="https://db.duckmath.org/html/doom_1/index.html"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+                    sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-pointer-lock allow-orientation-lock allow-top-navigation"
+                    src="https://db.duckmath.org/html/doom_1/index.html"></iframe>
+            </div>
+        )
 
         let dblClick = 0
         const dblClickDelay = 200
 
         const newWindow: DesktopObject<DialogType.BASE> = {
             id: crypto.randomUUID(),
-            name: 'Window' + count,
+            name: 'DOOOM',
             isMaximized: false,
             isOpen: false,
             type: DialogType.BASE,
@@ -39,9 +51,9 @@ function App() {
         }
         const shortcut: DesktopObject<DialogType.SHORTCUT> = {
             id: crypto.randomUUID(),
-            name: 'Shortcut' + count,
             key: 'Ctrl+Shift+A',
             type: DialogType.SHORTCUT,
+            icon: 'src/assets/doom.png',
             position: { x: 0, y: 0 },
             action: () => {
                 if (Date.now() - dblClick < dblClickDelay) {
@@ -77,7 +89,7 @@ function App() {
     return (
         <WindowContainerStyles $previewUrl={previewUrl} $mode={mode}>
             <h1>Hello World</h1>
-            <button onClick={handleAddWindow}>Add Window</button>
+            <button onClick={handleAddWindow}>DOOOM!!!</button>
             <button onClick={handleAddWidget}>Add Widjet</button>
             <AppStyles>
                 {shortcuts.map(shortcut => (
