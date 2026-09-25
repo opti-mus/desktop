@@ -1,11 +1,10 @@
-import { useEffect } from 'react'
 import { AppStyles, WindowContainerStyles } from './App.styled'
-import { WindowController } from './classes/WindowController'
 import BackgroundDesktop from './components/background/BackgroundDesktop'
 import ShortcutComponent from './components/shortcut/ShortcutComponent'
 import StartMenu from './components/startMenu/startMenu'
 import { TodoList } from './components/widgets/todoList/TodoList'
 import WindowTable from './components/window/windowComponent/Window'
+import { useInitListeners } from './hooks/useInitListener'
 import { useGlobalStore } from './state/state.global'
 import { DialogType, type DesktopObject } from './types/config'
 
@@ -19,6 +18,8 @@ function App() {
 
     const mode = useGlobalStore.use.mode()
     const changeWindowProps = useGlobalStore.use.changeWindowProps()
+
+    useInitListeners()
 
     const handleAddWindow = () => {
         const count = windows.length + 1
@@ -72,76 +73,6 @@ function App() {
 
         addWindow(newWidget)
     }
-
-    useEffect(() => {
-        const windowController = new WindowController()
-
-        windowController.addCallback(
-            'mouseup',
-            (_, controller) => {
-                const store = useGlobalStore.getState()
-
-                store.changeWindowProps({ id: controller.windowID, dimensions: controller.windowDimensions })
-            },
-            'save_window_dimension'
-        )
-        windowController.addCallback(
-            'mousedown',
-            (_, controller) => {
-                const store = useGlobalStore.getState()
-                // const shs = document.querySelectorAll('[data-shortcut]')
-                // console.log('@shs', shs)
-
-                if (controller.windowID) store.changeFocus(controller.windowID)
-            },
-            'change_focus'
-        )
-        windowController.addCallback(
-            'selection:start',
-            (_, controller) => {
-                const store = useGlobalStore.getState()
-                store.changePropsForAll({ isHovered: false })
-                // controller.selectionModule.researchObjects = store.shortcuts.map(i => ({
-                //     id: i.id,
-                //     position: i.position
-                // }))
-            },
-            'selection_start'
-        )
-        windowController.addCallback(
-            'selection:move',
-            (_, controller) => {
-                console.log('@change')
-
-                const store = useGlobalStore.getState()
-                store.changePropsForAll({ isHovered: false })
-
-                controller.selectionModule.selections.forEach((i, inx) => {
-                    store.changeShortcutProps({ id: inx, isHovered: true })
-                })
-            },
-            'selection_start'
-        )
-        windowController.addCallback(
-            'grab:bulk',
-            (e, controller) => {
-                // if (controller.selectionModule.selections.size) {
-                //     const store = useGlobalStore.getState()
-                //     controller.selectionModule.selections.forEach((data, inx) => {
-                //         if (data) {
-                //             const deltaX = e.clientX - controller.startData.mouseX
-                //             const deltaY = e.clientY - controller.startData.mouseY
-                //             console.log('@delta', { deltaX, deltaY })
-                //             const newPosition = { x: data.x + deltaX, y: data.y + deltaY }
-                //             store.changeShortcutProps({ id: inx, position: newPosition })
-                //         }
-                //     })
-                //     return
-                // }
-            },
-            'selection_start'
-        )
-    }, [])
 
     return (
         <WindowContainerStyles $previewUrl={previewUrl} $mode={mode}>

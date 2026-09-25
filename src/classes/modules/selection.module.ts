@@ -82,53 +82,31 @@ export class SelectionModule {
                     this.selectionArea.style.transform = `translate(${startData.mouseX}px, ${startData.mouseY}px)`
                 }
             }
-        }, 'selections')
+        }, 'selections_move')
 
         this.engine.addCallback('mouseup', (e) => {
             this.isSelection = false
+
             this.destroySelectionArea()
+            this.recalcSelections()
+
             this.engine.triggerCallbacks('selection:end', e)
 
-            this.selections.forEach((_, inx) => {
-                const actual = this.researchObjects.get(inx)
-                const newRect = actual?.getBoundingClientRect()
-
-                if (newRect) {
-                    this.selections.set(inx, newRect)
-                }
-
-            })
-
-        }, 'destroy_selection')
+        }, 'selection_up')
 
         this.engine.addCallback('mousedown', (e, engine) => {
-            const test = Array.from(document.querySelectorAll('[data-shortcut]'))
-
-            this.researchObjects = new Map(test.map(i => ([i.id, i])))
+            this.getResearchObj()
 
             if (engine.isDragging) return
-
-
 
             this.isSelection = true
             this.createSelectionArea()
             this.selections.clear()
             this.engine.triggerCallbacks('selection:start', e)
 
-            //TODO remove
-            document.body.style.userSelect = 'none'
-
-        }, 'destroy_selection')
+        }, 'selection_start')
     }
-    // private isPointInside(point: ResearchObject['position'], area: DOMRect) {
-    //     if (!point) return
-    //     return (
-    //         point.x >= area.left - 80 &&
-    //         point.x <= area.right - 80 &&
-    //         point.y >= area.top - 80 &&
-    //         point.y <= area.bottom - 80
-    //     )
-    // }
+
     isPointInside(a: DOMRect, b: DOMRect) {
         return (
             a.left <= b.right &&
@@ -137,6 +115,25 @@ export class SelectionModule {
             a.bottom >= b.top
         )
 
+    }
+    recalcSelections() {
+        this.selections.forEach((_, inx) => {
+            const actual = this.researchObjects.get(inx)
+            const newRect = actual?.getBoundingClientRect()
+
+            if (newRect) {
+                this.selections.set(inx, newRect)
+            }
+
+        })
+    }
+    getResearchObj() {
+        const elements = Array.from(document.querySelectorAll('[data-shortcut]')) as HTMLElement[]
+        const researchObjects = new Map(elements.map(i => ([i.id, i])))
+
+        this.researchObjects = researchObjects
+
+        return researchObjects
     }
     private createSelectionArea() {
         if (this.selectionArea) this.selectionArea.remove()

@@ -22,7 +22,7 @@ type BindType = {
     callback: (event: MouseEvent, instance: WindowController) => void
     invocationCount: number
 }
-type BindingEvent = 'mousedown' | 'mouseup' | 'mousemove' | 'selection:start' | 'selection:move' | 'selection:end' | 'grab:bulk'
+type BindingEvent = 'mousedown' | 'mouseup' | 'mousemove' | 'selection:start' | 'selection:move' | 'selection:end' | 'selection:clear' | 'grab:bulk'
 
 export class WindowController {
     static instance: WindowController
@@ -91,6 +91,12 @@ export class WindowController {
 
         this.triggerCallbacks('mousedown', e)
 
+        const inSelections = this.selectionModule.selections.has(windowDOM.id)
+
+        if (!inSelections) {
+            this.triggerCallbacks('selection:clear', e)
+            this.selectionModule.selections.clear()
+        }
 
         if (!this.refWindow) return
 
@@ -145,25 +151,23 @@ export class WindowController {
 
 
         if (this.isDragging) {
-            // this.triggerCallbacks('grab:bulk', e)
-
             if (this.selectionModule.selections.size) {
                 this.selectionModule.selections.forEach((data, inx) => {
                     if (data) {
                         const deltaX = e.clientX - this.startData.mouseX
                         const deltaY = e.clientY - this.startData.mouseY
-                        console.log('@delta', { deltaX, deltaY })
 
                         const newPosition = { x: data.x + deltaX, y: data.y + deltaY }
-                        console.log('@newPosition', { newPosition, data, mouseY: this.startData.mouseY, deltaY });
-
                         const DOM = this.selectionModule.researchObjects.get(inx)
 
                         if (DOM) {
                             DOM.style.transform = `translate(${newPosition.x}px, ${newPosition.y}px)`
+                            this.moveData.set(inx, { x, y })
                         }
                     }
                 })
+                this.triggerCallbacks('grab:bulk', e)
+
                 return
             }
             document.body.style.cursor = 'grab'
@@ -328,6 +332,7 @@ export class WindowController {
         this.bindings.set('selection:start', [])
         this.bindings.set('selection:move', [])
         this.bindings.set('selection:end', [])
+        this.bindings.set('selection:clear', [])
 
         this.bindings.set('grab:bulk', [])
 
@@ -350,8 +355,7 @@ export class WindowController {
         this.isResizing = false
         this.refWindow = null
 
-        //TODO test
-        // document.body.style.userSelect = ''
+        document.body.style.userSelect = ''
         document.body.style.cursor = ''
     }
 
