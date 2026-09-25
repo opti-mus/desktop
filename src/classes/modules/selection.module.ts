@@ -1,7 +1,6 @@
-import type { DesktopObject, DialogType } from "../../types/config";
 import type { WindowController } from "../WindowController";
 
-type ResearchObject = Pick<DesktopObject<DialogType.SHORTCUT>, 'id' | 'position'>
+// type ResearchObject = Pick<DesktopObject<DialogType.SHORTCUT>, 'id' | 'position'>
 
 export class SelectionModule {
     engine: WindowController

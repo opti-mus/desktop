@@ -39,8 +39,8 @@ export const useInitListeners = () => {
                 const store = useGlobalStore.getState()
                 store.changePropsForAll({ isHovered: false })
 
-                controller.selectionModule.selections.forEach((i, inx) => {
-                    store.changeShortcutProps({ id: inx, isHovered: true })
+                controller.selectionModule.selections.forEach((_, id) => {
+                    store.changeShortcutProps({ id, isHovered: true })
                 })
             },
             'selection_change'
