@@ -22,7 +22,7 @@ function App() {
 
     useInitListeners()
 
-    const handleAddWindow = () => {
+    const handleAddWindow = (props?: Partial<DesktopObject<DialogType.SHORTCUT>>) => {
         const count = windows.length + 1
 
         const render = () => (
@@ -56,6 +56,7 @@ function App() {
             type: DialogType.SHORTCUT,
             icon: 'src/assets/doom.webp',
             position: { x: 0, y: 0 },
+            ...props,
             action: () => {
                 if (Date.now() - dblClick < dblClickDelay) {
                     changeWindowProps({ id: newWindow.id, isOpen: true, isActive: true })
@@ -70,7 +71,7 @@ function App() {
         addWindow(newWindow)
     }
 
-    const handleAddWidget = () => {
+    const handleAddWidget = (props?: Partial<DesktopObject<DialogType.WIDGET>>) => {
         const id = crypto.randomUUID()
 
         const newWidget: DesktopObject<DialogType.WIDGET> = {
@@ -80,6 +81,7 @@ function App() {
             isOpen: true,
             isFocused: true,
             disabledControls: true,
+            ...props,
 
             render: () => <TodoList />
         }
@@ -91,8 +93,8 @@ function App() {
         <WindowContainerStyles $previewUrl={previewUrl} $mode={mode}>
             <ContextMenu handleAddWindow={handleAddWindow} handleAddWidget={handleAddWidget} />
             <h1>Hello World</h1>
-            <button onClick={handleAddWindow}>DOOOM!!!</button>
-            <button onClick={handleAddWidget}>Add Widjet</button>
+            <button onClick={() => handleAddWindow()}>DOOOM!!!</button>
+            <button onClick={() => handleAddWidget()}>Add Widget</button>
             <AppStyles>
                 {shortcuts.map(shortcut => (
                     <div key={shortcut.id}>

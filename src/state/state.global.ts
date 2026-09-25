@@ -1,6 +1,5 @@
 import type { StoreApi, UseBoundStore } from 'zustand'
 import { create } from 'zustand'
-import { createJSONStorage, persist } from 'zustand/middleware'
 import { createBackgroundSlice, type BackgroundStateSlice } from './BackgroundSlice'
 import { createShortcutSlice, type ShortcutStateSlice } from './ShortcutSlice'
 import { createWindowSlice, type WindowStateSlice } from './WindowSlice'
@@ -19,27 +18,27 @@ const createSelectors = <S extends UseBoundStore<StoreApi<object>>>(_store: S) =
   return store
 }
 
-export const globalStore = create<GlobalState>()(
-  persist(
-    (...a) => ({
-      ...createWindowSlice(...a),
-      ...createShortcutSlice(...a),
-      ...createBackgroundSlice(...a)
-    }),
-    {
-      name: 'store',
-      storage: createJSONStorage(() => localStorage),
-    },
-  ),
-)
 // export const globalStore = create<GlobalState>()(
-
-//   (...a) => ({
-//     ...createWindowSlice(...a),
-//     ...createShortcutSlice(...a),
-//     ...createBackgroundSlice(...a)
-//   }
-
+//   persist(
+//     (...a) => ({
+//       ...createWindowSlice(...a),
+//       ...createShortcutSlice(...a),
+//       ...createBackgroundSlice(...a)
+//     }),
+//     {
+//       name: 'store',
+//       storage: createJSONStorage(() => localStorage),
+//     },
 //   ),
 // )
+export const globalStore = create<GlobalState>()(
+
+  (...a) => ({
+    ...createWindowSlice(...a),
+    ...createShortcutSlice(...a),
+    ...createBackgroundSlice(...a)
+  }
+
+  ),
+)
 export const useGlobalStore = createSelectors(globalStore);

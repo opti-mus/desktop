@@ -22,7 +22,7 @@ type BindType = {
     callback: (event: MouseEvent, instance: WindowController) => void
     invocationCount: number
 }
-type BindingEvent = 'mousedown' | 'mouseup' | 'mousemove' | 'selection:start' | 'selection:move' | 'selection:end' | 'selection:clear' | 'grab:bulk'
+type BindingEvent = 'mousedown' | 'mouseup' | 'mousemove' | 'contextmenu' | 'selection:start' | 'selection:move' | 'selection:end' | 'selection:clear' | 'grab:bulk'
 
 export class WindowController {
     static instance: WindowController
@@ -72,6 +72,7 @@ export class WindowController {
         document.addEventListener('mousedown', this.mouseDownHandler.bind(this))
         document.addEventListener('mousemove', this.mouseMoveHandler.bind(this))
         document.addEventListener('mouseup', this.mouseUpHandler.bind(this))
+        document.addEventListener('contextmenu', this.contextMenuHandler.bind(this))
 
         this.bindCallbacks()
         this.selectionModule.init()
@@ -81,8 +82,14 @@ export class WindowController {
         document.removeEventListener('mousedown', this.mouseDownHandler)
         document.removeEventListener('mousemove', this.mouseMoveHandler)
         document.removeEventListener('mouseup', this.mouseUpHandler)
+        document.addEventListener('contextmenu', this.contextMenuHandler.bind(this))
+
     }
 
+    private contextMenuHandler(e: MouseEvent) {
+        e.preventDefault()
+        this.triggerCallbacks('contextmenu', e)
+    }
     private mouseDownHandler(e: MouseEvent) {
         document.body.style.userSelect = 'none'
 
@@ -332,6 +339,7 @@ export class WindowController {
         this.bindings.set('mousedown', [])
         this.bindings.set('mousemove', [])
         this.bindings.set('mouseup', [])
+        this.bindings.set('contextmenu', [])
 
         this.bindings.set('selection:start', [])
         this.bindings.set('selection:move', [])
