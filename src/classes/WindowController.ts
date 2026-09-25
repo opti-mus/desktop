@@ -97,7 +97,7 @@ export class WindowController {
 
         this.triggerCallbacks('mousedown', e)
 
-        const inSelections = this.selectionModule.selections.has(windowDOM.id)
+        const inSelections = this.selectionModule.selections.has(windowDOM?.id)
 
         if (!inSelections) {
             this.triggerCallbacks('selection:clear', e)
@@ -182,6 +182,7 @@ export class WindowController {
         if (!this.startMove) {
             const bbox = windowDOM?.getBoundingClientRect()
             document.body.style.cursor = ''
+            if (!windowDOM) return
 
             if (Math.abs(e.clientX - bbox.left) <= WindowController.OFFSET || Math.abs(e.clientX - bbox.right) <= WindowController.OFFSET) {
                 document.body.style.cursor = 'ew-resize'
