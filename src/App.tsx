@@ -102,9 +102,10 @@ function App() {
                     </div>
                 ))}
             </AppStyles>
-            {windows.map(w => (
-                <WindowTable key={w.id} window={w} />
-            ))}
+            {windows.map(w => {
+                if (!w.isOpen) return
+                return <WindowTable key={w.id} window={w} />
+            })}
 
             <BackgroundDesktop />
             <StartMenu />
