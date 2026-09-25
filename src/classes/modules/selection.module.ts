@@ -107,7 +107,6 @@ export class SelectionModule {
 
             this.isSelection = true
             this.createSelectionArea()
-            this.selections.clear()
             this.engine.triggerCallbacks('selection:start', e)
 
         }, 'selection_start')

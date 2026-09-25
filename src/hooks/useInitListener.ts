@@ -11,7 +11,7 @@ export const useInitListeners = () => {
             'mouseup',
             (_, controller) => {
                 const store = useGlobalStore.getState()
-                store.changeWindowProps({ id: controller.windowID, dimensions: controller.windowDimensions })
+                if (controller.windowID) store.changeWindowProps({ id: controller.windowID, dimensions: controller.windowDimensions })
             },
             'save_window_dimension'
         )
@@ -23,14 +23,7 @@ export const useInitListeners = () => {
             },
             'change_focus'
         )
-        windowController.addCallback(
-            'selection:start',
-            () => {
-                const store = useGlobalStore.getState()
-                store.changePropsForAll({ isHovered: false })
-            },
-            'selection_cle'
-        )
+
         windowController.addCallback(
             'selection:move',
             (_, controller) => {
@@ -45,9 +38,12 @@ export const useInitListeners = () => {
         )
         windowController.addCallback(
             'selection:clear',
-            () => {
+            (_, controller) => {
                 const store = useGlobalStore.getState()
-                store.changePropsForAll({ isHovered: false })
+                if (controller.selectionModule.selections.size) {
+                    store.changePropsForAll({ isHovered: false })
+                }
+
             },
             'selection_clear'
         )
