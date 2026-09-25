@@ -7,9 +7,9 @@ type StartMenuElementProps = {
 
 export const StartMenuElement = styled.div<StartMenuElementProps>`
     position: relative;
-
-    padding: 1rem;
-    background-color: rgba(0, 0, 0, 0.3);
+    width: 4rem;
+    height: 100%;
+    background-color: rgba(0,0,0,0.3);
 
     &::after {
         content: '';

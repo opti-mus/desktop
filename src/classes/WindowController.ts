@@ -1,5 +1,6 @@
 import type { DesktopObject, DialogType, MousePosition, WindowDimension } from "../types/config"
 import { parseTranslate } from "../utils"
+import { SelectionModule } from "./modules/selection.module"
 
 
 type StartMoveType = {
@@ -21,21 +22,27 @@ type BindType = {
     callback: (event: MouseEvent, instance: WindowController) => void
     invocationCount: number
 }
+type BindingEvent = 'mousedown' | 'mouseup' | 'mousemove' | 'selection:start' | 'selection:move' | 'selection:end' | 'selection:clear' | 'grab:bulk'
 
 export class WindowController {
     static instance: WindowController
     static OFFSET = 10
 
-    private startMove?: StartMoveType
-    private startData: StartDataType
-    private bindings: Map<string, BindType[]>
+    private bindings: Map<BindingEvent, BindType[]>
 
+    public selectionModule: SelectionModule
+    public startData: StartDataType
+    public startMove?: StartMoveType
     public moveData: Map<string, MousePosition>
     public windowDimensions: WindowDimension
     public refWindow: HTMLElement | null
     public isDragging: boolean
+    public isResizing: boolean
+
+
 
     constructor() {
+        this.selectionModule = new SelectionModule(this)
         this.startData = {
             mouseX: 0,
             mouseY: 0,
@@ -45,10 +52,13 @@ export class WindowController {
             translateY: 0
         }
         this.moveData = new Map()
-        this.refWindow = null
-        this.windowDimensions = { width: 0, height: 0 }
         this.bindings = new Map()
+
+        this.windowDimensions = { width: 0, height: 0 }
+        this.refWindow = null
         this.isDragging = false
+        this.isResizing = false
+
 
         if (WindowController.instance) return WindowController.instance
 
@@ -64,6 +74,7 @@ export class WindowController {
         document.addEventListener('mouseup', this.mouseUpHandler.bind(this))
 
         this.bindCallbacks()
+        this.selectionModule.init()
     }
 
     public destroy() {
@@ -72,76 +83,33 @@ export class WindowController {
         document.removeEventListener('mouseup', this.mouseUpHandler)
     }
 
-    public applyDimensions(target: HTMLElement | null, window: DesktopObject<DialogType.BASE | DialogType.WIDGET | DialogType.SHORTCUT>) {
-        if (!target || !window?.position) return
-
-        const { x, y } = window.position
-
-        target.style.transform = `translate(${x}px, ${y}px)`
-
-        target.style.width = `${window.dimensions?.width}px`
-        target.style.height = `${window.dimensions?.height}px`
-    }
-
-    public maximizeWindow(target: HTMLElement | null, window: DesktopObject<DialogType.BASE | DialogType.WIDGET>) {
-        if (!target || !window.position) return
-        const { isMaximized, position } = window
-
-        target.style.transform = isMaximized ? 'translate(0,0)' : `translate(${position.x}px, ${position.y}px)`
-    }
-
-    public addCallback<T extends WindowController[]>(
-        event: string,
-        callback: (event: MouseEvent, instance: WindowController, ...args: T) => void,
-        flag?: string,
-        ...args: T
-    ) {
-        const newCallback = (event: MouseEvent, instance: WindowController) => {
-            callback(event, instance, ...args)
-        }
-
-        const entry = { callback: newCallback, flag, invocationCount: 0 }
-        const callbacks = this.bindings.get(event) || []
-        const unique = callbacks.filter(entry => entry.flag !== flag)
-        unique.push(entry)
-
-        this.bindings.set(event, unique)
-    }
-
-    private bindCallbacks() {
-        this.bindings.set('mousedown', [])
-        this.bindings.set('mousemove', [])
-        this.bindings.set('mouseup', [])
-
-    }
-
-    private triggerCallbacks(event: string, eventData: MouseEvent) {
-        const callbacks = this.bindings.get(event)
-
-        if (callbacks) {
-            callbacks.forEach(entry => {
-                entry.invocationCount += 1
-                entry.callback(eventData, this)
-            })
-        }
-    }
-
     private mouseDownHandler(e: MouseEvent) {
-        const target = e.target as HTMLElement
-        const windowDOM = target.closest('[data-window]') as HTMLElement
+        document.body.style.userSelect = 'none'
+
+        const windowDOM = this.getWindowDOM(e)
 
         if (windowDOM) {
             this.refWindow = windowDOM
         }
 
-        const window = this.refWindow
+        this.startData.mouseX = e.clientX
+        this.startData.mouseY = e.clientY
 
-        if (!window) return
+        this.triggerCallbacks('mousedown', e)
 
-        const bbox = window.getBoundingClientRect()
+        const inSelections = this.selectionModule.selections.has(windowDOM?.id)
+
+        if (!inSelections) {
+            this.triggerCallbacks('selection:clear', e)
+            this.selectionModule.selections.clear()
+        }
+
+        if (!this.refWindow) return
+
+        const bbox = this.refWindow.getBoundingClientRect()
         this.windowDimensions = { width: bbox.width, height: bbox.height }
 
-        const transform = window.style.transform
+        const transform = this.refWindow.style.transform
         const { x, y } = parseTranslate(transform)
 
         if (this.windowID) {
@@ -165,40 +133,44 @@ export class WindowController {
                 bottom: Math.abs(e.clientY - bbox.bottom) <= WindowController.OFFSET
             }
         }
-
-        document.body.style.userSelect = 'none'
-
-        this.triggerCallbacks('mousedown', e)
     }
 
     private mouseMoveHandler(e: MouseEvent) {
-        const target = e.target as HTMLElement
-        const windowDOM = target.closest('[data-window]') as HTMLElement
+        const windowDOM = this.getWindowDOM(e)
 
-        if (windowDOM) {
-            this.refWindow = windowDOM
-        }
+        const deltaX = e.clientX - this.startData.mouseX
+        const deltaY = e.clientY - this.startData.mouseY
 
-        const window = this.refWindow
-
-        if (!window) return
-
-        const bbox = window?.getBoundingClientRect()
+        const x = this.startData.translateX + deltaX
+        const y = this.startData.translateY + deltaY
 
         this.triggerCallbacks('mousemove', e)
-        this.windowDimensions = { width: bbox.width, height: bbox.height }
-
 
         if (this.isDragging) {
+            if (!this.refWindow) return
+
+            if (this.selectionModule.selections.size) {
+                this.selectionModule.selections.forEach((data, inx) => {
+                    if (data) {
+                        const deltaX = e.clientX - this.startData.mouseX
+                        const deltaY = e.clientY - this.startData.mouseY
+
+                        const newPosition = { x: data.x + deltaX, y: data.y + deltaY }
+                        const DOM = this.selectionModule.researchObjects.get(inx)
+
+                        if (DOM) {
+                            DOM.style.transform = `translate(${newPosition.x}px, ${newPosition.y}px)`
+                            this.moveData.set(inx, { x, y })
+                        }
+                    }
+                })
+                this.triggerCallbacks('grab:bulk', e)
+
+                return
+            }
+
             document.body.style.cursor = 'grab'
-
-            const deltaX = e.clientX - this.startData.mouseX
-            const deltaY = e.clientY - this.startData.mouseY
-
-            const x = this.startData.translateX + deltaX
-            const y = this.startData.translateY + deltaY
-
-            window.style.transform = `translate(${x}px, ${y}px)`
+            this.refWindow.style.transform = `translate(${x}px, ${y}px)`
 
             if (this.windowID) {
 
@@ -208,8 +180,10 @@ export class WindowController {
         }
 
         if (!this.startMove) {
+            const bbox = windowDOM?.getBoundingClientRect()
             document.body.style.cursor = ''
-            if (!target.dataset?.window) return
+            if (!windowDOM) return
+
             if (Math.abs(e.clientX - bbox.left) <= WindowController.OFFSET || Math.abs(e.clientX - bbox.right) <= WindowController.OFFSET) {
                 document.body.style.cursor = 'ew-resize'
             }
@@ -220,6 +194,12 @@ export class WindowController {
             return
         }
 
+        if (!this.refWindow) return
+
+        const bbox = this.refWindow?.getBoundingClientRect()
+
+        this.windowDimensions = { width: bbox.width, height: bbox.height }
+
         // LEFT
         if (this.startMove.left) {
             const deltaX = e.clientX - this.startData.mouseX
@@ -228,10 +208,11 @@ export class WindowController {
             const newTranslateX = this.startData.translateX + deltaX
 
             if (newWidth > 50) {
-                window.style.width = `${newWidth}px`
+                this.refWindow.style.width = `${newWidth}px`
 
-                window.style.transform = `translate(${newTranslateX}px, ${this.startData.translateY}px)`
+                this.refWindow.style.transform = `translate(${newTranslateX}px, ${this.startData.translateY}px)`
                 this.windowDimensions.width = newWidth
+                this.isResizing = true
             }
         }
 
@@ -242,8 +223,9 @@ export class WindowController {
             const newWidth = this.startData.width + deltaX
 
             if (newWidth > 50) {
-                window.style.width = `${newWidth}px`
+                this.refWindow.style.width = `${newWidth}px`
                 this.windowDimensions.width = newWidth
+                this.isResizing = true
             }
         }
 
@@ -255,10 +237,11 @@ export class WindowController {
             const newTranslateY = this.startData.translateY + deltaY
 
             if (newHeight > 50) {
-                window.style.height = `${newHeight}px`
+                this.refWindow.style.height = `${newHeight}px`
                 this.windowDimensions.height = newHeight
+                this.isResizing = true
 
-                window.style.transform = `translate(${this.startData.translateX}px, ${newTranslateY}px)`
+                this.refWindow.style.transform = `translate(${this.startData.translateX}px, ${newTranslateY}px)`
 
             }
         }
@@ -270,8 +253,9 @@ export class WindowController {
             const newHeight = this.startData.height + deltaY
 
             if (newHeight > 50) {
-                window.style.height = `${newHeight}px`
+                this.refWindow.style.height = `${newHeight}px`
                 this.windowDimensions.height = newHeight
+                this.isResizing = true
             }
         }
 
@@ -301,12 +285,82 @@ export class WindowController {
         this.resetMove()
     }
 
+    public getWindowDOM(e: MouseEvent) {
+        const target = e.target as HTMLElement
+        const windowDOM = target.closest('[data-window]') as HTMLElement
+
+        return windowDOM
+    }
+
+    public applyDimensions(target: HTMLElement | null, window: DesktopObject<DialogType.BASE | DialogType.WIDGET | DialogType.SHORTCUT>) {
+        if (!target || !window?.position) return
+
+        const { x, y } = window.position
+
+        target.style.transform = `translate(${x}px, ${y}px)`
+
+        target.style.width = `${window.dimensions?.width}px`
+        target.style.height = `${window.dimensions?.height}px`
+    }
+
+    public maximizeWindow(target: HTMLElement | null, window: DesktopObject<DialogType.BASE | DialogType.WIDGET>) {
+        if (!target || !window.position) return
+        const { isMaximized, position } = window
+
+        target.style.transform = isMaximized ? 'translate(0,0)' : `translate(${position.x}px, ${position.y}px)`
+    }
+
+    public addCallback<T extends WindowController[]>(
+        event: BindingEvent,
+        callback: (event: MouseEvent, instance: WindowController, ...args: T) => void,
+        flag?: string,
+        ...args: T
+    ) {
+        const newCallback = (event: MouseEvent, instance: WindowController) => {
+            callback(event, instance, ...args)
+        }
+
+        const entry = { callback: newCallback, flag, invocationCount: 0 }
+        const callbacks = this.bindings.get(event) || []
+        const unique = callbacks.filter(entry => entry.flag !== flag)
+        unique.push(entry)
+
+        this.bindings.set(event, unique)
+    }
+
+    private bindCallbacks() {
+        this.bindings.set('mousedown', [])
+        this.bindings.set('mousemove', [])
+        this.bindings.set('mouseup', [])
+
+        this.bindings.set('selection:start', [])
+        this.bindings.set('selection:move', [])
+        this.bindings.set('selection:end', [])
+        this.bindings.set('selection:clear', [])
+
+        this.bindings.set('grab:bulk', [])
+
+    }
+
+    public triggerCallbacks(event: BindingEvent, eventData: MouseEvent) {
+        const callbacks = this.bindings.get(event)
+
+        if (callbacks) {
+            callbacks.forEach(entry => {
+                entry.invocationCount += 1
+                entry.callback(eventData, this)
+            })
+        }
+    }
+
     private resetMove() {
         this.startMove = undefined
         this.isDragging = false
+        this.isResizing = false
+        this.refWindow = null
+
         document.body.style.userSelect = ''
         document.body.style.cursor = ''
-        this.refWindow = null
     }
 
     public get windowID() {

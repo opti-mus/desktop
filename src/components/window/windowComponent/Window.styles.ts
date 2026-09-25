@@ -7,7 +7,7 @@ type WindowTableStylesProps = {
 }
 
 export const WindowTableStyles = styled.div<WindowTableStylesProps>`
-    width: ${({ $isMaximized }) => ($isMaximized ? '100vw !important' : '500px')};
+    width: ${({ $isMaximized }) => ($isMaximized ? '100vw !important' : '700px')};
     min-width: 350px;
     height: ${({ $isMaximized }) => ($isMaximized ? '100vh !important' : '500px')};
     min-height: 350px;
