@@ -1,11 +1,10 @@
-import { useEffect } from 'react'
 import { AppStyles, WindowContainerStyles } from './App.styled'
-import { WindowController } from './classes/WindowController'
 import BackgroundDesktop from './components/background/BackgroundDesktop'
 import ShortcutComponent from './components/shortcut/ShortcutComponent'
 import StartMenu from './components/startMenu/startMenu'
 import { TodoList } from './components/widgets/todoList/TodoList'
 import WindowTable from './components/window/windowComponent/Window'
+import { useInitListeners } from './hooks/useInitListener'
 import { useGlobalStore } from './state/state.global'
 import { DialogType, type DesktopObject } from './types/config'
 
@@ -19,6 +18,8 @@ function App() {
 
     const mode = useGlobalStore.use.mode()
     const changeWindowProps = useGlobalStore.use.changeWindowProps()
+
+    useInitListeners()
 
     const handleAddWindow = () => {
         const count = windows.length + 1
@@ -41,6 +42,7 @@ function App() {
             name: 'Shortcut' + count,
             key: 'Ctrl+Shift+A',
             type: DialogType.SHORTCUT,
+            position: { x: 0, y: 0 },
             action: () => {
                 if (Date.now() - dblClick < dblClickDelay) {
                     changeWindowProps({ id: newWindow.id, isOpen: true, isActive: true })
@@ -71,28 +73,6 @@ function App() {
 
         addWindow(newWidget)
     }
-
-    useEffect(() => {
-        const windowController = new WindowController()
-
-        windowController.addCallback(
-            'mouseup',
-            (_, controller) => {
-                const store = useGlobalStore.getState()
-
-                store.changeWindowProps({ id: controller.windowID, dimensions: controller.windowDimensions })
-            },
-            'save_window_dimension'
-        )
-        windowController.addCallback(
-            'mousedown',
-            (_, controller) => {
-                const store = useGlobalStore.getState()
-                if (controller.windowID) store.changeFocus(controller.windowID)
-            },
-            'change_focus'
-        )
-    }, [])
 
     return (
         <WindowContainerStyles $previewUrl={previewUrl} $mode={mode}>
