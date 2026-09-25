@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { WindowController } from '../../../classes/WindowController'
+import { useGlobalStore } from '../../../state/state.global'
 import type { DesktopObject, DialogType, MousePosition } from '../../../types/config'
 import {
     ContextMenuItemStyles,
@@ -22,17 +23,26 @@ type Revers = {
 export const ContextMenu = ({ handleAddWindow, handleAddWidget }: ContextMenuProps) => {
     const [isOpen, setIsOpen] = useState<boolean>(false)
     const [revers, setRevers] = useState<Revers>({ reversX: false, reversY: false })
+    const [windowID, setWindowID] = useState('')
     const [pos, setPos] = useState<MousePosition>({ x: 0, y: 0 })
     const refMenu = useRef<HTMLDivElement | null>(null)
     const refWrapperMenu = useRef<HTMLDivElement | null>(null)
+
+    const closeWindow = useGlobalStore.use.closeWindow()
 
     useEffect(() => {
         const controller = new WindowController()
 
         controller.addCallback(
             'contextmenu',
-            e => {
+            (e, ctrl) => {
+                const windowDOM = ctrl.getWindowDOM(e)
+
                 setIsOpen(true)
+
+                if (windowDOM?.id) {
+                    setWindowID(windowDOM?.id)
+                }
 
                 let x = e.clientX
                 let y = e.clientY
@@ -91,6 +101,12 @@ export const ContextMenu = ({ handleAddWindow, handleAddWidget }: ContextMenuPro
                     </SubMenuStyles>
                     <SubMenuStyles onClick={() => handleAddWidget({ position: { x: pos.x, y: pos.y } })}>
                         add widget
+                    </SubMenuStyles>
+                    <SubMenuStyles
+                        onClick={() => {
+                            if (windowID) closeWindow(windowID)
+                        }}>
+                        close
                     </SubMenuStyles>
                 </WrapperSubMenuStyles>
             </ContextMenuItemStyles>
