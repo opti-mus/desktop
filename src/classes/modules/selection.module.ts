@@ -2,6 +2,13 @@ import type { WindowController } from "../WindowController";
 
 // type ResearchObject = Pick<DesktopObject<DialogType.SHORTCUT>, 'id' | 'position'>
 
+const SELECTION_STYLE = {
+    position: 'fixed',
+    backgroundColor: `rgba(0, 88, 100, 0.17)`,
+    border: '1px solid rgba(0, 68, 100, 0.51)',
+    borderRadius: '.2rem'
+} satisfies Partial<CSSStyleDeclaration>
+
 export class SelectionModule {
     engine: WindowController
     public isSelection: boolean
@@ -139,8 +146,8 @@ export class SelectionModule {
 
         const areaDiv = document.createElement('div')
         areaDiv.id = 'selections'
-        areaDiv.style.position = 'fixed'
-        areaDiv.style.backgroundColor = `rgba(0, 47, 100, 0.3)`
+
+        Object.assign(areaDiv.style, SELECTION_STYLE)
 
         document.body.appendChild(areaDiv)
 
