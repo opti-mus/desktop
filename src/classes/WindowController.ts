@@ -84,7 +84,13 @@ export class WindowController {
     }
 
     private mouseDownHandler(e: MouseEvent) {
+        document.body.style.userSelect = 'none'
+
         const windowDOM = this.getWindowDOM(e)
+
+        if (windowDOM) {
+            this.refWindow = windowDOM
+        }
 
         this.startData.mouseX = e.clientX
         this.startData.mouseY = e.clientY
@@ -127,9 +133,6 @@ export class WindowController {
                 bottom: Math.abs(e.clientY - bbox.bottom) <= WindowController.OFFSET
             }
         }
-
-        document.body.style.userSelect = 'none'
-
     }
 
     private mouseMoveHandler(e: MouseEvent) {
@@ -143,14 +146,9 @@ export class WindowController {
 
         this.triggerCallbacks('mousemove', e)
 
-        if (!this.refWindow) return
-
-        const bbox = this.refWindow?.getBoundingClientRect()
-
-        this.windowDimensions = { width: bbox.width, height: bbox.height }
-
-
         if (this.isDragging) {
+            if (!this.refWindow) return
+
             if (this.selectionModule.selections.size) {
                 this.selectionModule.selections.forEach((data, inx) => {
                     if (data) {
@@ -170,6 +168,7 @@ export class WindowController {
 
                 return
             }
+
             document.body.style.cursor = 'grab'
             this.refWindow.style.transform = `translate(${x}px, ${y}px)`
 
@@ -181,8 +180,9 @@ export class WindowController {
         }
 
         if (!this.startMove) {
+            const bbox = windowDOM?.getBoundingClientRect()
             document.body.style.cursor = ''
-            if (!windowDOM?.dataset?.window) return
+
             if (Math.abs(e.clientX - bbox.left) <= WindowController.OFFSET || Math.abs(e.clientX - bbox.right) <= WindowController.OFFSET) {
                 document.body.style.cursor = 'ew-resize'
             }
@@ -192,6 +192,12 @@ export class WindowController {
             }
             return
         }
+
+        if (!this.refWindow) return
+
+        const bbox = this.refWindow?.getBoundingClientRect()
+
+        this.windowDimensions = { width: bbox.width, height: bbox.height }
 
         // LEFT
         if (this.startMove.left) {
@@ -282,9 +288,6 @@ export class WindowController {
         const target = e.target as HTMLElement
         const windowDOM = target.closest('[data-window]') as HTMLElement
 
-        if (windowDOM) {
-            this.refWindow = windowDOM
-        }
         return windowDOM
     }
 
