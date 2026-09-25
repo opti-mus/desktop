@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useGlobalStore } from '../../../state/state.global'
 import type { DesktopObject, DialogType } from '../../../types/config'
+import { ShortcutIcon, ShortcutIconWrapper } from '../../shortcut/Shortcut.styles'
 import { StartMenuElement } from './startMenuItem.styles'
 
 type StartMenuItemType = {
@@ -26,7 +27,12 @@ export const StartMenuItem = ({ shortcut }: StartMenuItemType) => {
 
     return (
         <StartMenuElement $isOpen={currentWindow?.isOpen} $isActive={currentWindow?.isActive} onClick={shortcutHandler}>
-            {shortcut.name}
+            {shortcut?.name ? <span>{shortcut.name}</span> : null}
+            {shortcut?.icon ? (
+                <ShortcutIconWrapper>
+                    <ShortcutIcon $src={shortcut.icon} />
+                </ShortcutIconWrapper>
+            ) : null}
         </StartMenuElement>
     )
 }

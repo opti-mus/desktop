@@ -53,7 +53,7 @@ function App() {
             id: crypto.randomUUID(),
             key: 'Ctrl+Shift+A',
             type: DialogType.SHORTCUT,
-            icon: 'src/assets/doom.png',
+            icon: 'src/assets/doom.webp',
             position: { x: 0, y: 0 },
             action: () => {
                 if (Date.now() - dblClick < dblClickDelay) {

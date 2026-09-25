@@ -20,5 +20,6 @@ export const StartMenuWrapper = styled.div`
     align-items: center;
 
     gap: 1rem;
+    height: 100%;
 `
 

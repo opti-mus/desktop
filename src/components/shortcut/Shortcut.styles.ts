@@ -38,3 +38,8 @@ background-size: contain;
 background-position: center;
 background-repeat: no-repeat;
 `
+export const ShortcutIconWrapper = styled.div`
+    width: 100%;
+    height: 70%;
+    margin-top: 0.3rem;
+`
