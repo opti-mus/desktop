@@ -5,7 +5,8 @@ import {
     TodoItemCheckboxStyles,
     TodoItemButtons,
     TodoItemButton,
-    TodoItemSpan
+    TodoItemSpan,
+    TodoLabelGroupStyles
 } from './TodoListItem.styles'
 import type { Todo } from '../../../types/config'
 
@@ -29,14 +30,14 @@ export const TodoListItem = ({ todoList, setTodoList }: TodoListItemProps) => {
         <TodoListItemsStyles>
             {todoList.map(todo => (
                 <TodoItemStyles key={todo.id}>
-                    <TodoLabelStyles>
+                    <TodoLabelGroupStyles>
                         <TodoItemCheckboxStyles
                             id={todo.id}
                             checked={todo.completed}
                             onChange={() => completedTodo(todo.id)}
                         />
-                        <label htmlFor={todo.id}>{todo.text}</label>
-                    </TodoLabelStyles>
+                        <TodoLabelStyles htmlFor={todo.id}>{todo.text}</TodoLabelStyles>
+                    </TodoLabelGroupStyles>
                     <TodoItemButtons>
                         <TodoItemSpan $textInfo={todo.text}>@</TodoItemSpan>
                         <TodoItemButton onClick={() => deleteTodo(todo.id)}>Delete</TodoItemButton>

@@ -10,7 +10,7 @@ export const BackgroundStyles = styled.div`
     label {
         cursor: pointer;
         padding: 10px;
-        background-color: fcfcfc;
+        background-color: #fcfcfc;
         border-radius: 5px;
         border: 1px solid #ccc;
 
@@ -25,7 +25,7 @@ export const BackgroundStyles = styled.div`
 
     button {
         padding: 10px;
-        background-color: fcfcfc;
+        background-color: #fcfcfc;
         border-radius: 5px;
         border: 1px solid #ccc;
         cursor: pointer;

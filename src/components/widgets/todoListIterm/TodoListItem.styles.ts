@@ -16,17 +16,18 @@ export const TodoItemStyles = styled.li`
     width: 100%;
 `
 
-export const TodoLabelStyles = styled.div`
+export const TodoLabelGroupStyles = styled.div`
     display: flex;
     align-items: center;
     overflow: hidden;
-
-    label {
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden;
-    }
 `
+
+export const TodoLabelStyles = styled.label`
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+`
+
 export const TodoItemButtons = styled.div`
     display: flex;
     gap: 5px;

@@ -1,5 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
-import { ContextMenuItemStyles, ContextMenuStyles, SubMenuStyles, WrapperSubMenuStyles } from './ContextMenu.styles'
+import {
+    ContextMenuItemStyles,
+    ContextMenuSpan,
+    ContextMenuStyles,
+    SubMenuStyles,
+    WrapperSubMenuStyles
+} from './ContextMenu.styles'
 import type { MousePosition } from '../../../types/config'
 
 type ContextMenuProps = {
@@ -31,15 +37,19 @@ export const ContextMenu = ({ handleAddWindow, handleAddWidget }: ContextMenuPro
             let reversY = false
 
             if (!refMenu?.current) return
+            if (!refWrapperMenu?.current) return
 
             const menuWidth = refMenu.current?.offsetWidth
             const menuHeight = refMenu.current?.offsetHeight
 
-            if (2 * menuWidth + x > window.innerWidth) {
+            const menuWrapperWidth = refMenu.current?.offsetWidth
+            const menuWrapperHeight = refMenu.current?.offsetHeight
+
+            if (menuWrapperWidth + menuWidth + x > window.innerWidth) {
                 reversX = true
             }
 
-            if (menuHeight + y + 100 > window.innerHeight) {
+            if (menuHeight + y + menuWrapperHeight > window.innerHeight) {
                 reversY = true
             }
 
@@ -73,21 +83,21 @@ export const ContextMenu = ({ handleAddWindow, handleAddWidget }: ContextMenuPro
     return (
         <ContextMenuStyles ref={refMenu} $pos={pos} $isOpen={isOpen}>
             <ContextMenuItemStyles>
-                <span>Create</span> <span>&#9658;</span>
+                <ContextMenuSpan>Create</ContextMenuSpan> <ContextMenuSpan>&#9658;</ContextMenuSpan>
                 <WrapperSubMenuStyles ref={refWrapperMenu} $reversX={revers.reversX} $reversY={revers.reversY}>
                     <SubMenuStyles onClick={handleAddWindow}>add window</SubMenuStyles>
                     <SubMenuStyles onClick={handleAddWidget}>add widjet</SubMenuStyles>
                 </WrapperSubMenuStyles>
             </ContextMenuItemStyles>
             <ContextMenuItemStyles>
-                <span>Create</span> <span>&#9658;</span>
+                <ContextMenuSpan>Create</ContextMenuSpan> <ContextMenuSpan>&#9658;</ContextMenuSpan>
                 <WrapperSubMenuStyles $reversX={revers.reversX} $reversY={revers.reversY}>
                     <SubMenuStyles onClick={handleAddWindow}>add window</SubMenuStyles>
                     <SubMenuStyles onClick={handleAddWidget}>add widjet</SubMenuStyles>
                 </WrapperSubMenuStyles>
             </ContextMenuItemStyles>
             <ContextMenuItemStyles>
-                <span>Create</span> <span>&#9658;</span>
+                <ContextMenuSpan>Create</ContextMenuSpan> <ContextMenuSpan>&#9658;</ContextMenuSpan>
                 <WrapperSubMenuStyles $reversX={revers.reversX} $reversY={revers.reversY}>
                     <SubMenuStyles onClick={handleAddWindow}>add window</SubMenuStyles>
                     <SubMenuStyles onClick={handleAddWidget}>add widjet</SubMenuStyles>

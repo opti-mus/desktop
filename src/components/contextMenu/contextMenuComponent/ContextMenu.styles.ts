@@ -34,6 +34,11 @@ export const ContextMenuStyles = styled.div<ContextMenuProps>`
 
 export const SubMenuStyles = styled.div`
     padding: 5px 8px;
+    border-radius: 8px;
+
+    &:not(:last-child) {
+        border-bottom: 1px solid #ccc;
+    }
 
     &:hover {
         background-color: #e6e6e6;
@@ -44,6 +49,8 @@ export const WrapperSubMenuStyles = styled.div<WrapperSubMenu>`
     display: none;
     flex-direction: column;
     width: 250px;
+
+    background-color: #ffffff;
 
     border: 1px solid #ccc;
     border-radius: 8px;
@@ -58,10 +65,13 @@ export const ContextMenuItemStyles = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
+
     padding: 5px 8px;
     user-select: none;
 
     border-radius: 5px;
+
+    border-bottom: 1px solid #ccc;
 
     &:hover {
         background-color: #e6e6e6;
@@ -71,3 +81,4 @@ export const ContextMenuItemStyles = styled.div`
         display: flex;
     }
 `
+export const ContextMenuSpan = styled.span``
