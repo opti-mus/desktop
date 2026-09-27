@@ -1,7 +1,7 @@
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-import App from "./App.tsx";
-import { createGlobalStyle } from "styled-components";
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import { createGlobalStyle } from 'styled-components'
+import { AppRouter } from './router/index.tsx'
 
 const GlobalStyle = createGlobalStyle`
 * {
@@ -27,11 +27,11 @@ input[type=text]:focus {
 }
 `
 
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <>
-      <GlobalStyle />
-      <App />
-    </>
-  </StrictMode>
-);
+createRoot(document.getElementById('root')!).render(
+    <StrictMode>
+        <>
+            <GlobalStyle />
+            <AppRouter />
+        </>
+    </StrictMode>
+)
