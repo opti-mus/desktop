@@ -101,7 +101,7 @@ function App() {
             <ContextMenu handleAddWindow={handleAddWindow} handleAddWidget={handleAddWidget} />
             <h1>Hello World</h1>
             <button onClick={handleAddWindow}>Add Window</button>
-            <button onClick={handleAddWidget}>Add Widjet</button>
+            <button onClick={handleAddWidget}>Add Widget</button>
             <AppStyles>
                 {shortcuts.map(shortcut => (
                     <div key={shortcut.id}>

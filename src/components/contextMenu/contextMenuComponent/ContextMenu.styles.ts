@@ -30,6 +30,8 @@ export const ContextMenuStyles = styled.div<ContextMenuProps>`
 
     padding: 15px 0px;
     width: 250px;
+
+    z-index: 10000;
 `
 
 export const SubMenuStyles = styled.div`

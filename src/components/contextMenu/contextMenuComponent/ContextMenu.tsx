@@ -86,21 +86,21 @@ export const ContextMenu = ({ handleAddWindow, handleAddWidget }: ContextMenuPro
                 <ContextMenuSpan>Create</ContextMenuSpan> <ContextMenuSpan>&#9658;</ContextMenuSpan>
                 <WrapperSubMenuStyles ref={refWrapperMenu} $reversX={revers.reversX} $reversY={revers.reversY}>
                     <SubMenuStyles onClick={handleAddWindow}>add window</SubMenuStyles>
-                    <SubMenuStyles onClick={handleAddWidget}>add widjet</SubMenuStyles>
+                    <SubMenuStyles onClick={handleAddWidget}>add widget</SubMenuStyles>
                 </WrapperSubMenuStyles>
             </ContextMenuItemStyles>
             <ContextMenuItemStyles>
                 <ContextMenuSpan>Create</ContextMenuSpan> <ContextMenuSpan>&#9658;</ContextMenuSpan>
                 <WrapperSubMenuStyles $reversX={revers.reversX} $reversY={revers.reversY}>
                     <SubMenuStyles onClick={handleAddWindow}>add window</SubMenuStyles>
-                    <SubMenuStyles onClick={handleAddWidget}>add widjet</SubMenuStyles>
+                    <SubMenuStyles onClick={handleAddWidget}>add widget</SubMenuStyles>
                 </WrapperSubMenuStyles>
             </ContextMenuItemStyles>
             <ContextMenuItemStyles>
                 <ContextMenuSpan>Create</ContextMenuSpan> <ContextMenuSpan>&#9658;</ContextMenuSpan>
                 <WrapperSubMenuStyles $reversX={revers.reversX} $reversY={revers.reversY}>
                     <SubMenuStyles onClick={handleAddWindow}>add window</SubMenuStyles>
-                    <SubMenuStyles onClick={handleAddWidget}>add widjet</SubMenuStyles>
+                    <SubMenuStyles onClick={handleAddWidget}>add widget</SubMenuStyles>
                 </WrapperSubMenuStyles>
             </ContextMenuItemStyles>
         </ContextMenuStyles>

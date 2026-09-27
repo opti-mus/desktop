@@ -4,10 +4,7 @@ export const TodoListStyles = styled.div`
     width: 100%;
     height: 100%;
 
-    position: sticky;
-    top: 0;
-
-    padding: 12px 20px;
+    padding: 12px 0px 12px 20px;
 
     h2 {
         margin-top: 0;
@@ -29,6 +26,7 @@ export const TodoTaskStyles = styled.div`
     button {
         padding: 0px 12px;
         height: 40px;
+        margin-right: 20px;
         border: 1px solid #d3d3d3;
         border-radius: 5px;
         background-color: #e4e3e3;

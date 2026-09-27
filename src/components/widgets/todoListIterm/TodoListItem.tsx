@@ -9,6 +9,14 @@ import {
     TodoLabelGroupStyles
 } from './TodoListItem.styles'
 import type { Todo } from '../../../types/config'
+import Tooltip from '@mui/material/Tooltip'
+
+const styles = {
+    customWidth: {
+        maxWidth: 300,
+        fontSize: '14px'
+    }
+}
 
 type TodoListItemProps = {
     todoList: Todo[]
@@ -39,7 +47,9 @@ export const TodoListItem = ({ todoList, setTodoList }: TodoListItemProps) => {
                         <TodoLabelStyles htmlFor={todo.id}>{todo.text}</TodoLabelStyles>
                     </TodoLabelGroupStyles>
                     <TodoItemButtons>
-                        <TodoItemSpan $textInfo={todo.text}>@</TodoItemSpan>
+                        <Tooltip title={todo.text} slotProps={{ tooltip: { sx: styles.customWidth } }}>
+                            <TodoItemSpan>@</TodoItemSpan>
+                        </Tooltip>
                         <TodoItemButton onClick={() => deleteTodo(todo.id)}>Delete</TodoItemButton>
                     </TodoItemButtons>
                 </TodoItemStyles>

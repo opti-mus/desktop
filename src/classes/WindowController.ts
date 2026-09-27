@@ -1,19 +1,18 @@
-import type { DesktopObject, DialogType, MousePosition, WindowDimension } from "../types/config"
-import { parseTranslate } from "../utils"
-
+import type { DesktopObject, DialogType, MousePosition, WindowDimension } from '../types/config'
+import { parseTranslate } from '../utils'
 
 type StartMoveType = {
-    left: boolean,
-    right: boolean,
-    top: boolean,
+    left: boolean
+    right: boolean
+    top: boolean
     bottom: boolean
 }
 type StartDataType = {
-    mouseX: number,
-    mouseY: number,
-    width: number,
-    height: number,
-    translateX: number,
+    mouseX: number
+    mouseY: number
+    width: number
+    height: number
+    translateX: number
     translateY: number
 }
 type BindType = {
@@ -55,7 +54,6 @@ export class WindowController {
         WindowController.instance = this
 
         this.init()
-
     }
 
     public init() {
@@ -72,7 +70,10 @@ export class WindowController {
         document.removeEventListener('mouseup', this.mouseUpHandler)
     }
 
-    public applyDimensions(target: HTMLElement | null, window: DesktopObject<DialogType.BASE | DialogType.WIDGET | DialogType.SHORTCUT>) {
+    public applyDimensions(
+        target: HTMLElement | null,
+        window: DesktopObject<DialogType.BASE | DialogType.WIDGET | DialogType.SHORTCUT>
+    ) {
         if (!target || !window?.position) return
 
         const { x, y } = window.position
@@ -112,7 +113,6 @@ export class WindowController {
         this.bindings.set('mousedown', [])
         this.bindings.set('mousemove', [])
         this.bindings.set('mouseup', [])
-
     }
 
     private triggerCallbacks(event: string, eventData: MouseEvent) {
@@ -153,9 +153,7 @@ export class WindowController {
                 translateX: x,
                 translateY: y
             }
-
         }
-
 
         if (windowDOM) {
             this.startMove = {
@@ -188,7 +186,6 @@ export class WindowController {
         this.triggerCallbacks('mousemove', e)
         this.windowDimensions = { width: bbox.width, height: bbox.height }
 
-
         if (this.isDragging) {
             document.body.style.cursor = 'grab'
 
@@ -201,7 +198,6 @@ export class WindowController {
             window.style.transform = `translate(${x}px, ${y}px)`
 
             if (this.windowID) {
-
                 this.moveData.set(this.windowID, { x, y })
             }
             return
@@ -210,11 +206,17 @@ export class WindowController {
         if (!this.startMove) {
             document.body.style.cursor = ''
             if (!target.dataset?.window) return
-            if (Math.abs(e.clientX - bbox.left) <= WindowController.OFFSET || Math.abs(e.clientX - bbox.right) <= WindowController.OFFSET) {
+            if (
+                Math.abs(e.clientX - bbox.left) <= WindowController.OFFSET ||
+                Math.abs(e.clientX - bbox.right) <= WindowController.OFFSET
+            ) {
                 document.body.style.cursor = 'ew-resize'
             }
 
-            if ((Math.abs(e.clientY - bbox.top) <= WindowController.OFFSET || Math.abs(e.clientY - bbox.bottom) <= WindowController.OFFSET)) {
+            if (
+                Math.abs(e.clientY - bbox.top) <= WindowController.OFFSET ||
+                Math.abs(e.clientY - bbox.bottom) <= WindowController.OFFSET
+            ) {
                 document.body.style.cursor = 'ns-resize'
             }
             return
@@ -259,7 +261,6 @@ export class WindowController {
                 this.windowDimensions.height = newHeight
 
                 window.style.transform = `translate(${this.startData.translateX}px, ${newTranslateY}px)`
-
             }
         }
 
@@ -280,8 +281,6 @@ export class WindowController {
 
         // console.log('@target', target);
         // if (!target.dataset?.window) return
-
-
 
         // if (
         //     (Math.abs(e.clientX - bbox.left) <= WindowController.OFFSET && Math.abs(e.clientY - bbox.bottom) <= WindowController.OFFSET)
@@ -312,6 +311,4 @@ export class WindowController {
     public get windowID() {
         return this.refWindow?.dataset?.window
     }
-
-
 }

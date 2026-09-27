@@ -1,11 +1,12 @@
 import styled from 'styled-components'
-
-type TodoTextInfo = {
-    $textInfo: string
-}
+import { TodoItemStyle } from '../todoItemInfo/TodoItemInfo.styles'
 
 export const TodoListItemsStyles = styled.ul`
+    width: calc(100% - 5px);
+    height: calc(100% - 96px);
+    overflow-y: auto;
     list-style: none;
+    scrollbar-gutter: stable;
 `
 
 export const TodoItemStyles = styled.li`
@@ -29,43 +30,16 @@ export const TodoLabelStyles = styled.label`
 `
 
 export const TodoItemButtons = styled.div`
+    position: relative;
     display: flex;
     gap: 5px;
 `
-export const TodoItemSpan = styled.span<TodoTextInfo>`
+export const TodoItemSpan = styled.span`
     padding: 3px;
     cursor: pointer;
     position: relative;
 
-    &::after {
-        content: '${({ $textInfo }) => $textInfo}';
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        opacity: 0;
-        visibility: hidden;
-
-        padding: 8px 12px;
-
-        background-color: #f4f4f4;
-        width: 300px;
-        overflow-wrap: break-word;
-
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-
-        transition:
-            bottom 0.3s ease-in-out,
-            right 0.3s ease-in-out,
-            opacity 0.3s ease-in-out;
-
-        z-index: 100;
-    }
-
-    &:hover::after {
-        bottom: 100%;
-        right: 100%;
+    &:hover ~ ${TodoItemStyle} {
         opacity: 1;
         visibility: visible;
     }

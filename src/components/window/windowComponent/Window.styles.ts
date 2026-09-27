@@ -12,9 +12,7 @@ export const WindowTableStyles = styled.div<WindowTableStylesProps>`
     height: ${({ $isMaximized }) => ($isMaximized ? '100vh !important' : '500px')};
     min-height: 350px;
 
-    overflow-y: auto;
-    /* scrollbar-width: none;
-    -ms-overflow-style: none; */
+    overflow: hidden;
 
     background-color: #f0f0f0;
     border: 1px solid #ccc;
