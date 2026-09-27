@@ -6,6 +6,7 @@ import {
     ContextMenuItemStyles,
     ContextMenuSpan,
     ContextMenuStyles,
+    MenuItemStyles,
     SubMenuStyles,
     WrapperSubMenuStyles
 } from './ContextMenu.styles'
@@ -13,6 +14,7 @@ import {
 type ContextMenuProps = {
     handleAddWindow: (props: Partial<DesktopObject<DialogType.SHORTCUT>>) => void
     handleAddWidget: (props: Partial<DesktopObject<DialogType.WIDGET>>) => void
+    changeBackground?: () => void
 }
 
 type Revers = {
@@ -23,12 +25,16 @@ type Revers = {
 export const ContextMenu = ({ handleAddWindow, handleAddWidget }: ContextMenuProps) => {
     const [isOpen, setIsOpen] = useState<boolean>(false)
     const [revers, setRevers] = useState<Revers>({ reversX: false, reversY: false })
-    const [windowID, setWindowID] = useState('')
+    const [someId, setSomeId] = useState('')
     const [pos, setPos] = useState<MousePosition>({ x: 0, y: 0 })
+
     const refMenu = useRef<HTMLDivElement | null>(null)
     const refWrapperMenu = useRef<HTMLDivElement | null>(null)
 
     const closeWindow = useGlobalStore.use.closeWindow()
+    const closeShortcut = useGlobalStore.use.closeShortcut()
+
+    const handleClickDesktop = () => {}
 
     useEffect(() => {
         const controller = new WindowController()
@@ -37,12 +43,12 @@ export const ContextMenu = ({ handleAddWindow, handleAddWidget }: ContextMenuPro
             'contextmenu',
             (e, ctrl) => {
                 const windowDOM = ctrl.getWindowDOM(e)
+                const widgetDom = ctrl.getWidgetDOM(e)
 
                 setIsOpen(true)
 
-                if (windowDOM?.id) {
-                    setWindowID(windowDOM?.id)
-                }
+                if (windowDOM?.id) setSomeId(windowDOM?.id)
+                if (widgetDom?.id) setSomeId(widgetDom?.id)
 
                 let x = e.clientX
                 let y = e.clientY
@@ -56,8 +62,8 @@ export const ContextMenu = ({ handleAddWindow, handleAddWidget }: ContextMenuPro
                 const menuWidth = refMenu.current?.offsetWidth
                 const menuHeight = refMenu.current?.offsetHeight
 
-                const menuWrapperWidth = refMenu.current?.offsetWidth
-                const menuWrapperHeight = refMenu.current?.offsetHeight
+                const menuWrapperWidth = refWrapperMenu.current?.offsetWidth
+                const menuWrapperHeight = refWrapperMenu.current?.offsetHeight
 
                 if (menuWrapperWidth + menuWidth + x > window.innerWidth) {
                     reversX = true
@@ -85,6 +91,7 @@ export const ContextMenu = ({ handleAddWindow, handleAddWidget }: ContextMenuPro
             e => {
                 if (refMenu.current && !refMenu?.current.contains(e.target as Node)) {
                     setIsOpen(false)
+                    setSomeId('')
                 }
             },
             'close_ctx'
@@ -94,21 +101,49 @@ export const ContextMenu = ({ handleAddWindow, handleAddWidget }: ContextMenuPro
     return (
         <ContextMenuStyles ref={refMenu} $pos={pos} $isOpen={isOpen}>
             <ContextMenuItemStyles>
-                <ContextMenuSpan>Create</ContextMenuSpan> <ContextMenuSpan>&#9658;</ContextMenuSpan>
-                <WrapperSubMenuStyles ref={refWrapperMenu} $reversX={revers.reversX} $reversY={revers.reversY}>
-                    <SubMenuStyles onClick={() => handleAddWindow({ position: { x: pos.x, y: pos.y } })}>
-                        add window
-                    </SubMenuStyles>
-                    <SubMenuStyles onClick={() => handleAddWidget({ position: { x: pos.x, y: pos.y } })}>
-                        add widget
-                    </SubMenuStyles>
-                    <SubMenuStyles
+                {!someId && (
+                    <>
+                        <MenuItemStyles data-create $isOpen={isOpen}>
+                            <ContextMenuSpan>Create</ContextMenuSpan> <ContextMenuSpan>&#9658;</ContextMenuSpan>
+                            <WrapperSubMenuStyles
+                                ref={refWrapperMenu}
+                                $reversX={revers.reversX}
+                                $reversY={revers.reversY}>
+                                <SubMenuStyles
+                                    onClick={() => {
+                                        handleAddWindow({ position: { x: pos.x, y: pos.y } })
+                                        setIsOpen(false)
+                                    }}>
+                                    add shortcut
+                                </SubMenuStyles>
+
+                                <SubMenuStyles
+                                    onClick={() => {
+                                        handleAddWidget({ position: { x: pos.x, y: pos.y } })
+                                        setIsOpen(false)
+                                    }}>
+                                    add widget
+                                </SubMenuStyles>
+                            </WrapperSubMenuStyles>
+                        </MenuItemStyles>
+                        <MenuItemStyles>
+                            <ContextMenuSpan onClick={() => {}}>Change Background</ContextMenuSpan>
+                        </MenuItemStyles>
+                    </>
+                )}
+                {someId && (
+                    <MenuItemStyles
                         onClick={() => {
-                            if (windowID) closeWindow(windowID)
+                            if (someId) {
+                                closeWindow(someId)
+                                closeShortcut(someId)
+                                setIsOpen(false)
+                                setSomeId('')
+                            }
                         }}>
-                        close
-                    </SubMenuStyles>
-                </WrapperSubMenuStyles>
+                        <ContextMenuSpan>close</ContextMenuSpan>
+                    </MenuItemStyles>
+                )}
             </ContextMenuItemStyles>
         </ContextMenuStyles>
     )

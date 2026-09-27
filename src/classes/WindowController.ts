@@ -302,6 +302,13 @@ export class WindowController {
         return windowDOM
     }
 
+    public getWidgetDOM(e: MouseEvent) {
+        const target = e.target as HTMLElement
+        const widgetDOM = target.closest('[data-widget]') as HTMLElement
+
+        return widgetDOM
+    }
+
     public applyDimensions(
         target: HTMLElement | null,
         window: DesktopObject<DialogType.BASE | DialogType.WIDGET | DialogType.SHORTCUT>
