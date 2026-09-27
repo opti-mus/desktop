@@ -36,6 +36,7 @@ export type WindowConfig = Partial<{
   isVisible: boolean;
   isFocused: boolean;
   isResizable: boolean;
+  isHovered: boolean
 }>;
 
 export type WindowTemplate = {

@@ -6,6 +6,7 @@ export interface ShortcutStateSlice {
 
   addShortcut: (shortcut: Shortcut) => void;
   changeShortcutProps: (newProps: Partial<Shortcut>) => void
+  changePropsForAll: (props: Partial<Shortcut>) => void
 }
 
 export const createShortcutSlice: StateCreator<
@@ -23,6 +24,14 @@ export const createShortcutSlice: StateCreator<
           shortcuts: get().shortcuts.map(item => {
             if (item.id === props.id) return { ...item, ...props }
             return item
+          })
+        }));
+      },
+      changePropsForAll: (props: Partial<Shortcut>) => {
+        set(() => ({
+          shortcuts: get().shortcuts.map(item => {
+            return { ...item, ...props }
+
           })
         }));
       },
