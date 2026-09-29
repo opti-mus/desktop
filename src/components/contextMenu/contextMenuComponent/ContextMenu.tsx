@@ -127,7 +127,10 @@ export const ContextMenu = ({ handleAddWindow, handleAddWidget }: ContextMenuPro
                             </WrapperSubMenuStyles>
                         </MenuItemStyles>
                         <MenuItemStyles>
-                            <ContextMenuSpan onClick={() => {}}>Change Background</ContextMenuSpan>
+                            <ContextMenuSpan onClick={() => {}}>
+                                <input type="file" />
+                                Change
+                            </ContextMenuSpan>
                         </MenuItemStyles>
                     </>
                 )}
