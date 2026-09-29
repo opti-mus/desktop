@@ -1,33 +1,31 @@
+import { useMutation } from '@tanstack/react-query'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../../hooks/api/useAuth'
+import { useConfig } from '../../hooks/api/useConfig'
 import { routes } from '../../router/routes'
-import { BASE_API } from '../../utils/constants'
 
 const LoginPage = () => {
     const navigate = useNavigate()
+    const { loginUser } = useAuth()
+
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
-    const submitHandler = async () => {
-        const body = { name, email, password }
-
-        try {
-            const res = await fetch(`${BASE_API}/auth/login`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(body)
-            })
-            const data = await res.json()
-
+    const { mutate } = useMutation({
+        mutationFn: loginUser,
+        onSuccess: data => {
             if (data?.token) {
                 localStorage.setItem('token', data?.token)
                 navigate(routes.desktop)
             }
-        } catch (error) {
-            console.log('@errr', error)
         }
+    })
+
+    const submitHandler = async () => {
+        const body = { email, password }
+
+        mutate(body)
     }
     return (
         <section>

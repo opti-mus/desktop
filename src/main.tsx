@@ -3,6 +3,8 @@ import { createRoot } from 'react-dom/client'
 import { createGlobalStyle } from 'styled-components'
 import { AppRouter } from './router/index.tsx'
 
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+
 const GlobalStyle = createGlobalStyle`
 * {
   margin: 0px;
@@ -10,28 +12,14 @@ const GlobalStyle = createGlobalStyle`
   box-sizing: border-box;
 } 
 
-input[type=text] {
-  width: 100%;
-  padding: 12px 20px;
-  margin-bottom: 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  outline: none;
-  box-sizing: border-box;
-  font-size: 16px;
-  transition: border-color 0.3s ease-in-out;
-}
-
-input[type=text]:focus {
-  border-color: #8c8c8c;
-}
 `
+const queryClient = new QueryClient()
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
-        <>
+        <QueryClientProvider client={queryClient}>
             <GlobalStyle />
             <AppRouter />
-        </>
+        </QueryClientProvider>
     </StrictMode>
 )

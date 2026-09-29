@@ -1,6 +1,7 @@
 import { useEffect } from "react"
 import { WindowController } from "../classes/WindowController"
 import { useGlobalStore } from "../state/state.global"
+import { useConfig } from "./api/useConfig"
 
 export const useInitListeners = () => {
 
@@ -9,9 +10,11 @@ export const useInitListeners = () => {
 
         windowController.addCallback(
             'mouseup',
-            (_, controller) => {
+            async (_, controller) => {
                 const store = useGlobalStore.getState()
-                if (controller.windowID) store.changeWindowProps({ id: controller.windowID, dimensions: controller.windowDimensions })
+                if (controller.windowID) {
+                    store.changeWindowProps({ id: controller.windowID, dimensions: controller.windowDimensions })
+                }
             },
             'save_window_dimension'
         )

@@ -1,9 +1,13 @@
+import { useQuery } from '@tanstack/react-query'
+import { useEffect } from 'react'
 import { AppStyles, WindowContainerStyles } from './App.styled'
+import { WindowController } from './classes/WindowController'
 import BackgroundDesktop from './components/background/BackgroundDesktop'
 import ShortcutComponent from './components/shortcut/ShortcutComponent'
 import StartMenu from './components/startMenu/startMenu'
 import { TodoList } from './components/widgets/todoList/TodoList'
 import WindowTable from './components/window/windowComponent/Window'
+import { useConfig } from './hooks/api/useConfig'
 import { useInitListeners } from './hooks/useInitListener'
 import { useGlobalStore } from './state/state.global'
 import { DialogType, type DesktopObject } from './types/config'
@@ -15,15 +19,26 @@ function App() {
 
     const shortcuts = useGlobalStore.use.shortcuts()
     const addShortcut = useGlobalStore.use.addShortcut()
+    const setShortcuts = useGlobalStore.use.setShortcuts()
 
     const mode = useGlobalStore.use.mode()
     const changeWindowProps = useGlobalStore.use.changeWindowProps()
 
     useInitListeners()
+    const { getConfig } = useConfig()
+
+    const { isSuccess, data } = useQuery({
+        queryKey: ['config'],
+        queryFn: async () => await getConfig('1')
+    })
+
+    useEffect(() => {
+        if (isSuccess && data?.data?.config) {
+            setShortcuts(data?.data?.config)
+        }
+    }, [isSuccess])
 
     const handleAddWindow = () => {
-        const count = windows.length + 1
-
         const render = () => (
             <div style={{ width: '100%', height: '100%' }}>
                 <iframe
@@ -85,6 +100,10 @@ function App() {
 
         addWindow(newWidget)
     }
+
+    useEffect(() => {
+        return new WindowController().destroy()
+    }, [])
 
     return (
         <WindowContainerStyles $previewUrl={previewUrl} $mode={mode}>

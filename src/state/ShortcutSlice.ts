@@ -1,5 +1,5 @@
 import type { StateCreator } from 'zustand';
-import type { Shortcut } from "../types/config";
+import type { DesktopObject, DialogType, Shortcut } from "../types/config";
 
 export interface ShortcutStateSlice {
   shortcuts: Shortcut[];
@@ -7,6 +7,8 @@ export interface ShortcutStateSlice {
   addShortcut: (shortcut: Shortcut) => void;
   changeShortcutProps: (newProps: Partial<Shortcut>) => void
   changePropsForAll: (props: Partial<Shortcut>) => void
+  setShortcuts: (newShortcuts: DesktopObject<DialogType.SHORTCUT>[]) => void
+
 }
 
 export const createShortcutSlice: StateCreator<
@@ -33,6 +35,11 @@ export const createShortcutSlice: StateCreator<
             return { ...item, ...props }
 
           })
+        }));
+      },
+      setShortcuts: (newShortcuts: DesktopObject<DialogType.SHORTCUT>[]) => {
+        set(() => ({
+          shortcuts: newShortcuts
         }));
       },
 

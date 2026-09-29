@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { WindowController } from '../../classes/WindowController'
+import { useConfig } from '../../hooks/api/useConfig'
 import { useGlobalStore } from '../../state/state.global'
 import type { Shortcut } from '../../types/config'
 import { ShortcutIcon, ShortcutStyles } from './Shortcut.styles'
@@ -12,6 +13,7 @@ const ShortcutComponent = ({ shortcut }: ShortcutProps) => {
     const { id, isHovered } = shortcut
 
     const changeShortcutProps = useGlobalStore.use.changeShortcutProps()
+    const { updateConfig } = useConfig()
 
     const refObject = useRef<HTMLDivElement | null>(null)
 
@@ -22,14 +24,16 @@ const ShortcutComponent = ({ shortcut }: ShortcutProps) => {
         shortcut.action?.()
     }
 
-    const savePositionHandler = () => {
+    const savePositionHandler = async () => {
         const controller = new WindowController()
         const position = controller.moveData.get(id)
+        const store = useGlobalStore.getState()
 
         controller.selectionModule.recalcSelections()
 
         if (position && !controller.selectionModule.selections.size) {
             changeShortcutProps({ id, position })
+            await updateConfig({ id: 1, data: store.shortcuts })
         }
         if (controller.selectionModule.selections.size) {
             controller.selectionModule.selections.forEach((item, inx) => {
