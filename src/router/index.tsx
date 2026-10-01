@@ -6,16 +6,16 @@ import {
     Route,
     RouterProvider
 } from 'react-router-dom'
-import { useAuth } from '../hooks/useAuth'
+import { getAccessToken } from '../helpers/token'
 import { privateRoutes, publicRoutes, routes } from './routes'
 
 const NavigateRoute = () => {
-    const isAuth = useAuth()
+    const isAuth = getAccessToken()
 
     return isAuth ? <Outlet /> : <Navigate to={routes.auth.login} replace />
 }
 const PublicRoute = () => {
-    const isAuth = useAuth()
+    const isAuth = getAccessToken()
 
     return !isAuth ? <Outlet /> : <Navigate to={routes.desktop} replace />
 }

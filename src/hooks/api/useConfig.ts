@@ -1,5 +1,6 @@
 import axios from "axios";
 import { clearAccessToken, getAccessToken } from "../../helpers/token";
+import type { DesktopObject, DialogType } from "../../types/config";
 import { BASE_API } from "../../utils/constants";
 
 
@@ -43,7 +44,7 @@ const client = createApiInstance(true)
 
 export const useConfig = () => {
 
-    const createConfig = async (data) => {
+    const createConfig = async (data: DesktopObject<DialogType.SHORTCUT>) => {
         try {
             const response = await client.post(`/config/create`, data)
             return response.data
@@ -52,7 +53,7 @@ export const useConfig = () => {
 
         }
     }
-    const updateConfig = async (data) => {
+    const updateConfig = async (data: Partial<DesktopObject<DialogType.SHORTCUT>>) => {
         try {
             const response = await client.put(`/config/update`, data)
             return response.data
@@ -75,7 +76,7 @@ export const useConfig = () => {
             const response = await client.get(`/config`)
             return response.data
         } catch (error) {
-            throw new Error(error)
+            throw new Error
 
         }
     }
