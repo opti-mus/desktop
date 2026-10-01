@@ -1,8 +1,26 @@
-import type { StoreApi, UseBoundStore } from 'zustand';
-import { create } from 'zustand';
+import type { StateCreator, StoreApi, UseBoundStore } from 'zustand';
+import { create as actualCreate } from 'zustand';
 import { createBackgroundSlice, type BackgroundStateSlice } from './BackgroundSlice';
 import { createShortcutSlice, type ShortcutStateSlice } from './ShortcutSlice';
 import { createWindowSlice, type WindowStateSlice } from './WindowSlice';
+
+const storeResetFns = new Set<() => void>()
+
+export const resetAllStores = () => {
+  storeResetFns.forEach((resetFn) => {
+    resetFn()
+  })
+}
+
+export const create = (<T>() => {
+  return (stateCreator: StateCreator<T>) => {
+    const store = actualCreate(stateCreator)
+    storeResetFns.add(() => {
+      store.setState(store.getInitialState(), true)
+    })
+    return store
+  }
+}) as typeof actualCreate
 
 type WithSelectors<S> = S extends { getState: () => infer T }
   ? S & { use: { [K in keyof T]: () => T[K] } }
