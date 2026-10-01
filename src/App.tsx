@@ -113,7 +113,7 @@ function App() {
 
         controller.init()
 
-        return controller.destroy()
+        return () => controller.destroy()
     }, [])
 
     return (

@@ -71,8 +71,8 @@ export class WindowController {
         document.addEventListener('mousemove', this.mouseMoveHandler.bind(this))
         document.addEventListener('mouseup', this.mouseUpHandler.bind(this))
 
-        this.bindCallbacks()
         this.selectionModule.init()
+        // this.bindCallbacks()
     }
 
     public destroy() {
