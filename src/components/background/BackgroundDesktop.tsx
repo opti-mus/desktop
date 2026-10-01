@@ -1,7 +1,12 @@
 import { useRef } from 'react'
 import { BackgroundMode } from '../../state/BackgroundSlice'
 import { globalStore } from '../../state/state.global'
-import { BackgroundStyles } from './BackgroundDesktop.styles'
+import {
+    BackgroundButtonStyles,
+    BackgroundInputStyles,
+    BackgroundLabelStyles,
+    BackgroundStyles
+} from './BackgroundDesktop.styles'
 import { allowedTypes, handleChangeBackground } from './background.utils'
 
 const BackgroundDesktop = () => {
@@ -11,8 +16,8 @@ const BackgroundDesktop = () => {
 
     return (
         <BackgroundStyles>
-            <label htmlFor="background-desktop">
-                <input
+            <BackgroundLabelStyles htmlFor="background-desktop">
+                <BackgroundInputStyles
                     ref={fileInputRef}
                     type="file"
                     id="background-desktop"
@@ -21,10 +26,10 @@ const BackgroundDesktop = () => {
                     onChange={e => handleChangeBackground(e, fileInputRef, setBackground)}
                 />
                 <span>Change background</span>
-            </label>
-            <button onClick={() => setMode(BackgroundMode.CONTAIN)}>Contain</button>
-            <button onClick={() => setMode(BackgroundMode.COVER)}>Cover</button>
-            <button onClick={() => setMode(BackgroundMode.FILL)}>Fill</button>
+            </BackgroundLabelStyles>
+            <BackgroundButtonStyles onClick={() => setMode(BackgroundMode.CONTAIN)}>Contain</BackgroundButtonStyles>
+            <BackgroundButtonStyles onClick={() => setMode(BackgroundMode.COVER)}>Cover</BackgroundButtonStyles>
+            <BackgroundButtonStyles onClick={() => setMode(BackgroundMode.FILL)}>Fill</BackgroundButtonStyles>
         </BackgroundStyles>
     )
 }

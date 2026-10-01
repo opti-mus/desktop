@@ -17,24 +17,29 @@ export const TodoTaskStyles = styled.div`
     gap: 8px;
     justify-content: center;
 
-    input {
-        height: 40px;
-        min-width: 100px;
-        background-color: rgba(255, 255, 255, 0.8);
-    }
-
-    button {
-        padding: 0px 12px;
-        height: 40px;
-        margin-right: 20px;
-        border: 1px solid #d3d3d3;
-        border-radius: 5px;
-        background-color: #e4e3e3;
-        transition: all 0.3s ease-in-out;
-
-        &:hover {
-            border-color: #8c8c8c;
-            background-color: #e4e3e3;
-        }
-    }
 `
+
+export const TodoTaskInputStyles = styled.input`
+    height: 40px;
+    min-width: 100px;
+
+    background-color: rgba(255, 255, 255, 0.8);
+`
+
+export const TodoTaskButtonStyles = styled.button`
+    height: 40px;
+    
+    padding: 0px 12px;
+    margin-right: 20px;
+
+    border: 1px solid #d3d3d3;
+    border-radius: 5px;
+
+    background-color: #e4e3e3;
+
+    transition: all 0.3s ease-in-out;
+
+    &:hover {
+        border-color: #8c8c8c;
+        background-color: #e4e3e3;
+    }`

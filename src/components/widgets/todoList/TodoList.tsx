@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
 import type { Todo } from '../../../types/config'
-import { TodoListItem } from '../todoListIterm/TodoListItem'
-import { TodoListStyles, TodoTaskStyles } from './TodoList.styles'
+import { TodoListItem } from '../todoListItem/TodoListItem'
+import { TodoListStyles, TodoTaskButtonStyles, TodoTaskInputStyles, TodoTaskStyles } from './TodoList.styles'
 
 export const TodoList = () => {
     const [todoList, setTodoList] = useState<Todo[]>([])
@@ -34,7 +34,7 @@ export const TodoList = () => {
         <TodoListStyles>
             <h2>Todo List</h2>
             <TodoTaskStyles>
-                <input
+                <TodoTaskInputStyles
                     ref={refTodoInput}
                     type="text"
                     placeholder="Add a new todo..."
@@ -43,7 +43,7 @@ export const TodoList = () => {
                     onChange={e => setTodoText(e.target.value)}
                     onKeyDown={handleClickEnter}
                 />
-                <button onClick={handleAddTodo}>Add Todo</button>
+                <TodoTaskButtonStyles onClick={handleAddTodo}>Add Todo</TodoTaskButtonStyles>
             </TodoTaskStyles>
             <TodoListItem todoList={todoList} setTodoList={setTodoList} />
         </TodoListStyles>

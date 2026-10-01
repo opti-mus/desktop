@@ -89,6 +89,7 @@ export const MenuItemStyles = styled.div<MenuItem>`
     align-items: center;
 
     padding: 5px 8px;
+
     border-bottom: 1px solid #ccc;
 
     &:last-child {
@@ -108,10 +109,10 @@ export const MenuItemStyles = styled.div<MenuItem>`
 `
 
 export const ContextMenuSpan = styled.span`
-position: relative;
+    position: relative;
 `
 
 export const ContextMenuInputFile = styled.input.attrs({ type: 'file' })`
-position: absolute;
-opacity: 0;
+    position: absolute;
+    opacity: 0;
 `
