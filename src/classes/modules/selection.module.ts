@@ -32,6 +32,12 @@ export class SelectionModule {
 
     }
 
+    public destroy() {
+        this.engine.removeCallback('mousemove', 'selections_move')
+        this.engine.removeCallback('mouseup', 'selection_up')
+        this.engine.removeCallback('mousedown', 'selection_start')
+    }
+
     private initListeners() {
         this.engine.addCallback('mousemove', (e, engine) => {
 

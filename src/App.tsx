@@ -1,9 +1,13 @@
+import { useMutation, useQuery } from '@tanstack/react-query'
+import { useEffect } from 'react'
 import { AppStyles, WindowContainerStyles } from './App.styled'
+import { WindowController } from './classes/WindowController'
 import BackgroundDesktop from './components/background/BackgroundDesktop'
 import ShortcutComponent from './components/shortcut/ShortcutComponent'
 import StartMenu from './components/startMenu/startMenu'
 import { TodoList } from './components/widgets/todoList/TodoList'
 import WindowTable from './components/window/windowComponent/Window'
+import { useConfig } from './hooks/api/useConfig'
 import { useInitListeners } from './hooks/useInitListener'
 import { useGlobalStore } from './state/state.global'
 import { DialogType, type DesktopObject } from './types/config'
@@ -15,15 +19,34 @@ function App() {
 
     const shortcuts = useGlobalStore.use.shortcuts()
     const addShortcut = useGlobalStore.use.addShortcut()
+    const setShortcuts = useGlobalStore.use.setShortcuts()
 
     const mode = useGlobalStore.use.mode()
     const changeWindowProps = useGlobalStore.use.changeWindowProps()
 
+    const { createConfig, getAllConfigs } = useConfig()
     useInitListeners()
 
-    const handleAddWindow = () => {
-        const count = windows.length + 1
+    const { isSuccess, data } = useQuery({
+        queryKey: ['config'],
+        queryFn: async () => await getAllConfigs()
+    })
 
+    const { mutate: createConfigMt } = useMutation({
+        mutationFn: createConfig,
+        onSuccess: res => {
+            addShortcut(res.data)
+            addWindow(res.data)
+        }
+    })
+
+    useEffect(() => {
+        if (isSuccess && data?.data) {
+            setShortcuts(data?.data)
+        }
+    }, [isSuccess])
+
+    const handleAddWindow = async () => {
         const render = () => (
             <div style={{ width: '100%', height: '100%' }}>
                 <iframe
@@ -65,8 +88,7 @@ function App() {
             newWindow: newWindow.id
         }
 
-        addShortcut(shortcut)
-        addWindow(newWindow)
+        createConfigMt(shortcut)
     }
 
     const handleAddWidget = () => {
@@ -85,6 +107,14 @@ function App() {
 
         addWindow(newWidget)
     }
+
+    useEffect(() => {
+        const controller = new WindowController()
+
+        controller.init()
+
+        return controller.destroy()
+    }, [])
 
     return (
         <WindowContainerStyles $previewUrl={previewUrl} $mode={mode}>
