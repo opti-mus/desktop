@@ -1,7 +1,7 @@
 import { lazy, type JSX, type LazyExoticComponent } from "react"
 
-const LoginPage = lazy(() => import('../pages/auth/LoginPage'))
-const SignUpPage = lazy(() => import('../pages/auth/SignUpPage'))
+const LoginPage = lazy(() => import('../pages/auth/LoginPage/LoginPage'))
+const SignUpPage = lazy(() => import('../pages/auth/SigUpPage/SignUpPage'))
 const DesktopPage = lazy(() => import('../App'))
 
 export interface PageMeta {

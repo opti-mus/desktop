@@ -109,7 +109,11 @@ function App() {
     }
 
     useEffect(() => {
-        return new WindowController().destroy()
+        const controller = new WindowController()
+
+        controller.init()
+
+        return controller.destroy()
     }, [])
 
     return (

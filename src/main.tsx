@@ -10,6 +10,7 @@ const GlobalStyle = createGlobalStyle`
   margin: 0px;
   padding: 0px;
   box-sizing: border-box;
+  font-family: 'Courier New', Courier, monospace;
 } 
 
 `

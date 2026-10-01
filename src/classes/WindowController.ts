@@ -64,8 +64,6 @@ export class WindowController {
 
         WindowController.instance = this
 
-        this.init()
-
     }
 
     public init() {
@@ -81,6 +79,8 @@ export class WindowController {
         document.removeEventListener('mousedown', this.mouseDownHandler)
         document.removeEventListener('mousemove', this.mouseMoveHandler)
         document.removeEventListener('mouseup', this.mouseUpHandler)
+
+        this.selectionModule.destroy()
     }
 
     private mouseDownHandler(e: MouseEvent) {
@@ -350,6 +350,17 @@ export class WindowController {
                 entry.invocationCount += 1
                 entry.callback(eventData, this)
             })
+        }
+    }
+
+    public removeCallback(event: BindingEvent, flag?: string) {
+        const callbacks = this.bindings.get(event)
+        if (callbacks && flag) {
+            const filtered = callbacks.filter(entry => entry.flag !== flag)
+            this.bindings.set(event, filtered)
+        }
+        if (callbacks && !flag) {
+            this.bindings.set(event, [])
         }
     }
 
