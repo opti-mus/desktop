@@ -1,22 +1,22 @@
 import styled from 'styled-components'
 
 type ContextMenuProps = {
-    $pos: ContextmenuPos
-    $isOpen: boolean
+    $menuPosition: ContextMenuPosition
+    $isMenuOpen: boolean
 }
 
 type WrapperSubMenu = {
-    $reversX: boolean
-    $reversY: boolean
+    $reverseMenuX: boolean
+    $reverseMenuY: boolean
 }
 
-type ContextmenuPos = {
+type ContextMenuPosition = {
     x: number
     y: number
 }
 
 type MenuItem = {
-    $isOpen?: boolean
+    $isMenuOpen?: boolean
 }
 
 export const ContextMenuStyles = styled.div<ContextMenuProps>`
@@ -25,9 +25,9 @@ export const ContextMenuStyles = styled.div<ContextMenuProps>`
 
     position: absolute;
 
-    transform: translate(${({ $pos }) => $pos.x}px, ${({ $pos }) => $pos.y}px);
+    transform: translate(${({ $menuPosition }) => $menuPosition.x}px, ${({ $menuPosition }) => $menuPosition.y}px);
 
-    visibility: ${({ $isOpen }) => ($isOpen ? 'visible' : 'hidden')};
+    visibility: ${({ $isMenuOpen }) => ($isMenuOpen ? 'visible' : 'hidden')};
 
     background-color: #fefefe;
 
@@ -53,8 +53,8 @@ export const WrapperSubMenuStyles = styled.div<WrapperSubMenu>`
 
     position: absolute;
 
-    top: ${({ $reversY }) => ($reversY ? '-100%' : '0')};
-    left: ${({ $reversX }) => ($reversX ? '-100%' : '100%')};
+    top: ${({ $reverseMenuY }) => ($reverseMenuY ? '-100%' : '0')};
+    left: ${({ $reverseMenuX }) => ($reverseMenuX ? '-100%' : '100%')};
 
     visibility: hidden;
     opacity: 0;
@@ -102,9 +102,16 @@ export const MenuItemStyles = styled.div<MenuItem>`
     &[data-create]:hover ${WrapperSubMenuStyles} {
         display: flex;
 
-        visibility: ${({ $isOpen }) => ($isOpen ? 'visible' : 'hidden')};
-        opacity: ${({ $isOpen }) => ($isOpen ? 1 : 0)};
+        visibility: ${({ $isMenuOpen }) => ($isMenuOpen ? 'visible' : 'hidden')};
+        opacity: ${({ $isMenuOpen }) => ($isMenuOpen ? 1 : 0)};
     }
 `
 
-export const ContextMenuSpan = styled.span``
+export const ContextMenuSpan = styled.span`
+position: relative;
+`
+
+export const ContextMenuInputFile = styled.input.attrs({ type: 'file' })`
+position: absolute;
+opacity: 0;
+`

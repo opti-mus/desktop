@@ -6,7 +6,6 @@ type WindowContainerStyleProps = {
 }
 
 export const AppStyles = styled.div`
-    /* min-width: 100vw; */
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
@@ -24,3 +23,6 @@ export const WindowContainerStyles = styled.div<WindowContainerStyleProps>`
     background-position: center;
     background-repeat: no-repeat;
 `
+
+export const WindowContainerTitle = styled.h1`
+    text-shadow: 2px 2px 4px rgba(235, 235, 235, 0.5);`

@@ -1,4 +1,4 @@
-import { AppStyles, WindowContainerStyles } from './App.styled'
+import { AppStyles, WindowContainerStyles, WindowContainerTitle } from './App.styled'
 import BackgroundDesktop from './components/background/BackgroundDesktop'
 import { ContextMenu } from './components/contextMenu/contextMenuComponent/ContextMenu'
 import ShortcutComponent from './components/shortcut/ShortcutComponent'
@@ -90,7 +90,7 @@ function App() {
     return (
         <WindowContainerStyles $previewUrl={previewUrl} $mode={mode}>
             <ContextMenu handleAddWindow={handleAddWindow} handleAddWidget={handleAddWidget} />
-            <h1>Hello World</h1>
+            <WindowContainerTitle>Hello World</WindowContainerTitle>
             <button onClick={() => handleAddWindow()}>DOOOM!!!</button>
             <button onClick={() => handleAddWidget()}>Add Widget</button>
             <AppStyles>

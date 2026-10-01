@@ -2,50 +2,23 @@ import { useRef } from 'react'
 import { BackgroundMode } from '../../state/BackgroundSlice'
 import { globalStore } from '../../state/state.global'
 import { BackgroundStyles } from './BackgroundDesktop.styles'
-
-const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+import { allowedTypes, handleChangeBackground } from './background.utils'
 
 const BackgroundDesktop = () => {
     const { setMode, setBackground } = globalStore()
 
-    const fileInput = useRef<HTMLInputElement>(null)
-
-    const handleChangeBackground = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0]
-
-        if (!file || !fileInput.current) return
-
-        if (!allowedTypes.includes(file.type)) {
-            alert('Недопустимый формат файла (MIME)!')
-            fileInput.current.value = ''
-            return
-        }
-
-        const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif']
-        const fileName = file.name.toLowerCase()
-        const isValidExt = allowedExtensions.some(ext => fileName.endsWith(ext))
-
-        if (!isValidExt) {
-            alert('Неверное расширение файла!')
-            fileInput.current.value = ''
-            return
-        }
-
-        if (file) {
-            setBackground(file)
-        }
-    }
+    const fileInputRef = useRef<HTMLInputElement>(null)
 
     return (
         <BackgroundStyles>
             <label htmlFor="background-desktop">
                 <input
-                    ref={fileInput}
+                    ref={fileInputRef}
                     type="file"
                     id="background-desktop"
                     name="background"
                     accept={allowedTypes.join(', ')}
-                    onChange={handleChangeBackground}
+                    onChange={e => handleChangeBackground(e, fileInputRef, setBackground)}
                 />
                 <span>Change background</span>
             </label>
