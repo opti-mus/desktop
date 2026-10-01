@@ -328,19 +328,19 @@ export class WindowController {
         this.bindings.set(event, unique)
     }
 
-    private bindCallbacks() {
-        this.bindings.set('mousedown', [])
-        this.bindings.set('mousemove', [])
-        this.bindings.set('mouseup', [])
+    // private bindCallbacks() {
+    //     this.bindings.set('mousedown', [])
+    //     this.bindings.set('mousemove', [])
+    //     this.bindings.set('mouseup', [])
 
-        this.bindings.set('selection:start', [])
-        this.bindings.set('selection:move', [])
-        this.bindings.set('selection:end', [])
-        this.bindings.set('selection:clear', [])
+    //     this.bindings.set('selection:start', [])
+    //     this.bindings.set('selection:move', [])
+    //     this.bindings.set('selection:end', [])
+    //     this.bindings.set('selection:clear', [])
 
-        this.bindings.set('grab:bulk', [])
+    //     this.bindings.set('grab:bulk', [])
 
-    }
+    // }
 
     public triggerCallbacks(event: BindingEvent, eventData: MouseEvent) {
         const callbacks = this.bindings.get(event)
