@@ -70,6 +70,15 @@ export const useConfig = () => {
 
         }
     }
+    const getAllConfigs = async () => {
+        try {
+            const response = await client.get(`/config`)
+            return response.data
+        } catch (error) {
+            throw new Error(error)
 
-    return { createConfig, updateConfig, getConfig }
+        }
+    }
+
+    return { createConfig, updateConfig, getConfig, getAllConfigs }
 }

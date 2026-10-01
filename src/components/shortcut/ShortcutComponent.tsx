@@ -28,17 +28,22 @@ const ShortcutComponent = ({ shortcut }: ShortcutProps) => {
         const controller = new WindowController()
         const position = controller.moveData.get(id)
         const store = useGlobalStore.getState()
+        const config = store.shortcuts.find(item => item.id === id)
 
         controller.selectionModule.recalcSelections()
 
         if (position && !controller.selectionModule.selections.size) {
             changeShortcutProps({ id, position })
-            await updateConfig({ id: 1, data: store.shortcuts })
+
+            if (config) await updateConfig({ ...config, position })
         }
         if (controller.selectionModule.selections.size) {
-            controller.selectionModule.selections.forEach((item, inx) => {
-                changeShortcutProps({ id: inx, position: { x: item.x, y: item.y } })
-            })
+            for (const item of controller.selectionModule.selections) {
+                const [id, { x, y }] = item
+
+                changeShortcutProps({ id, position: { x, y } })
+                await updateConfig({ id, position: { x, y } })
+            }
         }
     }
 
