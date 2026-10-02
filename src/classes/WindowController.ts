@@ -295,16 +295,16 @@ export class WindowController {
         this.resetMove()
     }
 
+    // public getDesktopDOM(e: MouseEvent, data_attr: string) {
+    //     const target = e.target as HTMLElement
+    //     const windowDOM = target.closest(`[${data_attr}]`) as HTMLElement
+
+    //     return windowDOM
+    // }
+
     public getWindowDOM(e: MouseEvent) {
         const target = e.target as HTMLElement
-        const windowDOM = target.closest('[data-window]') as HTMLElement
-
-        return windowDOM
-    }
-
-    public getWidgetDOM(e: MouseEvent) {
-        const target = e.target as HTMLElement
-        const widgetDOM = target.closest('[data-widget]') as HTMLElement
+        const widgetDOM = target.closest('[data-window]') as HTMLElement
 
         return widgetDOM
     }

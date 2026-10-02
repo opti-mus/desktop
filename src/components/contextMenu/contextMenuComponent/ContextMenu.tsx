@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { WindowController } from '../../../classes/WindowController'
 import { useGlobalStore } from '../../../state/state.global'
-import type { DesktopObject, DialogType, MousePosition } from '../../../types/config'
+import { DialogType, type DesktopObject, type MousePosition } from '../../../types/config'
 import { allowedTypes, handleChangeBackground } from '../../background/background.utils'
 import {
     ContextMenuInputFile,
@@ -25,23 +25,48 @@ type Revers = {
 }
 
 export const ContextMenu = ({ handleAddWindow, handleAddWidget }: ContextMenuProps) => {
-    const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false)
-    const [reverseMenu, setReverseMenu] = useState<Revers>({ reverseMenuX: false, reverseMenuY: false })
-    const [TargetId, setTargetId] = useState('')
-    const [menuPosition, setMenuPosition] = useState<MousePosition>({ x: 0, y: 0 })
-
-    const refMenu = useRef<HTMLDivElement | null>(null)
-    const refWrapperMenu = useRef<HTMLDivElement | null>(null)
-    const refInputFile = useRef<HTMLInputElement | null>(null)
-
     const closeWindow = useGlobalStore.use.closeWindow()
     const closeShortcut = useGlobalStore.use.closeShortcut()
 
     const { setBackground } = useGlobalStore()
 
-    const renderContextMenu = (contextMenu: string) => {
-        switch (contextMenu) {
-            case 'desktop':
+    const refMenu = useRef<HTMLDivElement | null>(null)
+    const refWrapperMenu = useRef<HTMLDivElement | null>(null)
+    const refInputFile = useRef<HTMLInputElement | null>(null)
+
+    const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false)
+    const [reverseMenu, setReverseMenu] = useState<Revers>({ reverseMenuX: false, reverseMenuY: false })
+    const [windowType, setWindowType] = useState<DialogType | ''>('')
+    const [menuPosition, setMenuPosition] = useState<MousePosition>({ x: 0, y: 0 })
+    const [targetID, setTargetID] = useState<string>('')
+
+    const closeMenu = () => {
+        setIsMenuOpen(false)
+        setWindowType('')
+    }
+    const closeDesktopItem = () => {
+        switch (windowType) {
+            case DialogType.WIDGET:
+            case DialogType.BASE:
+                closeWindow(targetID)
+                break
+            case DialogType.SHORTCUT:
+                closeShortcut(targetID)
+                break
+        }
+        closeMenu()
+    }
+    const renderContextMenu = () => {
+        switch (windowType) {
+            case DialogType.WIDGET:
+            case DialogType.SHORTCUT:
+            case DialogType.BASE:
+                return (
+                    <MenuItemStyles onClick={closeDesktopItem}>
+                        <ContextMenuSpan>close</ContextMenuSpan>
+                    </MenuItemStyles>
+                )
+            default:
                 return (
                     <>
                         <MenuItemStyles data-create $isMenuOpen={isMenuOpen}>
@@ -85,20 +110,6 @@ export const ContextMenu = ({ handleAddWindow, handleAddWidget }: ContextMenuPro
                         </MenuItemStyles>
                     </>
                 )
-            case 'window':
-                return (
-                    <MenuItemStyles
-                        onClick={() => {
-                            if (TargetId) {
-                                closeWindow(TargetId)
-                                closeShortcut(TargetId)
-                                setIsMenuOpen(false)
-                                setTargetId('')
-                            }
-                        }}>
-                        <ContextMenuSpan>close</ContextMenuSpan>
-                    </MenuItemStyles>
-                )
         }
     }
 
@@ -109,12 +120,12 @@ export const ContextMenu = ({ handleAddWindow, handleAddWidget }: ContextMenuPro
             'contextmenu',
             (e, ctrl) => {
                 const windowDOM = ctrl.getWindowDOM(e)
-                const widgetDom = ctrl.getWidgetDOM(e)
+                const type = windowDOM?.dataset?.type as DialogType | undefined
 
                 setIsMenuOpen(true)
 
-                if (windowDOM?.id) setTargetId(windowDOM?.id)
-                if (widgetDom?.id) setTargetId(widgetDom?.id)
+                if (type) setWindowType(type)
+                if (windowDOM?.id) setTargetID(windowDOM?.id)
 
                 let x = e.clientX
                 let y = e.clientY
@@ -157,7 +168,7 @@ export const ContextMenu = ({ handleAddWindow, handleAddWidget }: ContextMenuPro
             e => {
                 if (refMenu.current && !refMenu?.current.contains(e.target as Node)) {
                     setIsMenuOpen(false)
-                    setTargetId('')
+                    setWindowType('')
                 }
             },
             'close_ctx'
@@ -166,9 +177,7 @@ export const ContextMenu = ({ handleAddWindow, handleAddWidget }: ContextMenuPro
 
     return (
         <ContextMenuStyles ref={refMenu} $menuPosition={menuPosition} $isMenuOpen={isMenuOpen}>
-            <ContextMenuItemStyles>
-                {!TargetId ? renderContextMenu('desktop') : renderContextMenu('window')}
-            </ContextMenuItemStyles>
+            <ContextMenuItemStyles>{renderContextMenu()}</ContextMenuItemStyles>
         </ContextMenuStyles>
     )
 }

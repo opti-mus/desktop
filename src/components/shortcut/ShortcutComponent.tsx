@@ -9,7 +9,7 @@ type ShortcutProps = {
 }
 
 const ShortcutComponent = ({ shortcut }: ShortcutProps) => {
-    const { id, isHovered } = shortcut
+    const { id, isHovered, type } = shortcut
 
     const changeShortcutProps = useGlobalStore.use.changeShortcutProps()
 
@@ -45,6 +45,7 @@ const ShortcutComponent = ({ shortcut }: ShortcutProps) => {
     return (
         <ShortcutStyles
             ref={refObject}
+            data-type={type}
             data-window={id}
             data-shortcut={id}
             $isHovered={isHovered}
