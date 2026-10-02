@@ -20,3 +20,14 @@ export const StartMenuWrapper = styled.div`
     gap: 1rem;
     height: 100%;
 `
+export const LogoutButtonStyles = styled.button`
+    position: absolute;
+    right: 5%;
+
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+`

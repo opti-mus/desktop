@@ -69,7 +69,6 @@ export class WindowController {
 
         WindowController.instance = this
 
-        this.init()
     }
 
     public init() {
@@ -78,8 +77,8 @@ export class WindowController {
         document.addEventListener('mouseup', this.mouseUpHandler.bind(this))
         document.addEventListener('contextmenu', this.contextMenuHandler.bind(this))
 
-        this.bindCallbacks()
         this.selectionModule.init()
+        // this.bindCallbacks()
     }
 
     public destroy() {
@@ -87,6 +86,8 @@ export class WindowController {
         document.removeEventListener('mousemove', this.mouseMoveHandler)
         document.removeEventListener('mouseup', this.mouseUpHandler)
         document.addEventListener('contextmenu', this.contextMenuHandler.bind(this))
+
+        this.selectionModule.destroy()
     }
 
     private contextMenuHandler(e: MouseEvent) {
@@ -354,12 +355,13 @@ export class WindowController {
         this.bindings.set('mouseup', [])
         this.bindings.set('contextmenu', [])
 
-        this.bindings.set('selection:start', [])
-        this.bindings.set('selection:move', [])
-        this.bindings.set('selection:end', [])
-        this.bindings.set('selection:clear', [])
+        //     this.bindings.set('selection:start', [])
+        //     this.bindings.set('selection:move', [])
+        //     this.bindings.set('selection:end', [])
+        //     this.bindings.set('selection:clear', [])
 
         this.bindings.set('grab:bulk', [])
+
     }
 
     public triggerCallbacks(event: BindingEvent, eventData: MouseEvent) {
@@ -370,6 +372,17 @@ export class WindowController {
                 entry.invocationCount += 1
                 entry.callback(eventData, this)
             })
+        }
+    }
+
+    public removeCallback(event: BindingEvent, flag?: string) {
+        const callbacks = this.bindings.get(event)
+        if (callbacks && flag) {
+            const filtered = callbacks.filter(entry => entry.flag !== flag)
+            this.bindings.set(event, filtered)
+        }
+        if (callbacks && !flag) {
+            this.bindings.set(event, [])
         }
     }
 

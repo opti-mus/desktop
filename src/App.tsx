@@ -1,10 +1,13 @@
+import { useEffect } from 'react'
 import { AppButtonStyles, AppStyles, WindowContainerStyles, WindowContainerTitle } from './App.styled'
+import { WindowController } from './classes/WindowController'
 import BackgroundDesktop from './components/background/BackgroundDesktop'
 import { ContextMenu } from './components/contextMenu/contextMenuComponent/ContextMenu'
 import ShortcutComponent from './components/shortcut/ShortcutComponent'
 import StartMenu from './components/startMenu/startMenu'
 import { TodoList } from './components/widgets/todoList/TodoList'
 import WindowTable from './components/window/windowComponent/Window'
+import { useConfig } from './hooks/api/useConfig'
 import { useInitListeners } from './hooks/useInitListener'
 import { useGlobalStore } from './state/state.global'
 import { DialogType, type DesktopObject } from './types/config'
@@ -15,14 +18,34 @@ function App() {
     const addWindow = useGlobalStore.use.addWindow()
 
     const shortcuts = useGlobalStore.use.shortcuts()
-    const addShortcut = useGlobalStore.use.addShortcut()
+    const setShortcuts = useGlobalStore.use.setShortcuts()
 
     const mode = useGlobalStore.use.mode()
     const changeWindowProps = useGlobalStore.use.changeWindowProps()
 
+    const queryClient = useQueryClient()
+    const { createConfig, getAllConfigs } = useConfig()
     useInitListeners()
 
-    const handleAddWindow = (props?: Partial<DesktopObject<DialogType.SHORTCUT>>) => {
+    const { isSuccess, data } = useQuery({
+        queryKey: ['config'],
+        queryFn: async () => await getAllConfigs()
+    })
+
+    const { mutate: createConfigMt } = useMutation({
+        mutationFn: createConfig,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['config'] })
+        }
+    })
+
+    useEffect(() => {
+        if (isSuccess && data?.data) {
+            setShortcuts(data?.data)
+        }
+    }, [isSuccess, data])
+
+    const handleAddWindow = async (props?: Partial<DesktopObject<DialogType.SHORTCUT>>) => {
         const render = () => (
             <div style={{ width: '100%', height: '100%' }}>
                 <iframe
@@ -64,9 +87,9 @@ function App() {
             },
             newWindow: newWindow.id
         }
-
-        addShortcut(shortcut)
         addWindow(newWindow)
+
+        createConfigMt(shortcut)
     }
 
     const handleAddWidget = (props?: Partial<DesktopObject<DialogType.WIDGET>>) => {
@@ -86,6 +109,14 @@ function App() {
 
         addWindow(newWidget)
     }
+
+    useEffect(() => {
+        const controller = new WindowController()
+
+        controller.init()
+
+        return () => controller.destroy()
+    }, [])
 
     return (
         <WindowContainerStyles $previewUrl={previewUrl} $mode={mode}>

@@ -9,9 +9,11 @@ export const useInitListeners = () => {
 
         windowController.addCallback(
             'mouseup',
-            (_, controller) => {
+            async (_, controller) => {
                 const store = useGlobalStore.getState()
-                if (controller.windowID) store.changeWindowProps({ id: controller.windowID, dimensions: controller.windowDimensions })
+                if (controller.windowID) {
+                    store.changeWindowProps({ id: controller.windowID, dimensions: controller.windowDimensions })
+                }
             },
             'save_window_dimension'
         )
