@@ -1,26 +1,29 @@
-import styled from "styled-components";
+import styled from 'styled-components'
 
 type WindowTableStylesProps = {
-  $isMaximized: boolean;
-  $isOpen: boolean;
-  $isFocused: boolean;
+    $isMaximized: boolean
+    $isOpen: boolean
+    $isFocused: boolean
 }
 
 export const WindowTableStyles = styled.div<WindowTableStylesProps>`
-  width: ${({ $isMaximized }) => ($isMaximized ? "100vw !important" : "700px")};
-  height: ${({ $isMaximized }) => ($isMaximized ? "100vh !important" : "500px")};
+    width: ${({ $isMaximized }) => ($isMaximized ? '100vw !important' : '700px')};
+    min-width: 350px;
+    height: ${({ $isMaximized }) => ($isMaximized ? '100vh !important' : '500px')};
+    min-height: 350px;
 
-  background-color: #f0f0f0;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  padding: 10px;
+    overflow: hidden;
 
-  display: ${({ $isOpen }) => ($isOpen ? "flex" : "none")};
-  flex-direction: column;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
 
-  position: absolute;
-  top: 0;
-  left: 0;
-  
-  z-index: ${({ $isFocused }) => ($isFocused ? 1000 : 1)};
-  `;
+    display: ${({ $isOpen }) => ($isOpen ? 'flex' : 'none')};
+    flex-direction: column;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    z-index: ${({ $isFocused }) => ($isFocused ? 1000 : 1)};
+`

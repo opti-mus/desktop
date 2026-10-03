@@ -1,20 +1,19 @@
-import type { DesktopObject, DialogType, MousePosition, WindowDimension } from "../types/config"
-import { parseTranslate } from "../utils"
-import { SelectionModule } from "./modules/selection.module"
-
+import type { DesktopObject, DialogType, MousePosition, WindowDimension } from '../types/config'
+import { parseTranslate } from '../utils'
+import { SelectionModule } from './modules/selection.module'
 
 type StartMoveType = {
-    left: boolean,
-    right: boolean,
-    top: boolean,
+    left: boolean
+    right: boolean
+    top: boolean
     bottom: boolean
 }
 type StartDataType = {
-    mouseX: number,
-    mouseY: number,
-    width: number,
-    height: number,
-    translateX: number,
+    mouseX: number
+    mouseY: number
+    width: number
+    height: number
+    translateX: number
     translateY: number
 }
 type BindType = {
@@ -22,7 +21,16 @@ type BindType = {
     callback: (event: MouseEvent, instance: WindowController) => void
     invocationCount: number
 }
-type BindingEvent = 'mousedown' | 'mouseup' | 'mousemove' | 'selection:start' | 'selection:move' | 'selection:end' | 'selection:clear' | 'grab:bulk'
+type BindingEvent =
+    | 'mousedown'
+    | 'mouseup'
+    | 'mousemove'
+    | 'contextmenu'
+    | 'selection:start'
+    | 'selection:move'
+    | 'selection:end'
+    | 'selection:clear'
+    | 'grab:bulk'
 
 export class WindowController {
     static instance: WindowController
@@ -38,8 +46,6 @@ export class WindowController {
     public refWindow: HTMLElement | null
     public isDragging: boolean
     public isResizing: boolean
-
-
 
     constructor() {
         this.selectionModule = new SelectionModule(this)
@@ -59,7 +65,6 @@ export class WindowController {
         this.isDragging = false
         this.isResizing = false
 
-
         if (WindowController.instance) return WindowController.instance
 
         WindowController.instance = this
@@ -70,6 +75,7 @@ export class WindowController {
         document.addEventListener('mousedown', this.mouseDownHandler.bind(this))
         document.addEventListener('mousemove', this.mouseMoveHandler.bind(this))
         document.addEventListener('mouseup', this.mouseUpHandler.bind(this))
+        document.addEventListener('contextmenu', this.contextMenuHandler.bind(this))
 
         this.selectionModule.init()
         // this.bindCallbacks()
@@ -79,10 +85,15 @@ export class WindowController {
         document.removeEventListener('mousedown', this.mouseDownHandler)
         document.removeEventListener('mousemove', this.mouseMoveHandler)
         document.removeEventListener('mouseup', this.mouseUpHandler)
+        document.addEventListener('contextmenu', this.contextMenuHandler.bind(this))
 
         this.selectionModule.destroy()
     }
 
+    private contextMenuHandler(e: MouseEvent) {
+        e.preventDefault()
+        this.triggerCallbacks('contextmenu', e)
+    }
     private mouseDownHandler(e: MouseEvent) {
         document.body.style.userSelect = 'none'
 
@@ -121,9 +132,7 @@ export class WindowController {
                 translateX: x,
                 translateY: y
             }
-
         }
-
 
         if (windowDOM) {
             this.startMove = {
@@ -173,7 +182,6 @@ export class WindowController {
             this.refWindow.style.transform = `translate(${x}px, ${y}px)`
 
             if (this.windowID) {
-
                 this.moveData.set(this.windowID, { x, y })
             }
             return
@@ -184,11 +192,17 @@ export class WindowController {
             document.body.style.cursor = ''
             if (!windowDOM) return
 
-            if (Math.abs(e.clientX - bbox.left) <= WindowController.OFFSET || Math.abs(e.clientX - bbox.right) <= WindowController.OFFSET) {
+            if (
+                Math.abs(e.clientX - bbox.left) <= WindowController.OFFSET ||
+                Math.abs(e.clientX - bbox.right) <= WindowController.OFFSET
+            ) {
                 document.body.style.cursor = 'ew-resize'
             }
 
-            if ((Math.abs(e.clientY - bbox.top) <= WindowController.OFFSET || Math.abs(e.clientY - bbox.bottom) <= WindowController.OFFSET)) {
+            if (
+                Math.abs(e.clientY - bbox.top) <= WindowController.OFFSET ||
+                Math.abs(e.clientY - bbox.bottom) <= WindowController.OFFSET
+            ) {
                 document.body.style.cursor = 'ns-resize'
             }
             return
@@ -242,7 +256,6 @@ export class WindowController {
                 this.isResizing = true
 
                 this.refWindow.style.transform = `translate(${this.startData.translateX}px, ${newTranslateY}px)`
-
             }
         }
 
@@ -265,8 +278,6 @@ export class WindowController {
         // console.log('@target', target);
         // if (!target.dataset?.window) return
 
-
-
         // if (
         //     (Math.abs(e.clientX - bbox.left) <= WindowController.OFFSET && Math.abs(e.clientY - bbox.bottom) <= WindowController.OFFSET)
         // ) {
@@ -285,14 +296,24 @@ export class WindowController {
         this.resetMove()
     }
 
+    // public getDesktopDOM(e: MouseEvent, data_attr: string) {
+    //     const target = e.target as HTMLElement
+    //     const windowDOM = target.closest(`[${data_attr}]`) as HTMLElement
+
+    //     return windowDOM
+    // }
+
     public getWindowDOM(e: MouseEvent) {
         const target = e.target as HTMLElement
-        const windowDOM = target.closest('[data-window]') as HTMLElement
+        const widgetDOM = target.closest('[data-window]') as HTMLElement
 
-        return windowDOM
+        return widgetDOM
     }
 
-    public applyDimensions(target: HTMLElement | null, window: DesktopObject<DialogType.BASE | DialogType.WIDGET | DialogType.SHORTCUT>) {
+    public applyDimensions(
+        target: HTMLElement | null,
+        window: DesktopObject<DialogType.BASE | DialogType.WIDGET | DialogType.SHORTCUT>
+    ) {
         if (!target || !window?.position) return
 
         const { x, y } = window.position
@@ -332,6 +353,7 @@ export class WindowController {
     //     this.bindings.set('mousedown', [])
     //     this.bindings.set('mousemove', [])
     //     this.bindings.set('mouseup', [])
+    //     this.bindings.set('contextmenu', [])
 
     //     this.bindings.set('selection:start', [])
     //     this.bindings.set('selection:move', [])
@@ -377,6 +399,4 @@ export class WindowController {
     public get windowID() {
         return this.refWindow?.dataset?.window
     }
-
-
 }

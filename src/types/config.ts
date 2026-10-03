@@ -75,3 +75,5 @@ export type DesktopObject<T extends keyof typeof DialogType = keyof typeof Dialo
   CombinedObject,
   { type: T }
 >
+
+
