@@ -1,15 +1,16 @@
 import { useEffect, useRef, useState } from 'react'
 import { WindowController } from '../../../classes/WindowController'
+
 import { useGlobalStore } from '../../../state/state.global'
 import { DialogType, type DesktopObject, type MousePosition } from '../../../types/config'
-import { allowedTypes, handleChangeBackground } from '../../background/background.utils'
+
+import { ContextMenuBackground } from '../contextMenuBackground/contextMenuBackground'
+import { ContextMenuCreate } from '../contextMenuCreate/ContextMenuCreate'
 import {
-    ContextMenuInputFile,
     ContextMenuItemStyles,
     ContextMenuSpan,
     ContextMenuStyles,
     MenuItemStyles,
-    SubMenuStyles,
     WrapperSubMenuStyles
 } from './ContextMenu.styles'
 
@@ -28,11 +29,8 @@ export const ContextMenu = ({ handleAddWindow, handleAddWidget }: ContextMenuPro
     const closeWindow = useGlobalStore.use.closeWindow()
     const closeShortcut = useGlobalStore.use.closeShortcut()
 
-    const { setBackground } = useGlobalStore()
-
     const refMenu = useRef<HTMLDivElement | null>(null)
     const refWrapperMenu = useRef<HTMLDivElement | null>(null)
-    const refInputFile = useRef<HTMLInputElement | null>(null)
 
     const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false)
     const [reverseMenu, setReverseMenu] = useState<Revers>({ reverseMenuX: false, reverseMenuY: false })
@@ -75,38 +73,23 @@ export const ContextMenu = ({ handleAddWindow, handleAddWidget }: ContextMenuPro
                                 ref={refWrapperMenu}
                                 $reverseMenuX={reverseMenu.reverseMenuX}
                                 $reverseMenuY={reverseMenu.reverseMenuY}>
-                                <SubMenuStyles
-                                    onClick={() => {
-                                        handleAddWindow({ position: { x: menuPosition.x, y: menuPosition.y } })
-                                        setIsMenuOpen(false)
-                                    }}>
-                                    add shortcut
-                                </SubMenuStyles>
-
-                                <SubMenuStyles
-                                    onClick={() => {
-                                        handleAddWidget({ position: { x: menuPosition.x, y: menuPosition.y } })
-                                        setIsMenuOpen(false)
-                                    }}>
-                                    add widget
-                                </SubMenuStyles>
+                                <ContextMenuCreate
+                                    handleAddWindow={handleAddWindow}
+                                    handleAddWidget={handleAddWidget}
+                                    setIsMenuOpen={setIsMenuOpen}
+                                    position={menuPosition}
+                                />
                             </WrapperSubMenuStyles>
                         </MenuItemStyles>
-                        <MenuItemStyles>
-                            <ContextMenuSpan>
-                                <ContextMenuInputFile
-                                    ref={refInputFile}
-                                    type="file"
-                                    id="background-desktop"
-                                    name="background"
-                                    accept={allowedTypes.join(', ')}
-                                    onChange={e => {
-                                        handleChangeBackground(e, refInputFile, setBackground)
-                                        setIsMenuOpen(false)
-                                    }}
-                                />
-                                Change Background
-                            </ContextMenuSpan>
+
+                        <MenuItemStyles data-create $isMenuOpen={isMenuOpen}>
+                            <ContextMenuSpan>Background</ContextMenuSpan> <ContextMenuSpan>&#9658;</ContextMenuSpan>
+                            <WrapperSubMenuStyles
+                                ref={refWrapperMenu}
+                                $reverseMenuX={reverseMenu.reverseMenuX}
+                                $reverseMenuY={reverseMenu.reverseMenuY}>
+                                <ContextMenuBackground setIsMenuOpen={setIsMenuOpen} />
+                            </WrapperSubMenuStyles>
                         </MenuItemStyles>
                     </>
                 )
