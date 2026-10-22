@@ -1,8 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
-import { AppStyles, WindowContainerStyles } from './App.styled'
+import { AppButtonStyles, AppStyles, WindowContainerStyles, WindowContainerTitle } from './App.styled'
 import { WindowController } from './classes/WindowController'
 import BackgroundDesktop from './components/background/BackgroundDesktop'
+import { ContextMenu } from './components/contextMenu/contextMenuComponent/ContextMenu'
 import ShortcutComponent from './components/shortcut/ShortcutComponent'
 import StartMenu from './components/startMenu/startMenu'
 import { TodoList } from './components/widgets/todoList/TodoList'
@@ -46,7 +47,7 @@ function App() {
     //     }
     // }, [isSuccess, data])
 
-    const handleAddWindow = async () => {
+    const handleAddWindow = async (props?: Partial<DesktopObject<DialogType.SHORTCUT>>) => {
         const render = () => (
             <div style={{ width: '100%', height: '100%' }}>
                 <iframe
@@ -78,6 +79,7 @@ function App() {
             type: DialogType.SHORTCUT,
             icon: 'src/assets/doom.webp',
             position: { x: 0, y: 0 },
+            ...props,
             action: () => {
                 if (Date.now() - dblClick < dblClickDelay) {
                     changeWindowProps({ id: newWindow.id, isOpen: true, isActive: true })
@@ -92,7 +94,7 @@ function App() {
         createConfigMt(shortcut)
     }
 
-    const handleAddWidget = () => {
+    const handleAddWidget = (props?: Partial<DesktopObject<DialogType.WIDGET>>) => {
         const id = crypto.randomUUID()
 
         const newWidget: DesktopObject<DialogType.WIDGET> = {
@@ -102,6 +104,7 @@ function App() {
             isOpen: true,
             isFocused: true,
             disabledControls: true,
+            ...props,
 
             render: () => <TodoList />
         }
@@ -119,9 +122,10 @@ function App() {
 
     return (
         <WindowContainerStyles $previewUrl={previewUrl} $mode={mode}>
-            <h1>Hello World</h1>
-            <button onClick={handleAddWindow}>DOOOM!!!</button>
-            <button onClick={handleAddWidget}>Add Widjet</button>
+            <ContextMenu handleAddWindow={handleAddWindow} handleAddWidget={handleAddWidget} />
+            <WindowContainerTitle>Hello World</WindowContainerTitle>
+            <AppButtonStyles onClick={() => handleAddWindow()}>DOOOM!!!</AppButtonStyles>
+            <AppButtonStyles onClick={() => handleAddWidget()}>Add Widget</AppButtonStyles>
             <AppStyles>
                 {shortcuts.map(shortcut => (
                     <div key={shortcut.id}>
@@ -129,9 +133,10 @@ function App() {
                     </div>
                 ))}
             </AppStyles>
-            {windows.map(w => (
-                <WindowTable key={w.id} window={w} />
-            ))}
+            {windows.map(w => {
+                if (!w.isOpen) return
+                return <WindowTable key={w.id} window={w} />
+            })}
 
             <BackgroundDesktop />
             <StartMenu />

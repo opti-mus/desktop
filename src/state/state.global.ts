@@ -1,8 +1,8 @@
-import type { StateCreator, StoreApi, UseBoundStore } from 'zustand';
-import { create as actualCreate } from 'zustand';
-import { createBackgroundSlice, type BackgroundStateSlice } from './BackgroundSlice';
-import { createShortcutSlice, type ShortcutStateSlice } from './ShortcutSlice';
-import { createWindowSlice, type WindowStateSlice } from './WindowSlice';
+import type { StateCreator, StoreApi, UseBoundStore } from 'zustand'
+import { create as actualCreate } from 'zustand'
+import { createBackgroundSlice, type BackgroundStateSlice } from './BackgroundSlice'
+import { createShortcutSlice, type ShortcutStateSlice } from './ShortcutSlice'
+import { createWindowSlice, type WindowStateSlice } from './WindowSlice'
 
 const storeResetFns = new Set<() => void>()
 
@@ -22,19 +22,15 @@ export const create = (<T>() => {
   }
 }) as typeof actualCreate
 
-type WithSelectors<S> = S extends { getState: () => infer T }
-  ? S & { use: { [K in keyof T]: () => T[K] } }
-  : never
+type WithSelectors<S> = S extends { getState: () => infer T } ? S & { use: { [K in keyof T]: () => T[K] } } : never
 
 type GlobalState = WindowStateSlice & ShortcutStateSlice & BackgroundStateSlice
 
-const createSelectors = <S extends UseBoundStore<StoreApi<object>>>(
-  _store: S,
-) => {
+const createSelectors = <S extends UseBoundStore<StoreApi<object>>>(_store: S) => {
   const store = _store as WithSelectors<typeof _store>
   store.use = {}
   for (const k of Object.keys(store.getState())) {
-    ; (store.use as any)[k] = () => store((s) => s[k as keyof typeof s])
+    ; (store.use as any)[k] = () => store(s => s[k as keyof typeof s])
   }
 
   return store

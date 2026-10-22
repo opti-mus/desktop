@@ -41,6 +41,7 @@ const WindowTable = ({ window }: WindowTableProps) => {
 
     return (
         <WindowTableStyles
+            data-type={window.type}
             data-window={id}
             ref={refObject}
             $isMaximized={!!isMaximized}
