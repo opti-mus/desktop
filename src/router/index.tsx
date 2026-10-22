@@ -12,7 +12,7 @@ import { privateRoutes, publicRoutes, routes } from './routes'
 const NavigateRoute = () => {
     const isAuth = getAccessToken()
 
-    return isAuth ? <Outlet /> : <Navigate to={routes.auth.login} replace />
+    return isAuth ? <Navigate to={routes.desktop} replace /> : <Navigate to={routes.auth.login} replace />
 }
 const PublicRoute = () => {
     const isAuth = getAccessToken()
@@ -20,10 +20,15 @@ const PublicRoute = () => {
     return !isAuth ? <Outlet /> : <Navigate to={routes.desktop} replace />
 }
 
+const ProtectedRoute = () => {
+    const isAuth = getAccessToken()
+    return isAuth ? <Outlet /> : <Navigate to={routes.auth.login} replace />
+}
+
 const router = createBrowserRouter(
     createRoutesFromElements(
         <>
-            <Route element={<NavigateRoute />}>
+            <Route element={<ProtectedRoute />}>
                 {Object.values(privateRoutes).map(({ Element, path }) => (
                     <Route key={path} path={path} element={<Element />} />
                 ))}

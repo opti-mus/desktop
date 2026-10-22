@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { AppButtonStyles, AppStyles, WindowContainerStyles, WindowContainerTitle } from './App.styled'
 import { WindowController } from './classes/WindowController'
@@ -19,19 +19,20 @@ function App() {
     const addWindow = useGlobalStore.use.addWindow()
 
     const shortcuts = useGlobalStore.use.shortcuts()
-    const setShortcuts = useGlobalStore.use.setShortcuts()
+    const addShortcut = useGlobalStore.use.addShortcut()
+    // const setShortcuts = useGlobalStore.use.setShortcuts()
 
     const mode = useGlobalStore.use.mode()
     const changeWindowProps = useGlobalStore.use.changeWindowProps()
 
     const queryClient = useQueryClient()
-    const { createConfig, getAllConfigs } = useConfig()
+    const { createConfig } = useConfig()
     useInitListeners()
 
-    const { isSuccess, data } = useQuery({
-        queryKey: ['config'],
-        queryFn: async () => await getAllConfigs()
-    })
+    // const { isSuccess, data } = useQuery({
+    //     queryKey: ['config'],
+    //     queryFn: async () => await getAllConfigs()
+    // })
 
     const { mutate: createConfigMt } = useMutation({
         mutationFn: createConfig,
@@ -40,11 +41,11 @@ function App() {
         }
     })
 
-    useEffect(() => {
-        if (isSuccess && data?.data) {
-            setShortcuts(data?.data)
-        }
-    }, [isSuccess, data])
+    // useEffect(() => {
+    //     if (isSuccess && data?.data) {
+    //         setShortcuts(data?.data)
+    //     }
+    // }, [isSuccess, data])
 
     const handleAddWindow = async (props?: Partial<DesktopObject<DialogType.SHORTCUT>>) => {
         const render = () => (
@@ -89,7 +90,7 @@ function App() {
             newWindow: newWindow.id
         }
         addWindow(newWindow)
-
+        addShortcut(shortcut)
         createConfigMt(shortcut)
     }
 
