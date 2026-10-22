@@ -19,13 +19,13 @@ function App() {
 
     const shortcuts = useGlobalStore.use.shortcuts()
     const addShortcut = useGlobalStore.use.addShortcut()
-    const setShortcuts = useGlobalStore.use.setShortcuts()
+    // const setShortcuts = useGlobalStore.use.setShortcuts()
 
     const mode = useGlobalStore.use.mode()
     const changeWindowProps = useGlobalStore.use.changeWindowProps()
 
     const queryClient = useQueryClient()
-    const { createConfig, getAllConfigs } = useConfig()
+    const { createConfig } = useConfig()
     useInitListeners()
 
     // const { isSuccess, data } = useQuery({
