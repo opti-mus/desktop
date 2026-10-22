@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { AppStyles, WindowContainerStyles } from './App.styled'
 import { WindowController } from './classes/WindowController'
@@ -18,6 +18,7 @@ function App() {
     const addWindow = useGlobalStore.use.addWindow()
 
     const shortcuts = useGlobalStore.use.shortcuts()
+    const addShortcut = useGlobalStore.use.addShortcut()
     const setShortcuts = useGlobalStore.use.setShortcuts()
 
     const mode = useGlobalStore.use.mode()
@@ -27,10 +28,10 @@ function App() {
     const { createConfig, getAllConfigs } = useConfig()
     useInitListeners()
 
-    const { isSuccess, data } = useQuery({
-        queryKey: ['config'],
-        queryFn: async () => await getAllConfigs()
-    })
+    // const { isSuccess, data } = useQuery({
+    //     queryKey: ['config'],
+    //     queryFn: async () => await getAllConfigs()
+    // })
 
     const { mutate: createConfigMt } = useMutation({
         mutationFn: createConfig,
@@ -39,11 +40,11 @@ function App() {
         }
     })
 
-    useEffect(() => {
-        if (isSuccess && data?.data) {
-            setShortcuts(data?.data)
-        }
-    }, [isSuccess, data])
+    // useEffect(() => {
+    //     if (isSuccess && data?.data) {
+    //         setShortcuts(data?.data)
+    //     }
+    // }, [isSuccess, data])
 
     const handleAddWindow = async () => {
         const render = () => (
@@ -87,7 +88,7 @@ function App() {
             newWindow: newWindow.id
         }
         addWindow(newWindow)
-
+        addShortcut(shortcut)
         createConfigMt(shortcut)
     }
 
